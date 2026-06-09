@@ -1,14 +1,13 @@
-from flask import Flask  # Import the Flask class used to create the web application
+from flask import Flask  # Import Flask class used to create the web application
 
 
-def create_app():  # Define the application factory function
-    app = Flask(__name__)  # Create a new Flask application instance
+def create_app():  # Define the application factory function used to build and configure the Flask app
+    app =  Flask(__name__)  # Create a new Flask application instance using the current package name
 
-    app.config["SECRET_KEY"] = "temporary_development_key"  # Set a temporary secret key for local development
+    app.config["SECRET_KEY"] = "temporary-development-key"  # Set a temporary secret key for local development sessions
 
-    @app.route("/")  # Register the homepage route
-    def home():  # Define the function that runs when the homepage is visited
-        return "The Only Tee is running."  # Return a simple test message in the browser
+    from app.routes import main  # Import the main routes blueprint after creating the app to avoid circular imports
 
-    return app  # Return the configured Flask application
+    app.register_blueprint(main)  # Register the main blueprint so its routes become available in the app
 
+    return app  # Return the fully configured Flask application instance
