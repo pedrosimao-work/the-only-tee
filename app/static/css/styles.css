@@ -1,0 +1,50 @@
+body { /* Target the full visible page body */
+    background-color: #ffffff; /* Set a clean white background for the whole website */
+    color: #111111; /* Set the default text color to near-black for strong contrast */
+} /* End the body styling block */
+
+.hero-section { /* Target the homepage hero section */
+    min-height: 80vh; /* Make the hero section take at least 80% of the browser height */
+    padding: 5rem 0; /* Add vertical spacing above and below the hero content */
+} /* End the hero section styling block */
+
+.page-section { /* Target normal inner page sections */
+    padding: 5rem 0; /* Add consistent vertical spacing to standard pages */
+} /* End the page section styling block */
+
+.product-card { /* Target the current drop product card */
+    border: 1px solid #e5e5e5; /* Add a subtle border around the product card */
+    border-radius: 1.5rem; /* Round the card corners for a premium look */
+    background-color: #f8f8f8; /* Add a very light grey background to separate the card from the page */
+} /* End the product card styling block */
+
+
+.product-placeholder { /* Target the temporary product image placeholder */
+    width: 280px; /* Set a fixed placeholder width */
+    height: 360px; /* Set a fixed placeholder height */
+    border-radius: 1rem; /* Round the placeholde corners */
+    background: linear-gradient(135deg, #111111, #444444); /* Add a dark gradient as temporary product artwork */
+    display: flex; /* Use flexbox to center the placeholder text */
+    align-items: center; /* Center the placeholder text vertically */
+    justify-content: center; /* Center the placeholder text horizontally */
+    color: #ffffff; /* Set the placeholder text color to white */
+    font-weight: 700; /* Make the placeholder text bold */
+    letter-spacing: 0.2rem; /* Add spacing between placeholder letters */
+} /* End the product placeholder styling block */
+
+.archive-card { /* Target the archive item card */
+    border: 1px solid #e5e5e5; /* Add a subtle card border */
+    border-radius: 1.25rem; /* Round the archive card corners */
+    background-color: #ffffff; /* Keep archive cards white for a gallery-like look */
+} /* End the archive card styling block */
+
+.archive-placeholder { /* Target the archive image placeholder */
+    height: 260px; /* Set a fixed height for archive placeholder visuals */
+    border-radius: 1rem; /* Round the placeholder corners */
+    background-color: #f1f1f1; /* Add a light grey placeholder background */
+    display: flex; /* Use flexbox to center the placeholder content */
+    align-items: center; /* Center the placeholder content vertically */
+    justify-content: center; /* Center the placeholder content horizontally */
+    font-weight: 700; /* Make the drop number bold */
+    color: #777777; /* Set the drop number to muted grey */
+} /* End the archive placeholder styling block */

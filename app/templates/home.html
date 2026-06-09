@@ -1,0 +1,30 @@
+{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+
+{% block title %}Current Drop | The Only Tee{% endblock %} <!-- Replace the page title for this specific page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="hero-section d-flex align-items-center"> <!-- Create the main landing hero section and vertically center its content -->
+    <div class="container"> <!-- Center the hero content inside a Bootsrap container -->
+        <div class="row aligh-items-center g-5"> <!-- Create a responsive row with vertical alignment and spacing -->
+            <div class="col-lg-6"> <!-- Create the left column for text content on large screens -->
+                <p class="text-uppercase small fw-semibold text-muted mb-2">Drop #0001 · Season 1</p> <!-- Display the drop identity line -->
+                <h1 class="display-4 fw-bold mb-3">Silent Horizon</h1> <!-- Display the current drop name as the main heading -->
+                <p class="lead text-muted mb-4">A one-time T-shirt drop available for a limited window before entering the Archive Collection permanentely.</p> <!-- Display the main product concept -->
+                <div class="d-flex flex-column flex-sm-row gap-3"> <!-- Create a responsive button group with spacing -->
+                    <a href="#" class="btn btn-dark btn-lg px-4">View Current Drop</a> <!-- Add the main call-to-action button -->
+                    <a href="{{ url_for('main.archive') }}" class="btn btn-outline-dark btn-lg px-4">Explore Archive</a> <!-- Add a secondary button linking to the archive -->
+                </div> <!-- Close the button group -->
+            </div> <!-- Close the left column -->
+            <div class="col-lg-6"> <!-- Create the right column for the product visual -->
+                <div class="product-card p-4 text-center"> <!-- Create a styled product card wrapper -->
+                    <div class="product-placeholder mx-auto mb-4"> <!-- Create a temporary visual placeholder for the T-shirt image -->
+                        <span>TEE</span> <!-- Display temporary placeholder text -->
+                    </div> <!-- Close the product placeholder -->
+                    <h2 class="h4 mb-1">THE ONLY TEE</h2> <!-- Display the product brand heading -->
+                    <p class="text-muted mb-0">€59 fixed drop price</p> <!-- Display the planned fixed product price -->
+                </div> <!-- Close the product card -->
+            </div> <!-- Close the right column -->
+        </div> <!-- Close the row -->
+    </div> <!-- Close the container -->
+</section> <!-- Close the hero section -->
+{% endblock %} <!-- End the page-specific content block -->
