@@ -19,7 +19,31 @@ def home():  # Define the function that runs when a user visits the homepage
 
 @main.route("/archive")  # Register the archive page URL route
 def archive():  # Define the function that runs when a user visits the archive page
-    return render_template("archive.html")  # Render and return the archive template
+    archived_drops = [  #  Create a temporary list containing archived drop dictionaries
+        {  # Create the first archived drop dictionary
+            "drop_number": "0001",  # Store the first archived drop number as a string
+            "season": 1,  # Store the first archived drio season number
+            "name": "Silent Horizon",  # Store the first archived drop name
+            "price": 59,  # Store the first archived drop price
+            "released_year": 2026,  # Store the year when the first drop was released
+        },  # Close the first archived drop dictionary
+        {  # Create the second archived drop dictionary
+            "drop_number": "0002",  # Store the second archived drop number as a string
+            "season": 1,  # Store the second archived drop season number
+            "name": "Frozen Signal",  # Store the second archived drop name
+            "price": 59,  # Store the second archived drop price
+            "release_year": 2026,  # Store the year when the second drop was released
+        },  # Close the second archived drop dictionary
+        {  # Create the third archived drop dictionary
+            "drop_number": "0003",  # Store the third archived drop number as a string
+            "season": 1,  # Store the third archived drop season number
+            "name": "Cold Archive",  # Store the third archived drop name
+            "price": 59,  # Store the third archived drop price
+            "released_year": 2026,  # Store the year when the third drop was released
+        },  # Close the third archived drop dictionary
+    ]  # Close the archived drop list
+
+    return render_template("archive.html", archived_drops=archived_drops)  # Render the archive page and send archived drops to the template
 
 @main.route("/about")  # Register the about page URL route
 def about():  # Define the function that runs when a user visits the about page
