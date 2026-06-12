@@ -48,3 +48,24 @@ body { /* Target the full visible page body */
     font-weight: 700; /* Make the drop number bold */
     color: #777777; /* Set the drop number to muted grey */
 } /* End the archive placeholder styling block */
+
+.drop-meta { /* Target the metadata wrapper containing price, time, and status */
+    max-width: 620px; /* Limit the width so the metadata boxes do not stretch too much */
+} /* End the drop metadata wrapper styling block */
+
+.meta-box { /* Target each small metadata box */
+    border: 1px solid #e5e5e5; /* Add a subtle border around each metadata box */
+    border-radius: 1rem; /* Round the corners to match the premium visual style */
+    padding: 1ren 1.25rem; /* Add internal spacing inside each metadata box */
+    min-width: 130px; /* Give each metadata box a minimum readable width */
+    background-color: #ffffff; /* Keep the metadata boxes clean and white */
+} /* End the metadata box styling block */
+
+.meta-label { /* Target the small label inside each metadata box */
+    display: block; /* Place the label on its own line above the value */
+    font-size: 0.75rem; /* Make the label smaller than the value */
+    text-transform: uppercase; /* Convert the label text to uppercase for a technical/premium look */
+    letter-spacing: 0.08rem; /* Add slight spacing between label letters */
+    color: #777777; /* Make the label muted so the value stands out */
+    margin-bottom: 0.25rem; /* Add small spacing below the label */
+} /* End the metadata label styling block */
