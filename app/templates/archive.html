@@ -12,15 +12,18 @@
         </div> <!-- Close the heading area -->
 
         <div class="row g-4"> <!-- Create a responsive Bootstrap grid for archived drops -->
+            {% for drop in archived_drops %} <!-- Start a Jinja loop through every archived drop sent from the Flask route -->
             <div class="col-md-6 col-lg-4"> <!-- Create one archive grid column -->
                 <div class="archive-card p-4 h-100"> <!-- Create one archive card with equal height -->
                     <div class="archive-placeholder mb-3"> <!-- Create a temporary image placeholder -->
-                        <span>#0001</span> <!-- Display the archived drop number -->
+                        <span>#{{ drop.drop_number }}</span> <!-- Display the archived drop number for the current dictionary -->
                     </div> <!-- Close the placeholder -->
-                    <p class="text-uppercase small text-muted mb-1">Season 1</p> <!-- Display the season label -->
-                    <h2 class="h5 mb-0">Silent Horizon</h2> <!-- Display the archived drop name -->
+                    <p class="text-uppercase small text-muted mb-1">Season {{ drop.season }} · {{ drop.release_year }}</p> <!-- Display the season and release year dinamically -->
+                    <h2 class="h5 mb-0">{{ drop.name }}</h2> <!-- Display the archived drop name dinamically -->
+                    <p class="text-muted mb-0">Original drop price: €{{ drop.price }}</p> <!-- Display the archived drop price dinamically -->
                 </div> <!-- Close the archive card -->
             </div> <!-- Close the archive grid column -->
+            {% endfor %} <!-- End the Jinja loop after all archived drops have been displayed -->
         </div> <!-- Close the archive grid -->
     </div> <!-- Close the container -->
 </section> <!-- Close the page section -->
