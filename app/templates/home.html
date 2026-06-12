@@ -7,11 +7,27 @@
     <div class="container"> <!-- Center the hero content inside a Bootsrap container -->
         <div class="row aligh-items-center g-5"> <!-- Create a responsive row with vertical alignment and spacing -->
             <div class="col-lg-6"> <!-- Create the left column for text content on large screens -->
-                <p class="text-uppercase small fw-semibold text-muted mb-2">Drop #0001 · Season 1</p> <!-- Display the drop identity line -->
-                <h1 class="display-4 fw-bold mb-3">Silent Horizon</h1> <!-- Display the current drop name as the main heading -->
-                <p class="lead text-muted mb-4">A one-time T-shirt drop available for a limited window before entering the Archive Collection permanentely.</p> <!-- Display the main product concept -->
+                <p class="text-uppercase small fw-semibold text-muted mb-2">Drop #{{ active_drop.drop_number }} · Season {{ active_drop.season }}</p> <!-- Display the drop number and season from the Python dictionary -->
+                <h1 class="display-4 fw-bold mb-3">{{ active_drop.name }}</h1> <!-- Display the current drop name from the Python dictionary -->
+                <p class="lead text-muted mb-4">{{ active_drop.description }}</p> <!-- Display the active drop description from the Python dictionary -->
+
+                <div class="drop-meta d-flex flex-column flex-sm-row gap mb-4">  <!-- Create a responsive group for price and time data -->
+                    <div class="meta-box">  <!-- Create a small information box for the price -->
+                        <span class="meta-label">Price</span> <!-- Display the price label -->
+                        <strong>€{{ active_drop.price }}</strong> <!-- Display the active drop price from the Python dictionary -->
+                    </div>  <!-- Close the price information box -->
+                    <div class="meta-box"> <!--Create a small information box for the countdown -->
+                        <span class="meta-label">Time Left</span> <! Display the time-left label -->
+                        <strong>{{ active_drop.days_left }} days</strong> <!-- Display the number of days left from the Python dictionary -->
+                    </div> <!-- Close the countdown information box -->
+                    <div class="meta-box"> <!-- Create a small information box for the status -->
+                        <span class="meta-label">Status</span> <!-- Display the status label -->
+                        <strong>{{ active_drop.status|capitalize }}</strong> <!-- Display the status from the Python dictionary with first letter uppercase -->
+                    </div> <!-- Close the status information box -->
+                </div> <!-- Close the drop metadata group -->
+
                 <div class="d-flex flex-column flex-sm-row gap-3"> <!-- Create a responsive button group with spacing -->
-                    <a href="#" class="btn btn-dark btn-lg px-4">View Current Drop</a> <!-- Add the main call-to-action button -->
+                    <a href="#" class="btn btn-dark btn-lg px-4">Reserve Drop</a> <!-- Add the main call-to-action button for future purchase/reservation logic -->
                     <a href="{{ url_for('main.archive') }}" class="btn btn-outline-dark btn-lg px-4">Explore Archive</a> <!-- Add a secondary button linking to the archive -->
                 </div> <!-- Close the button group -->
             </div> <!-- Close the left column -->
@@ -21,7 +37,7 @@
                         <span>TEE</span> <!-- Display temporary placeholder text -->
                     </div> <!-- Close the product placeholder -->
                     <h2 class="h4 mb-1">THE ONLY TEE</h2> <!-- Display the product brand heading -->
-                    <p class="text-muted mb-0">€59 fixed drop price</p> <!-- Display the planned fixed product price -->
+                    <p class="text-muted mb-0">Drop #{{ active_drop.drop_number }} · €{{ active_drop.price }}</p> <!-- Display drop number and price dinamically -->
                 </div> <!-- Close the product card -->
             </div> <!-- Close the right column -->
         </div> <!-- Close the row -->
