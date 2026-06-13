@@ -1,2 +1,5 @@
 Flask==3.0.3  # Install Flask as the main Python web framework
 python-dotenv==1.0.1  # Load environment variables from a local .env file
+Flask-SQLAlchemy==3.1.1  # Add SQLAlchemy integration for Flask database models
+Flask-Migrate==4.0.7  # Add database migration support using Alembic
+PyMySQL==1.1.1  # Add MariaDB/MySQL driver for future DirectAdmin deployment
