@@ -18,7 +18,11 @@ def create_app():  # Define the application factory function used to build and c
 
     from app import models  # Import models so Flask-Migrate can detect database tables
 
+    from app.commands import register_commands  # Import the function that registers custom Flask CLI commands
+
     from app.routes import main  # Import the main routes blueprint after creating the app to avoid circular imports
+
+    register_commands(app)  # Register custom terminal commands on the Flask app
 
     app.register_blueprint(main)  # Register the main blueprint so its routes become available in the app
 
