@@ -69,3 +69,9 @@ body { /* Target the full visible page body */
     color: #777777; /* Make the label muted so the value stands out */
     margin-bottom: 0.25rem; /* Add small spacing below the label */
 } /* End the metadata label styling block */
+
+.archive-empty-state { /* Target the empty archive message box */
+    border: 1px solid #e5e5e5; /* Target the empty archive message box */
+    border-radius: 1.25; /* Round the corners to match the archive cards */
+    background-color: #f8f8f8; /* Add a light grey background for visual separation */
+} /* End the archive empty-state styling block */
