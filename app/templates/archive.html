@@ -11,20 +11,28 @@
             <p class="text-muted">Every finished drop becomes part of the permanent collection. No missed section. No repeated designs. Just the full timeline.</p> <!-- Explain the archive concept -->
         </div> <!-- Close the heading area -->
 
+        {% if archived_drops %}  <!-- Check if the database returned at least one archived drop -->
         <div class="row g-4"> <!-- Create a responsive Bootstrap grid for archived drops -->
-            {% for drop in archived_drops %} <!-- Start a Jinja loop through every archived drop sent from the Flask route -->
+            {% for drop in archived_drops %} <!-- Start a Jinja loop through every archived database drop -->
             <div class="col-md-6 col-lg-4"> <!-- Create one archive grid column -->
                 <div class="archive-card p-4 h-100"> <!-- Create one archive card with equal height -->
                     <div class="archive-placeholder mb-3"> <!-- Create a temporary image placeholder -->
-                        <span>#{{ drop.drop_number }}</span> <!-- Display the archived drop number for the current dictionary -->
+                        <span>#{{ drop.drop_number }}</span> <!-- Display the archived drop number from the database record -->
                     </div> <!-- Close the placeholder -->
-                    <p class="text-uppercase small text-muted mb-1">Season {{ drop.season }} · {{ drop.release_year }}</p> <!-- Display the season and release year dinamically -->
+                    <p class="text-uppercase small text-muted mb-1">Season {{ drop.season }}</p> <!-- Display the archived drop season dinamically -->
                     <h2 class="h5 mb-0">{{ drop.name }}</h2> <!-- Display the archived drop name dinamically -->
                     <p class="text-muted mb-0">Original drop price: €{{ drop.price }}</p> <!-- Display the archived drop price dinamically -->
                 </div> <!-- Close the archive card -->
             </div> <!-- Close the archive grid column -->
             {% endfor %} <!-- End the Jinja loop after all archived drops have been displayed -->
         </div> <!-- Close the archive grid -->
+        {% else %}  <!-- Run this section if there are no archived drops yet -->
+        <div class="archive-empty-state p-5 text-center"> <!-- Create a centered empty-state box for the archive -->
+            <p class="text-uppercase small fw-semibold text-muted mb-2">Archive Empty</p> <!--Display a small empty archive label -->
+            <h2 class="fw-bold mb-3">No drops have entered the archive yet.</h2> <!-- Display the empty archive heading -->
+            <p class="text-muted mb-0">Once a drop expires, it will appear here permanently.</p> <!-- Explain when archive items will appear -->
+        </div> <!-- Close the archive empty-state box -->
+        {% endif %} <!-- End the archived_drops conditional check -->
     </div> <!-- Close the container -->
 </section> <!-- Close the page section -->
 {% endblock %} <!-- End the page-specific content block -->
