@@ -1,5 +1,6 @@
 import click  # Import Click so we can display styled messages in the terminal
 
+from app.constants import DROP_STATUS_ACTIVE, DROP_STATUS_ARCHIVED  # Import reusable status constants for seed data
 from app.extensions import db  # Import the database object so we can save and delete records
 from app.models import Drop  # Import the Drop model so we can create drop records
 
@@ -15,7 +16,7 @@ def register_commands(app):  # Define a function that registers custom made comm
             name="Silent Horizon",  # Set the active drop name
             description="A one-time T-shirt drop available for a limited window before entering the Archive Collection permanently.",  # Set the active drop description
             price=59,  # Set the fixed active drop price
-            status="active",  # Mark this drop as the current active drop
+            status=DROP_STATUS_ACTIVE,  # Mark this drop as the current active drop
         )  # Close the active drop object creation
 
         archived_drop_one = Drop(  # Create the first archived drop record
@@ -24,7 +25,7 @@ def register_commands(app):  # Define a function that registers custom made comm
             name="Frozen Signal",  # Set the first archived drop name
             description="A finished limited drop from the first collection.",  # Set the first archived drop description
             price=59,  # Set the first archived drop price
-            status="archived",  # Mark this drop as archived
+            status=DROP_STATUS_ARCHIVED,  # Mark this drop as archived
         )  # Close the first archived drop object creation
 
         archived_drop_two = Drop(  # Create the second archived drop record
@@ -33,7 +34,7 @@ def register_commands(app):  # Define a function that registers custom made comm
             name="Cold Archive",  # Set the second archived drop name
             description="A finished limited drop from the first collection.",  # Set the second archived drop description
             price=59,  # Set the second archived drop price
-            status="archived",  # Mark this drop object creation
+            status=DROP_STATUS_ARCHIVED,  # Mark this drop object creation
         )  # Close the second archived drop object creation
 
         db.session.add(active_drop)  # Add the active drop object to the database session
