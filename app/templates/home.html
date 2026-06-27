@@ -1,57 +1,80 @@
 {% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
 
-{% block title %}Current Drop | The Only Tee{% endblock %} <!-- Replace the page title for this specific page -->
+{% block title %}Current Drop | The Only Tee{% endblock %} <!-- Set the browser title for the homepage -->
 
 {% block content %} <!-- Start the page-specific content block -->
-<section class="hero-section d-flex align-items-center"> <!-- Create the main landing hero section and vertically center its content -->
-    <div class="container"> <!-- Center the hero content inside a Bootsrap container -->
-        {% if active_drop %} <!-- Check if the Flask route found an active drop in the database -->
-        <div class="row aligh-items-center g-5"> <!-- Create a responsive row with vertical alignment and spacing -->
-            <div class="col-lg-6"> <!-- Create the left column for text content on large screens -->
-                <p class="text-uppercase small fw-semibold text-muted mb-2">Drop #{{ active_drop.drop_number }} · Season {{ active_drop.season }}</p> <!-- Display the drop number and season from the Python dictionary -->
-                <h1 class="display-4 fw-bold mb-3">{{ active_drop.name }}</h1> <!-- Display the current drop name from the Python dictionary -->
-                <p class="lead text-muted mb-4">{{ active_drop.description }}</p> <!-- Display the active drop description from the Python dictionary -->
+<section class="hero-section d-flex align-items-center"> <!-- Create the main homepage hero section -->
+    <div class="container"> <!-- Center the hero content inside a Bootstrap container -->
+        {% if active_drop %} <!-- Check if the database returned an active drop -->
+        <div class="row align-items-center g-5"> <!-- Create a responsive Bootstrap row with spacing between columns -->
+            <div class="col-lg-6"> <!-- Create the left column for text and actions -->
+                <p class="eyebrow mb-3">Current Drop · Season {{ active_drop.season }}</p> <!-- Display a small uppercase context label -->
+                <h1 class="hero-title mb-3">{{ active_drop.name }}</h1> <!-- Display the active drop name as the main page heading -->
+                <p class="hero-copy mb-4">{{ active_drop.description }}</p> <!-- Display the active drop description from the database -->
 
-                <div class="drop-meta d-flex flex-column flex-sm-row gap mb-4">  <!-- Create a responsive group for price and time data -->
-                    <div class="meta-box">  <!-- Create a small information box for the price -->
-                        <span class="meta-label">Price</span> <!-- Display the price label -->
-                        <strong>€{{ active_drop.price }}</strong> <!-- Display the active drop price from the Python dictionary -->
-                    </div>  <!-- Close the price information box -->
+                <div class="product-showcase mobile-product-showcase mx-auto mb-4 d-lg-none"> <!-- Show the product image on mobile right after the description -->
+                    <div class="product-frame"> <!-- Create the main product visual frame -->
+                        <div class="product-placeholder"> <!-- Create the temporary product visual placeholder -->
+                            <span>THE<br>ONLY<br>TEE</span> <!-- Display stacked placeholder text inside the product visual -->
+                        </div> <!-- Close the temporary product visual placeholder -->
+                    </div> <!-- Close the product visual frame -->
 
-                    <div class="meta-box"> <!-- Create a small information box for the status -->
-                        <span class="meta-label">Status</span> <!-- Display the status label -->
-                        <strong>{{ active_drop.status|capitalize }}</strong> <!-- Display the status from the Python dictionary with first letter uppercase -->
-                    </div> <!-- Close the status information box -->
-                </div> <!-- Close the drop metadata group -->
+                    <div class="product-summary mt-3"> <!-- Create a compact summary card below the product visual -->
+                        <div> <!-- Create a wrapper for product summary text -->
+                            <p class="mb-1 small text-muted">Now showing</p> <!-- Display a small contextual label -->
+                            <h2 class="h5 mb-0">Drop #{{ active_drop.drop_number }}</h2> <!-- Display the active drop number -->
+                        </div> <!-- Close the product summary text wrapper -->
+                        <strong>€{{ active_drop.price }}</strong> <!-- Display the active drop price -->
+                    </div> <!-- Close the product summary card -->
+                </div> <!-- Close the mobile-only product showcase -->
 
-                <div class="meta-box"> <!-- Create a small information box for the collection -->
-                    <span class="meta-label">Collection</span> <!-- Display the collection label -->
-                    <strong>Season {{ active_drop.season }}</strong> <!-- Display the database drop season -->
-                </div> <!-- Close the collection informatio box -->
+                <div class="drop-meta d-none d-md-flex gap-3 mb-4"> <!-- Hide redundant metadata on mobile and show it from tablet size upward -->
+                    <div class="meta-box"> <!-- Create the price metadata box -->
+                        <span class="meta-label">Price</span> <!-- Display the metadata label -->
+                        <strong>€{{ active_drop.price }}</strong> <!-- Display the active drop price -->
+                    </div> <!-- Close the price metadata box -->
+                    <div class="meta-box"> <!-- Create the status metadata box -->
+                        <span class="meta-label">Status</span> <!-- Display the metadata label -->
+                        <strong>{{ active_drop.status|capitalize }}</strong> <!-- Display the active drop status -->
+                    </div> <!-- Close the status metadata box -->
+                    <div class="meta-box"> <!-- Create the collection metadata box -->
+                        <span class="meta-label">Collection</span> <!-- Display the metadata label -->
+                        <strong>Season {{ active_drop.season }}</strong> <!-- Display the active drop season -->
+                    </div> <!-- Close the collection metadata box -->
+                </div> <!-- Close the metadata area -->
 
-                <div class="d-flex flex-column flex-sm-row gap-3"> <!-- Create a responsive button group with spacing -->
-                    <a href="#" class="btn btn-dark btn-lg px-4">Reserve Drop</a> <!-- Add the main call-to-action button for future purchase/reservation logic -->
-                    <a href="{{ url_for('main.archive') }}" class="btn btn-outline-dark btn-lg px-4">Explore Archive</a> <!-- Add a secondary button linking to the archive -->
-                </div> <!-- Close the button group -->
+                <div class="d-grid d-sm-flex gap-3"> <!-- Create responsive action buttons that stack on mobile -->
+                    <a href="#" class="btn btn-dark btn-lg px-4">Reserve Drop</a> <!-- Add the future reservation button -->
+                    <a href="{{ url_for('main.archive') }}" class="btn btn-outline-dark btn-lg px-4">Explore Archive</a> <!-- Add the archive navigation button -->
+                </div> <!-- Close the action button wrapper -->
             </div> <!-- Close the left column -->
-            <div class="col-lg-6"> <!-- Create the right column for the product visual -->
-                <div class="product-card p-4 text-center"> <!-- Create a styled product card wrapper -->
-                    <div class="product-placeholder mx-auto mb-4"> <!-- Create a temporary visual placeholder for the T-shirt image -->
-                        <span>TEE</span> <!-- Display temporary placeholder text -->
-                    </div> <!-- Close the product placeholder -->
-                    <h2 class="h4 mb-1">THE ONLY TEE</h2> <!-- Display the product brand heading -->
-                    <p class="text-muted mb-0">Drop #{{ active_drop.drop_number }} · €{{ active_drop.price }}</p> <!-- Display drop number and price dinamically -->
-                </div> <!-- Close the product card -->
-            </div> <!-- Close the right column -->
-        </div> <!-- Close the row -->
-        {% else %} <!-- Run this section if there is no active drop in the database -->
-        <div class="text-center py-5"> <!-- Create a centered empty-state message area -->
-            <p class="text-uppercase small fw-semibold text-muted mb-2">No Active Drop</p> <!-- Display a small empty-state label -->
+
+            <div class="col-lg-6 d-none d-lg-block"> <!-- Show the product presentation as a right column only on desktop -->
+                <div class="product-showcase mx-auto"> <!-- Create a centered product showcase wrapper -->
+                    <div class="product-frame"> <!-- Create the main product visual frame -->
+                        <div class="product-placeholder"> <!-- Create the temporary product visual placeholder -->
+                            <span>THE<br>ONLY<br>TEE</span> <!-- Display stacked placeholder text inside the product visual -->
+                        </div> <!-- Close the temporary product visual placeholder -->
+                    </div> <!-- Close the product visual frame -->
+
+                    <div class="product-summary mt-4"> <!-- Create a summary card below the product visual -->
+                        <div> <!-- Create a wrapper for product summary text -->
+                            <p class="mb-1 small text-muted">Now showing</p> <!-- Display a small contextual label -->
+                            <h2 class="h5 mb-0">Drop #{{ active_drop.drop_number }}</h2> <!-- Display the active drop number -->
+                        </div> <!-- Close the product summary text wrapper -->
+                        <strong>€{{ active_drop.price }}</strong> <!-- Display the active drop price -->
+                    </div> <!-- Close the product summary card -->
+                </div> <!-- Close the product showcase wrapper -->
+            </div> <!-- Close the desktop-only right column -->
+        </div> <!-- Close the responsive row -->
+        {% else %} <!-- Run this block if there is no active drop -->
+        <div class="empty-state text-center mx-auto"> <!-- Create a centered empty state wrapper -->
+            <p class="eyebrow mb-3">No Active Drop</p> <!-- Display a small empty-state label -->
             <h1 class="fw-bold mb-3">The next drop is being prepared.</h1> <!-- Display the empty-state heading -->
-            <p class="lead text-muted mb-4">Check back soon for the next limited release</p> <!-- Display the empty-state description -->
-            <a href="{{ url_for('main.archive')}}" class="btn btn-outline-dark btn-lg px-4">Explore Archive</a> <!-- Add a button to the archive page -->
-        </div> <!-- Close the empty-state message area -->
-        {% endif %} <!-- End the active_drop conditional check -->
-    </div> <!-- Close the container -->
-</section> <!-- Close the hero section -->
+            <p class="lead text-muted mb-4">Check back soon for the next limited release.</p> <!-- Display the empty-state copy -->
+            <a href="{{ url_for('main.archive') }}" class="btn btn-outline-dark btn-lg px-4">Explore Archive</a> <!-- Add a button linking to the archive -->
+        </div> <!-- Close the empty-state wrapper -->
+        {% endif %} <!-- End the active_drop conditional -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the homepage hero section -->
 {% endblock %} <!-- End the page-specific content block -->
