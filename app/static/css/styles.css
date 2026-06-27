@@ -221,3 +221,33 @@ a { /* Target all links */
         font-size: 1.75rem; /* Reduce placeholder text size on small screens */
     } /* End small-screen product placeholder styling */
 } /* End the small-screen media query */
+
+.auth-section { /* Target authentication pages such as login and registration */
+    padding: 5rem 0; /* Add vertical spacing around authentication content */
+} /* End the auth section styling block */
+
+.auth-card { /* Target authentication and profile cards */
+    background-color: #ffffff; /* Keep auth cards white */
+    border: 1px solid var(--color-border); /* Add a subtle border around auth cards */
+    border-radius: var(--radius-large); /* Apply large rounded corners to auth cards */
+    padding: 2rem; /* Add internal spacing inside auth cards */
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.05); /* Add a soft shadow for depth */
+} /* End the auth card styling block */
+
+.form-error { /* Target form validation error messages */
+    color: #b42318; /* Use a muted red color for validation errors */
+    font-size: 0.875rem; /* Make validation errors slightly smaller than normal text */
+    margin-top: 0.35rem; /* Add spacing above validation errors */
+} /* End the form error styling block */
+
+.profile-row { /* Target each row of profile information */
+    align-items: center; /* Vertically align profile row content */
+    border-bottom: 1px solid var(--color-border); /* Add a separator between profile rows */
+    display: flex; /* Use flexbox for label/value layout */
+    justify-content: space-between; /* Push label left and value right */
+    padding: 1rem 0; /* Add vertical spacing to each profile row */
+} /* End the profile row styling block */
+
+.profile-row:last-child { /* Target the final profile row */
+    border-bottom: 0; /* Remove the separator from the last profile row */
+} /* End the final profile row styling block */

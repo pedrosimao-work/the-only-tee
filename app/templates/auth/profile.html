@@ -1,0 +1,37 @@
+{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+
+{% block title %}Profile | The Only Tee{% endblock %} <!-- Set the browser title for the profile page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section"> <!-- Create a standard inner page section -->
+    <div class="container"> <!-- Center the profile content inside a Bootstrap container -->
+        <div class="row justify-content-center"> <!-- Center the profile card horizontally -->
+            <div class="col-lg-8"> <!-- Limit the profile card width -->
+                <div class="auth-card"> <!-- Reuse the authentication card style for the profile page -->
+                    <p class="eyebrow mb-3">Account</p> <!-- Display a small uppercase section label -->
+                    <h1 class="page-title mb-4">Your profile</h1> <!-- Display the profile page heading -->
+
+                    <div class="profile-row"> <!-- Create one profile information row -->
+                        <span>Email</span> <!-- Display the email label -->
+                        <strong>{{ current_user.email }}</strong> <!-- Display the logged-in user's email -->
+                    </div> <!-- Close the email profile row -->
+
+                    <div class="profile-row"> <!-- Create one profile information row -->
+                        <span>Username</span> <!-- Display the username label -->
+                        <strong>{{ current_user.username }}</strong> <!-- Display the logged-in user's username -->
+                    </div> <!-- Close the username profile row -->
+
+                    <div class="profile-row"> <!-- Create one profile information row -->
+                        <span>Role</span> <!-- Display the role label -->
+                        {% if current_user.is_admin %} <!-- Check if the logged-in user is an admin -->
+                        <strong>Admin</strong> <!-- Display admin role -->
+                        {% else %} <!-- Run this block for normal users -->
+                        <strong>User</strong> <!-- Display normal user role -->
+                        {% endif %} <!-- End the admin role condition -->
+                    </div> <!-- Close the role profile row -->
+                </div> <!-- Close the profile card -->
+            </div> <!-- Close the profile column -->
+        </div> <!-- Close the centered row -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the profile section -->
+{% endblock %} <!-- End the page-specific content block -->
