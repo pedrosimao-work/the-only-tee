@@ -23,15 +23,40 @@
                 <li class="nav-item"> <!-- Create one navigation list item -->
                     <a class="nav-link" href="{{ url_for('main.about') }}">About</a> <!-- Link to the about page -->
                 </li> <!-- Close the navigation list item -->
-                <li class="nav-item ms-lg-3"> <!-- Create one navigation item with extra spacing on large screens -->
-                    <a class="btn btn-dark btn-sm px-3" href="#">Account</a> <!-- Add a placeholder account button for future authentication -->
-                </li> <!-- Close the navigation item -->
+                {% if current_user.is_authenticated %}  <!-- Check if the current visitor is logged in -->
+                <li class="nav-item ms-lg-3"> <!-- Create a spaced navigation item for the profile link -->
+                    <a class="nav-link" href="{{ url_for('auth.profile') }}">Profile</a> <!-- Link to the logged-in user's profile page -->
+                </li> <!-- Close the profile navigation item -->
+                <li class="nav-item ms-lg-2"> <!-- Create a spaced navigation item for logout -->
+                    <a class="btn btn-outline-dark btn-sm px-3" href="{{ url_for('auth.logout') }}">Logout</a> <!-- Link to the logout route -->
+                </li> <!-- Close the logout navigation item -->
+                {% else %} <!-- Run this block when the visitor is not logged in -->
+                <li class="nav-item ms-lg-3"> <!-- Create a spaced navigation item for login -->
+                    <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a> <!-- Link to the login page -->
+                </li> <!-- Close the login navigation item -->
+                <li class="nav-item ms-lg-2"> <!-- Create a spaced navigation item for registration -->
+                    <a class="btn btn-dark btn-sm px-3" href="{{ url_for('auth.register') }}">Create Account</a> <!-- Link to the registration page -->
+                </li> <!-- Close the registration navigation item -->
+                {% endif %} <!-- End the authentication-aware navbar condition -->
             </ul> <!-- Close the navigation list -->
         </div> <!-- Close the collapsible navbar area -->
     </div> <!-- Close the Bootstrap container -->
 </nav> <!-- Close the navigation bar -->
 
 <main class="flex-grow-1"> <!-- Make the main content grow and push the footer to the bottom on short pages -->
+    <div class="container mt-4"> <!-- Create a container for flash messages with top spacing -->
+        {% with messages = get_flashed_messages(with_categories=true) %} <!-- Retrieve flashed messages with their categories -->
+            {% if messages %} <!-- Check if there are any flashed messages to show -->
+                {% for category, message in messages %} <!-- Loop through each flashed message -->
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert"> <!-- Create a Bootstrap dismissible alert using the message category -->
+                    {{ message }} <!-- Display the flashed message text -->
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> <!-- Add a Bootstrap close button to dismiss the alert -->
+                </div> <!-- Close the alert box -->
+                {% endfor %} <!-- End the flashed messages loop -->
+            {% endif %} <!-- End the messages existence check -->
+        {% endwith %} <!-- End the flashed messages context block -->
+    </div> <!-- Close the flash message container -->
+
     {% block content %}{% endblock %} <!-- Define a content block that child templates will replace -->
 </main> <!-- End the main content area -->
 

@@ -1,0 +1,58 @@
+{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+
+{% block title %}Create Account | The Only Tee{% endblock %} <!-- Set the browser title for the registration page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="auth-section"> <!-- Create a dedicated section for authentication pages -->
+    <div class="container"> <!-- Center the auth content inside a Bootstrap container -->
+        <div class="row justify-content-center"> <!-- Center the form column horizontally -->
+            <div class="col-md-8 col-lg-5"> <!-- Limit the form width for readability -->
+                <div class="auth-card"> <!-- Create a styled authentication card -->
+                    <p class="eyebrow mb-3">Join the system</p> <!-- Display a small uppercase context label -->
+                    <h1 class="h2 fw-bold mb-4">Create account</h1> <!-- Display the registration heading -->
+
+                    <form method="POST"> <!-- Create a POST form for account registration -->
+                        {{ form.hidden_tag() }} <!-- Render hidden CSRF protection fields -->
+
+                        <div class="mb-3"> <!-- Create spacing around the email field -->
+                            {{ form.email.label(class="form-label") }} <!-- Render the email field label -->
+                            {{ form.email(class="form-control", placeholder="you@example.com") }} <!-- Render the email input with Bootstrap styling -->
+                            {% for error in form.email.errors %} <!-- Loop through email validation errors -->
+                            <div class="form-error">{{ error }}</div> <!-- Display each email error -->
+                            {% endfor %} <!-- End the email errors loop -->
+                        </div> <!-- Close the email field wrapper -->
+
+                        <div class="mb-3"> <!-- Create spacing around the username field -->
+                            {{ form.username.label(class="form-label") }} <!-- Render the username field label -->
+                            {{ form.username(class="form-control", placeholder="your_username") }} <!-- Render the username input with Bootstrap styling -->
+                            {% for error in form.username.errors %} <!-- Loop through username validation errors -->
+                            <div class="form-error">{{ error }}</div> <!-- Display each username error -->
+                            {% endfor %} <!-- End the username errors loop -->
+                        </div> <!-- Close the username field wrapper -->
+
+                        <div class="mb-3"> <!-- Create spacing around the password field -->
+                            {{ form.password.label(class="form-label") }} <!-- Render the password field label -->
+                            {{ form.password(class="form-control", placeholder="Minimum 6 characters") }} <!-- Render the password input with Bootstrap styling -->
+                            {% for error in form.password.errors %} <!-- Loop through password validation errors -->
+                            <div class="form-error">{{ error }}</div> <!-- Display each password error -->
+                            {% endfor %} <!-- End the password errors loop -->
+                        </div> <!-- Close the password field wrapper -->
+
+                        <div class="mb-4"> <!-- Create spacing around the confirm password field -->
+                            {{ form.confirm_password.label(class="form-label") }} <!-- Render the confirm password field label -->
+                            {{ form.confirm_password(class="form-control", placeholder="Repeat your password") }} <!-- Render the confirm password input with Bootstrap styling -->
+                            {% for error in form.confirm_password.errors %} <!-- Loop through confirm password validation errors -->
+                            <div class="form-error">{{ error }}</div> <!-- Display each confirm password error -->
+                            {% endfor %} <!-- End the confirm password errors loop -->
+                        </div> <!-- Close the confirm password field wrapper -->
+
+                        {{ form.submit(class="btn btn-dark w-100 btn-lg") }} <!-- Render the registration submit button full width -->
+                    </form> <!-- Close the registration form -->
+
+                    <p class="mt-4 mb-0 text-muted">Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a>.</p> <!-- Add a link to the login page -->
+                </div> <!-- Close the authentication card -->
+            </div> <!-- Close the centered form column -->
+        </div> <!-- Close the centered row -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the auth section -->
+{% endblock %} <!-- End the page-specific content block -->
