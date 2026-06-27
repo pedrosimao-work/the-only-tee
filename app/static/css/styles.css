@@ -1,77 +1,223 @@
-body { /* Target the full visible page body */
-    background-color: #ffffff; /* Set a clean white background for the whole website */
-    color: #111111; /* Set the default text color to near-black for strong contrast */
+:root { /* Define reusable global CSS variables */
+    --color-black: #111111; /* Store the main black color */
+    --color-muted: #6f6f6f; /* Store the muted text color */
+    --color-border: #e8e8e8; /* Store the standard border color */
+    --color-soft: #f7f7f7; /* Store the soft background color */
+    --radius-large: 1.5rem; /* Store the large border radius value */
+    --radius-medium: 1rem; /* Store the medium border radius value */
+} /* End the global CSS variables block */
+
+body { /* Target the full page body */
+    background-color: #ffffff; /* Set the page background to white */
+    color: var(--color-black); /* Set the default text color to the main black variable */
+    text-rendering: optimizeLegibility; /* Improve text rendering quality in supported browsers */
 } /* End the body styling block */
 
+a { /* Target all links */
+    text-decoration: none; /* Remove default underlines from links */
+} /* End the link styling block */
+
+.tracking-brand { /* Target brand text that needs extra letter spacing */
+    letter-spacing: 0.08rem; /* Add subtle spacing between letters */
+} /* End the brand tracking utility block */
+
+.navbar { /* Target the Bootstrap navbar */
+    backdrop-filter: blur(12px); /* Add a subtle blur effect behind the sticky navbar */
+} /* End the navbar styling block */
+
+.nav-link { /* Target Bootstrap navigation links */
+    font-size: 0.95rem; /* Set a slightly refined navigation font size */
+    color: var(--color-black); /* Set navigation links to the main black color */
+} /* End the nav link styling block */
+
+.nav-link:hover { /* Target navigation links when hovered */
+    color: var(--color-muted); /* Change hovered navigation links to muted color */
+} /* End the nav link hover styling block */
+
 .hero-section { /* Target the homepage hero section */
-    min-height: 80vh; /* Make the hero section take at least 80% of the browser height */
-    padding: 5rem 0; /* Add vertical spacing above and below the hero content */
+    min-height: calc(100vh - 73px); /* Make the hero fill the viewport minus approximate navbar height */
+    padding: 5rem 0; /* Add vertical spacing to the hero section */
 } /* End the hero section styling block */
 
-.page-section { /* Target normal inner page sections */
-    padding: 5rem 0; /* Add consistent vertical spacing to standard pages */
+.page-section { /* Target standard inner page sections */
+    padding: 5rem 0; /* Add consistent vertical spacing to inner pages */
 } /* End the page section styling block */
 
-.product-card { /* Target the current drop product card */
-    border: 1px solid #e5e5e5; /* Add a subtle border around the product card */
-    border-radius: 1.5rem; /* Round the card corners for a premium look */
-    background-color: #f8f8f8; /* Add a very light grey background to separate the card from the page */
-} /* End the product card styling block */
+.eyebrow { /* Target small uppercase section labels */
+    color: var(--color-muted); /* Set the label color to muted grey */
+    font-size: 0.78rem; /* Make the label smaller than body text */
+    font-weight: 700; /* Make the label bold */
+    letter-spacing: 0.14rem; /* Add wide letter spacing for a premium look */
+    text-transform: uppercase; /* Convert the label text to uppercase */
+} /* End the eyebrow styling block */
 
+.hero-title { /* Target the homepage main heading */
+    font-size: clamp(3rem, 8vw, 6.5rem); /* Make the heading fluidly responsive between minimum and maximum sizes */
+    font-weight: 800; /* Make the heading very bold */
+    line-height: 0.95; /* Tighten the heading line height for a fashion/editorial look */
+    letter-spacing: -0.05em; /* Slightly tighten letter spacing for large heading text */
+} /* End the hero title styling block */
 
-.product-placeholder { /* Target the temporary product image placeholder */
-    width: 280px; /* Set a fixed placeholder width */
-    height: 360px; /* Set a fixed placeholder height */
-    border-radius: 1rem; /* Round the placeholde corners */
-    background: linear-gradient(135deg, #111111, #444444); /* Add a dark gradient as temporary product artwork */
-    display: flex; /* Use flexbox to center the placeholder text */
-    align-items: center; /* Center the placeholder text vertically */
-    justify-content: center; /* Center the placeholder text horizontally */
-    color: #ffffff; /* Set the placeholder text color to white */
-    font-weight: 700; /* Make the placeholder text bold */
-    letter-spacing: 0.2rem; /* Add spacing between placeholder letters */
-} /* End the product placeholder styling block */
+.hero-copy { /* Target the homepage lead copy */
+    max-width: 620px; /* Limit the paragraph width for readability */
+    color: var(--color-muted); /* Set the hero copy to muted grey */
+    font-size: 1.15rem; /* Make the hero copy slightly larger than body text */
+    line-height: 1.7; /* Increase line height for readability */
+} /* End the hero copy styling block */
 
-.archive-card { /* Target the archive item card */
-    border: 1px solid #e5e5e5; /* Add a subtle card border */
-    border-radius: 1.25rem; /* Round the archive card corners */
-    background-color: #ffffff; /* Keep archive cards white for a gallery-like look */
-} /* End the archive card styling block */
+.page-title { /* Target large page headings */
+    font-size: clamp(2.25rem, 5vw, 4rem); /* Make page headings responsive */
+    font-weight: 800; /* Make page headings bold */
+    letter-spacing: -0.04em; /* Tighten page heading letter spacing */
+} /* End the page title styling block */
 
-.archive-placeholder { /* Target the archive image placeholder */
-    height: 260px; /* Set a fixed height for archive placeholder visuals */
-    border-radius: 1rem; /* Round the placeholder corners */
-    background-color: #f1f1f1; /* Add a light grey placeholder background */
-    display: flex; /* Use flexbox to center the placeholder content */
-    align-items: center; /* Center the placeholder content vertically */
-    justify-content: center; /* Center the placeholder content horizontally */
-    font-weight: 700; /* Make the drop number bold */
-    color: #777777; /* Set the drop number to muted grey */
-} /* End the archive placeholder styling block */
+.page-copy { /* Target readable inner page paragraphs */
+    color: var(--color-muted); /* Set inner page copy to muted grey */
+    font-size: 1.08rem; /* Make page copy slightly larger than default body text */
+    line-height: 1.8; /* Increase line height for comfortable reading */
+} /* End the page copy styling block */
 
-.drop-meta { /* Target the metadata wrapper containing price, time, and status */
-    max-width: 620px; /* Limit the width so the metadata boxes do not stretch too much */
+.drop-identity { /* Target the active drop identity pill group */
+    display: flex; /* Use flexbox to lay out identity pills */
+    flex-wrap: wrap; /* Allow identity pills to wrap on small screens */
+    gap: 0.75rem; /* Add spacing between identity pills */
+} /* End the drop identity wrapper styling block */
+
+.drop-identity span { /* Target each drop identity pill */
+    border: 1px solid var(--color-border); /* Add a subtle border around each identity pill */
+    border-radius: 999px; /* Make each identity pill fully rounded */
+    padding: 0.5rem 0.85rem; /* Add internal spacing inside each identity pill */
+    color: var(--color-muted); /* Set the pill text to muted grey */
+    font-size: 0.9rem; /* Set a compact pill text size */
+} /* End the drop identity pill styling block */
+
+.drop-meta { /* Target the metadata wrapper containing price, status, and collection */
+    max-width: 640px; /* Limit the metadata area width */
 } /* End the drop metadata wrapper styling block */
 
-.meta-box { /* Target each small metadata box */
-    border: 1px solid #e5e5e5; /* Add a subtle border around each metadata box */
-    border-radius: 1rem; /* Round the corners to match the premium visual style */
-    padding: 1ren 1.25rem; /* Add internal spacing inside each metadata box */
-    min-width: 130px; /* Give each metadata box a minimum readable width */
-    background-color: #ffffff; /* Keep the metadata boxes clean and white */
+.meta-box { /* Target each metadata box */
+    border: 1px solid var(--color-border); /* Add a subtle border around the metadata box */
+    border-radius: var(--radius-medium); /* Apply the medium border radius */
+    padding: 1rem 1.25rem; /* Add internal spacing to each metadata box */
+    min-width: 140px; /* Give each metadata box a readable minimum width */
+    background-color: #ffffff; /* Keep metadata boxes white */
 } /* End the metadata box styling block */
 
-.meta-label { /* Target the small label inside each metadata box */
-    display: block; /* Place the label on its own line above the value */
-    font-size: 0.75rem; /* Make the label smaller than the value */
-    text-transform: uppercase; /* Convert the label text to uppercase for a technical/premium look */
-    letter-spacing: 0.08rem; /* Add slight spacing between label letters */
-    color: #777777; /* Make the label muted so the value stands out */
-    margin-bottom: 0.25rem; /* Add small spacing below the label */
+.meta-label { /* Target labels inside metadata boxes */
+    display: block; /* Put the label on its own line */
+    color: var(--color-muted); /* Set metadata labels to muted grey */
+    font-size: 0.72rem; /* Make metadata labels small */
+    font-weight: 700; /* Make metadata labels bold */
+    letter-spacing: 0.1rem; /* Add letter spacing to metadata labels */
+    margin-bottom: 0.25rem; /* Add spacing below metadata labels */
+    text-transform: uppercase; /* Convert metadata labels to uppercase */
 } /* End the metadata label styling block */
 
-.archive-empty-state { /* Target the empty archive message box */
-    border: 1px solid #e5e5e5; /* Target the empty archive message box */
-    border-radius: 1.25; /* Round the corners to match the archive cards */
-    background-color: #f8f8f8; /* Add a light grey background for visual separation */
-} /* End the archive empty-state styling block */
+.product-showcase { /* Target the product showcase wrapper */
+    max-width: 460px; /* Limit the showcase width */
+} /* End the product showcase styling block */
+
+.product-frame { /* Target the main product visual frame */
+    border: 1px solid var(--color-border); /* Add a subtle border around the product frame */
+    border-radius: var(--radius-large); /* Apply a large border radius to the product frame */
+    background: radial-gradient(circle at top, #ffffff, var(--color-soft)); /* Add a soft editorial background gradient */
+    padding: 2rem; /* Add internal spacing around the product visual */
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.08); /* Add a soft shadow for depth */
+} /* End the product frame styling block */
+
+.product-placeholder { /* Target the temporary product visual placeholder */
+    aspect-ratio: 4 / 5; /* Keep the product visual in a fashion/product image ratio */
+    border-radius: var(--radius-medium); /* Round the product visual corners */
+    background: linear-gradient(135deg, #111111, #3b3b3b); /* Add a dark gradient background to the placeholder */
+    color: #ffffff; /* Set placeholder text to white */
+    display: flex; /* Use flexbox to center the placeholder text */
+    align-items: center; /* Center placeholder text vertically */
+    justify-content: center; /* Center placeholder text horizontally */
+    font-size: 2.25rem; /* Make placeholder text large */
+    font-weight: 800; /* Make placeholder text bold */
+    letter-spacing: 0.2rem; /* Add letter spacing to placeholder text */
+    line-height: 1.1; /* Tighten line height for stacked placeholder text */
+    text-align: center; /* Center-align the stacked placeholder text */
+} /* End the product placeholder styling block */
+
+.product-summary { /* Target the summary card below the product visual */
+    align-items: center; /* Vertically align the content inside the summary card */
+    background-color: #ffffff; /* Set the summary card background to white */
+    border: 1px solid var(--color-border); /* Add a subtle border around the summary card */
+    border-radius: var(--radius-medium); /* Apply medium rounded corners */
+    display: flex; /* Use flexbox to position text and price */
+    justify-content: space-between; /* Push text to the left and price to the right */
+    padding: 1rem 1.25rem; /* Add internal spacing to the summary card */
+} /* End the product summary styling block */
+
+.archive-card { /* Target each archive card */
+    background-color: #ffffff; /* Set archive card background to white */
+    border: 1px solid var(--color-border); /* Add a subtle border around archive cards */
+    border-radius: var(--radius-large); /* Apply large rounded corners to archive cards */
+    overflow: hidden; /* Keep child elements clipped inside rounded corners */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Animate hover movement and shadow smoothly */
+} /* End the archive card styling block */
+
+.archive-card:hover { /* Target archive cards on hover */
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.08); /* Add a soft hover shadow */
+    transform: translateY(-4px); /* Move the card slightly upward on hover */
+} /* End the archive card hover styling block */
+
+.archive-placeholder { /* Target the archive visual placeholder */
+    align-items: center; /* Center placeholder content vertically */
+    aspect-ratio: 4 / 3; /* Keep archive visuals in a consistent ratio */
+    background-color: var(--color-soft); /* Set a soft grey background for archive visuals */
+    color: var(--color-muted); /* Set placeholder text to muted grey */
+    display: flex; /* Use flexbox for centering */
+    font-size: 1.5rem; /* Make archive placeholder text prominent */
+    font-weight: 800; /* Make archive placeholder text bold */
+    justify-content: center; /* Center placeholder content horizontally */
+    letter-spacing: 0.08rem; /* Add letter spacing to archive placeholder text */
+} /* End the archive placeholder styling block */
+
+.archive-card-body { /* Target the content area of archive cards */
+    padding: 1.25rem; /* Add internal spacing inside archive card body */
+} /* End the archive card body styling block */
+
+.archive-meta { /* Target archive metadata text */
+    color: var(--color-muted); /* Set archive metadata to muted grey */
+    font-size: 0.78rem; /* Make archive metadata compact */
+    font-weight: 700; /* Make archive metadata bold */
+    letter-spacing: 0.1rem; /* Add spacing between archive metadata letters */
+    text-transform: uppercase; /* Convert archive metadata to uppercase */
+} /* End the archive metadata styling block */
+
+.empty-state { /* Target reusable empty state boxes */
+    border: 1px solid var(--color-border); /* Add a subtle border around empty states */
+    border-radius: var(--radius-large); /* Apply large rounded corners to empty states */
+    background-color: var(--color-soft); /* Set a soft background color */
+    max-width: 720px; /* Limit the empty state width */
+    padding: 4rem 2rem; /* Add generous internal spacing */
+} /* End the empty-state styling block */
+
+.site-footer { /* Target the website footer */
+    background-color: #ffffff; /* Keep the footer background white */
+} /* End the site footer styling block */
+
+@media (max-width: 767.98px) { /* Apply these rules on phones and small tablets */
+    .hero-section { /* Target the hero section on small screens */
+        min-height: auto; /* Remove full viewport height on small screens */
+        padding: 4rem 0; /* Reduce hero spacing on small screens */
+    } /* End small-screen hero section styling */
+
+    .page-section { /* Target standard page sections on small screens */
+        padding: 4rem 0; /* Reduce inner page spacing on small screens */
+    } /* End small-screen page section styling */
+
+    .hero-title { /* Target the hero title on small screens */
+        letter-spacing: -0.04em; /* Slightly reduce tight letter spacing on small screens */
+    } /* End small-screen hero title styling */
+
+    .product-frame { /* Target the product frame on small screens */
+        padding: 1rem; /* Reduce product frame spacing on small screens */
+    } /* End small-screen product frame styling */
+
+    .product-placeholder { /* Target the product placeholder on small screens */
+        font-size: 1.75rem; /* Reduce placeholder text size on small screens */
+    } /* End small-screen product placeholder styling */
+} /* End the small-screen media query */
