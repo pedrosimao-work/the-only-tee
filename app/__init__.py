@@ -27,10 +27,12 @@ def create_app():  # Define the application factory function used to build and c
 
     register_commands(app)  # Register custom terminal commands on the Flask app
 
-    from app.auth.routes import auth  # Import the authentication bluepring after the app is configured
+    from app.admin.routes import admin  # Import the admin blueprint after the app is configured
+    from app.auth.routes import auth  # Import the authentication blueprint after the app is configured
     from app.routes import main  # Import the main routes blueprint after creating the app to avoid circular imports
 
     app.register_blueprint(main)  # Register the main blueprint so its routes become available in the app
     app.register_blueprint(auth)  # Register the authentication blueprint
+    app.register_blueprint(admin)  # Register the admin blueprint
 
     return app  # Return the fully configured Flask application instance

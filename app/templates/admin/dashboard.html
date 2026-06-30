@@ -1,0 +1,55 @@
+{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+
+{% block title %}Admin Dashboard | The Only Tee{% endblock %} <!-- Set the browser title for the admin dashboard -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section"> <!-- Create a standard inner page section -->
+    <div class="container"> <!-- Center dashboard content inside a Bootstrap container -->
+        <div class="row align-items-end mb-5 gy-3"> <!-- Create a responsive heading row -->
+            <div class="col-lg-8"> <!-- Create the left heading column -->
+                <p class="eyebrow mb-3">Admin</p> <!-- Display a small uppercase admin label -->
+                <h1 class="page-title mb-3">Dashboard</h1> <!-- Display the admin dashboard heading -->
+                <p class="page-copy mb-0">Manage drops, review lifecycle states, and prepare future product releases.</p> <!-- Display a short admin dashboard description -->
+            </div> <!-- Close the left heading column -->
+            <div class="col-lg-4 text-lg-end"> <!-- Create the right heading column -->
+                <a href="{{ url_for('admin.create_drop') }}" class="btn btn-dark">Create Drop</a> <!-- Add a button linking to the create-drop page -->
+            </div> <!-- Close the right heading column -->
+        </div> <!-- Close the heading row -->
+
+        <div class="row g-4 mb-5"> <!-- Create a responsive grid for dashboard stats -->
+            <div class="col-md-6 col-lg-3"> <!-- Create one stat card column -->
+                <div class="admin-stat-card"> <!-- Create the total drops stat card -->
+                    <span>Total Drops</span> <!-- Display the stat label -->
+                    <strong>{{ total_drops }}</strong> <!-- Display the total drop count -->
+                </div> <!-- Close the stat card -->
+            </div> <!-- Close the stat column -->
+
+            <div class="col-md-6 col-lg-3"> <!-- Create one stat card column -->
+                <div class="admin-stat-card"> <!-- Create the active drops stat card -->
+                    <span>Active</span> <!-- Display the stat label -->
+                    <strong>{{ active_drops }}</strong> <!-- Display the active drop count -->
+                </div> <!-- Close the stat card -->
+            </div> <!-- Close the stat column -->
+
+            <div class="col-md-6 col-lg-3"> <!-- Create one stat card column -->
+                <div class="admin-stat-card"> <!-- Create the draft drops stat card -->
+                    <span>Draft</span> <!-- Display the stat label -->
+                    <strong>{{ draft_drops }}</strong> <!-- Display the draft drop count -->
+                </div> <!-- Close the stat card -->
+            </div> <!-- Close the stat column -->
+
+            <div class="col-md-6 col-lg-3"> <!-- Create one stat card column -->
+                <div class="admin-stat-card"> <!-- Create the archived drops stat card -->
+                    <span>Archived</span> <!-- Display the stat label -->
+                    <strong>{{ archived_drops }}</strong> <!-- Display the archived drop count -->
+                </div> <!-- Close the stat card -->
+            </div> <!-- Close the stat column -->
+        </div> <!-- Close the stats grid -->
+
+        <div class="d-flex flex-column flex-sm-row gap-3"> <!-- Create a responsive admin action row -->
+            <a href="{{ url_for('admin.drops') }}" class="btn btn-outline-dark">View All Drops</a> <!-- Link to the admin drop list -->
+            <a href="{{ url_for('main.home') }}" class="btn btn-outline-secondary">View Public Site</a> <!-- Link back to the public homepage -->
+        </div> <!-- Close the admin action row -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the dashboard section -->
+{% endblock %} <!-- End the page-specific content block -->

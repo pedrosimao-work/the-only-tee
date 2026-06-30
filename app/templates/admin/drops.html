@@ -1,0 +1,53 @@
+{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+
+{% block title %}Manage Drops | The Only Tee{% endblock %} <!-- Set the browser title for the drop management page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section"> <!-- Create a standard inner page section -->
+    <div class="container"> <!-- Center drop management content inside a Bootstrap container -->
+        <div class="row align-items-end mb-5 gy-3"> <!-- Create a responsive heading row -->
+            <div class="col-lg-8"> <!-- Create the left heading column -->
+                <p class="eyebrow mb-3">Admin</p> <!-- Display a small uppercase admin label -->
+                <h1 class="page-title mb-3">Manage Drops</h1> <!-- Display the drop management heading -->
+                <p class="page-copy mb-0">Review all drop records currently stored in the database.</p> <!-- Display a short description -->
+            </div> <!-- Close the left heading column -->
+            <div class="col-lg-4 text-lg-end"> <!-- Create the right heading column -->
+                <a href="{{ url_for('admin.create_drop') }}" class="btn btn-dark">Create Drop</a> <!-- Add a button linking to create a new drop -->
+            </div> <!-- Close the right heading column -->
+        </div> <!-- Close the heading row -->
+
+        {% if drops %} <!-- Check if there are any drops to display -->
+        <div class="table-responsive admin-table-wrapper"> <!-- Create a responsive table wrapper for smaller screens -->
+            <table class="table align-middle mb-0"> <!-- Create a Bootstrap table with vertically aligned cells -->
+                <thead> <!-- Start the table header -->
+                    <tr> <!-- Create the header row -->
+                        <th>Drop</th> <!-- Create the drop number header -->
+                        <th>Name</th> <!-- Create the name header -->
+                        <th>Season</th> <!-- Create the season header -->
+                        <th>Price</th> <!-- Create the price header -->
+                        <th>Status</th> <!-- Create the status header -->
+                    </tr> <!-- Close the header row -->
+                </thead> <!-- End the table header -->
+                <tbody> <!-- Start the table body -->
+                    {% for drop in drops %} <!-- Loop through every drop record -->
+                    <tr> <!-- Create one table row for the current drop -->
+                        <td>#{{ drop.drop_number }}</td> <!-- Display the drop number -->
+                        <td>{{ drop.name }}</td> <!-- Display the drop name -->
+                        <td>{{ drop.season }}</td> <!-- Display the season number -->
+                        <td>€{{ drop.price }}</td> <!-- Display the drop price -->
+                        <td>{{ drop.status|capitalize }}</td> <!-- Display the drop status -->
+                    </tr> <!-- Close the current table row -->
+                    {% endfor %} <!-- End the drops loop -->
+                </tbody> <!-- End the table body -->
+            </table> <!-- Close the table -->
+        </div> <!-- Close the responsive table wrapper -->
+        {% else %} <!-- Run this block if there are no drops -->
+        <div class="empty-state text-center mx-auto"> <!-- Create a centered empty state -->
+            <p class="eyebrow mb-3">No Drops</p> <!-- Display a small empty state label -->
+            <h2 class="fw-bold mb-3">No drops have been created yet.</h2> <!-- Display the empty state heading -->
+            <a href="{{ url_for('admin.create_drop') }}" class="btn btn-dark">Create First Drop</a> <!-- Add a button to create the first drop -->
+        </div> <!-- Close the empty state -->
+        {% endif %} <!-- End the drops existence condition -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the drop management section -->
+{% endblock %} <!-- End the page-specific content block -->
