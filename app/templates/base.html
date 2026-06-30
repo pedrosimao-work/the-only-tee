@@ -10,33 +10,49 @@
 </head> <!-- End the head section -->
 <body class="d-flex flex-column min-vh-100"> <!-- Make the page use full-height vertical flex layout so the footer stays at the bottom -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top"> <!-- Create a responsive Bootstrap navbar that stays visible at the top -->
-    <div class="container">  <!-- Center the navbar content inside a Bootstrap container -->
+    <div class="container"> <!-- Center the navbar content inside a Bootstrap container -->
         <a class="navbar-brand fw-bold tracking-brand" href="{{ url_for('main.home') }}">THE ONLY TEE</a> <!-- Add the brand link that points to the homepage -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavBar" aria-expanded="false" aria-label="Toggle navigation"> <!-- Add an accessible menu button -->
-            <span class="navbar-toggler-icon"></span>  <!-- Display the default Bootstrap hamburger icon -->
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation"> <!-- Add an accessible mobile menu button -->
+            <span class="navbar-toggler-icon"></span> <!-- Display the default Bootstrap hamburger icon -->
         </button> <!-- Close the mobile menu button -->
+
         <div class="collapse navbar-collapse" id="mainNavbar"> <!-- Create the collapsible menu area for smaller screens -->
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center"> <!-- Create a right aligned Bootstrap navigation list -->
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center"> <!-- Create a right-aligned Bootstrap navigation list -->
                 <li class="nav-item"> <!-- Create a navigation list item -->
                     <a class="nav-link" href="{{ url_for('main.home') }}">Current Drop</a> <!-- Link to the current active drop page -->
                 </li> <!-- Close the navigation list item -->
-                <li class="nav-item"> <!-- Create one navigation list item -->
+
+                <li class="nav-item"> <!-- Create a navigation list item -->
+                    <a class="nav-link" href="{{ url_for('main.archive') }}">Archive Collection</a> <!-- Link to the archive collection page -->
+                </li> <!-- Close the navigation list item -->
+
+                <li class="nav-item"> <!-- Create a navigation list item -->
                     <a class="nav-link" href="{{ url_for('main.about') }}">About</a> <!-- Link to the about page -->
                 </li> <!-- Close the navigation list item -->
-                {% if current_user.is_authenticated %}  <!-- Check if the current visitor is logged in -->
-                <li class="nav-item ms-lg-3"> <!-- Create a spaced navigation item for the profile link -->
-                    <a class="nav-link" href="{{ url_for('auth.profile') }}">Profile</a> <!-- Link to the logged-in user's profile page -->
-                </li> <!-- Close the profile navigation item -->
-                <li class="nav-item ms-lg-2"> <!-- Create a spaced navigation item for logout -->
-                    <a class="btn btn-outline-dark btn-sm px-3" href="{{ url_for('auth.logout') }}">Logout</a> <!-- Link to the logout route -->
-                </li> <!-- Close the logout navigation item -->
+
+                {% if current_user.is_authenticated %} <!-- Check if the current visitor is logged in -->
+                    {% if current_user.is_admin %} <!-- Check if the logged-in user is an admin -->
+                    <li class="nav-item ms-lg-3"> <!-- Create a spaced navigation item for the admin dashboard -->
+                        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin</a> <!-- Link to the admin dashboard for admin users only -->
+                    </li> <!-- Close the admin navigation item -->
+                    {% endif %} <!-- End the admin link condition -->
+
+                    <li class="nav-item ms-lg-3"> <!-- Create a spaced navigation item for the profile link -->
+                        <a class="nav-link" href="{{ url_for('auth.profile') }}">Profile</a> <!-- Link to the logged-in user's profile page -->
+                    </li> <!-- Close the profile navigation item -->
+
+                    <li class="nav-item ms-lg-2"> <!-- Create a spaced navigation item for logout -->
+                        <a class="btn btn-outline-dark btn-sm px-3" href="{{ url_for('auth.logout') }}">Logout</a> <!-- Link to the logout route -->
+                    </li> <!-- Close the logout navigation item -->
                 {% else %} <!-- Run this block when the visitor is not logged in -->
-                <li class="nav-item ms-lg-3"> <!-- Create a spaced navigation item for login -->
-                    <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a> <!-- Link to the login page -->
-                </li> <!-- Close the login navigation item -->
-                <li class="nav-item ms-lg-2"> <!-- Create a spaced navigation item for registration -->
-                    <a class="btn btn-dark btn-sm px-3" href="{{ url_for('auth.register') }}">Create Account</a> <!-- Link to the registration page -->
-                </li> <!-- Close the registration navigation item -->
+                    <li class="nav-item ms-lg-3"> <!-- Create a spaced navigation item for login -->
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a> <!-- Link to the login page -->
+                    </li> <!-- Close the login navigation item -->
+
+                    <li class="nav-item ms-lg-2"> <!-- Create a spaced navigation item for registration -->
+                        <a class="btn btn-dark btn-sm px-3" href="{{ url_for('auth.register') }}">Create Account</a> <!-- Link to the registration page -->
+                    </li> <!-- Close the registration navigation item -->
                 {% endif %} <!-- End the authentication-aware navbar condition -->
             </ul> <!-- Close the navigation list -->
         </div> <!-- Close the collapsible navbar area -->

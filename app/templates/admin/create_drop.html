@@ -1,0 +1,85 @@
+{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+
+{% block title %}Create Drop | The Only Tee{% endblock %} <!-- Set the browser title for the create-drop page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="auth-section"> <!-- Use the auth-style section spacing for form-centered pages -->
+    <div class="container"> <!-- Center create-drop content inside a Bootstrap container -->
+        <div class="row justify-content-center"> <!-- Center the form column horizontally -->
+            <div class="col-lg-7"> <!-- Limit the create-drop form width -->
+                <div class="auth-card"> <!-- Reuse the card style for form layout -->
+                    <p class="eyebrow mb-3">Admin</p> <!-- Display a small uppercase admin label -->
+                    <h1 class="h2 fw-bold mb-4">Create drop</h1> <!-- Display the create-drop heading -->
+
+                    <form method="POST"> <!-- Create a POST form for creating drops -->
+                        {{ form.hidden_tag() }} <!-- Render hidden CSRF protection fields -->
+
+                        <div class="row g-3"> <!-- Create a responsive form grid -->
+                            <div class="col-md-6"> <!-- Create the drop number column -->
+                                {{ form.drop_number.label(class="form-label") }} <!-- Render the drop number label -->
+                                {{ form.drop_number(class="form-control", placeholder="0004") }} <!-- Render the drop number input -->
+                                {% for error in form.drop_number.errors %} <!-- Loop through drop number validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each drop number error -->
+                                {% endfor %} <!-- End the drop number errors loop -->
+                            </div> <!-- Close the drop number column -->
+
+                            <div class="col-md-6"> <!-- Create the season column -->
+                                {{ form.season.label(class="form-label") }} <!-- Render the season label -->
+                                {{ form.season(class="form-control", placeholder="1") }} <!-- Render the season input -->
+                                {% for error in form.season.errors %} <!-- Loop through season validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each season error -->
+                                {% endfor %} <!-- End the season errors loop -->
+                            </div> <!-- Close the season column -->
+
+                            <div class="col-12"> <!-- Create the full-width name field row -->
+                                {{ form.name.label(class="form-label") }} <!-- Render the name label -->
+                                {{ form.name(class="form-control", placeholder="Static Garden") }} <!-- Render the name input -->
+                                {% for error in form.name.errors %} <!-- Loop through name validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each name error -->
+                                {% endfor %} <!-- End the name errors loop -->
+                            </div> <!-- Close the name field row -->
+
+                            <div class="col-12"> <!-- Create the full-width description field row -->
+                                {{ form.description.label(class="form-label") }} <!-- Render the description label -->
+                                {{ form.description(class="form-control", rows="4", placeholder="Describe this limited drop.") }} <!-- Render the description textarea -->
+                                {% for error in form.description.errors %} <!-- Loop through description validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each description error -->
+                                {% endfor %} <!-- End the description errors loop -->
+                            </div> <!-- Close the description field row -->
+
+                            <div class="col-md-6"> <!-- Create the price column -->
+                                {{ form.price.label(class="form-label") }} <!-- Render the price label -->
+                                {{ form.price(class="form-control", placeholder="59") }} <!-- Render the price input -->
+                                {% for error in form.price.errors %} <!-- Loop through price validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each price error -->
+                                {% endfor %} <!-- End the price errors loop -->
+                            </div> <!-- Close the price column -->
+
+                            <div class="col-md-6"> <!-- Create the status column -->
+                                {{ form.status.label(class="form-label") }} <!-- Render the status label -->
+                                {{ form.status(class="form-select") }} <!-- Render the status dropdown -->
+                                {% for error in form.status.errors %} <!-- Loop through status validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each status error -->
+                                {% endfor %} <!-- End the status errors loop -->
+                            </div> <!-- Close the status column -->
+
+                            <div class="col-12"> <!-- Create the full-width image URL row -->
+                                {{ form.image_url.label(class="form-label") }} <!-- Render the image URL label -->
+                                {{ form.image_url(class="form-control", placeholder="https://example.com/image.jpg") }} <!-- Render the image URL input -->
+                                {% for error in form.image_url.errors %} <!-- Loop through image URL validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each image URL error -->
+                                {% endfor %} <!-- End the image URL errors loop -->
+                            </div> <!-- Close the image URL row -->
+                        </div> <!-- Close the responsive form grid -->
+
+                        <div class="d-grid d-sm-flex gap-3 mt-4"> <!-- Create a responsive action button row -->
+                            {{ form.submit(class="btn btn-dark btn-lg px-4") }} <!-- Render the create-drop submit button -->
+                            <a href="{{ url_for('admin.drops') }}" class="btn btn-outline-dark btn-lg px-4">Cancel</a> <!-- Add a cancel link back to drop management -->
+                        </div> <!-- Close the action button row -->
+                    </form> <!-- Close the create-drop form -->
+                </div> <!-- Close the form card -->
+            </div> <!-- Close the centered form column -->
+        </div> <!-- Close the centered row -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the create-drop section -->
+{% endblock %} <!-- End the page-specific content block -->

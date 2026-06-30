@@ -251,3 +251,32 @@ a { /* Target all links */
 .profile-row:last-child { /* Target the final profile row */
     border-bottom: 0; /* Remove the separator from the last profile row */
 } /* End the final profile row styling block */
+
+.admin-stat-card { /* Target each admin dashboard statistic card */
+    background-color: #ffffff; /* Keep admin stat cards white */
+    border: 1px solid var(--color-border); /* Add a subtle border around each admin stat card */
+    border-radius: var(--radius-large); /* Apply large rounded corners to stat cards */
+    padding: 1.5rem; /* Add internal spacing inside each stat card */
+} /* End the admin stat card styling block */
+
+.admin-stat-card span { /* Target the label inside each admin stat card */
+    color: var(--color-muted); /* Set the stat label to muted grey */
+    display: block; /* Put the stat label on its own line */
+    font-size: 0.78rem; /* Make the stat label compact */
+    font-weight: 700; /* Make the stat label bold */
+    letter-spacing: 0.1rem; /* Add spacing between letters */
+    margin-bottom: 0.75rem; /* Add spacing below the label */
+    text-transform: uppercase; /* Convert the stat label to uppercase */
+} /* End the admin stat label styling block */
+
+.admin-stat-card strong { /* Target the number inside each admin stat card */
+    display: block; /* Put the number on its own line */
+    font-size: 2.5rem; /* Make the stat number large */
+    line-height: 1; /* Tighten the stat number line height */
+} /* End the admin stat number styling block */
+
+.admin-table-wrapper { /* Target the responsive wrapper around admin tables */
+    border: 1px solid var(--color-border); /* Add a subtle border around the table area */
+    border-radius: var(--radius-large); /* Apply large rounded corners to the table wrapper */
+    overflow: hidden; /* Clip the table corners inside the rounded wrapper */
+} /* End the admin table wrapper styling block */
