@@ -1,6 +1,6 @@
 {% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
 
-{% block title %}Admin Dashboard | The Only Tee{% endblock %} <!-- Set the browser title for the admin dashboard -->
+{% block title %}Admin Dashboard | {{ BRAND_NAME }}{% endblock %} <!-- Set the browser title for the admin dashboard -->
 
 {% block content %} <!-- Start the page-specific content block -->
 <section class="page-section"> <!-- Create a standard inner page section -->
@@ -9,7 +9,7 @@
             <div class="col-lg-8"> <!-- Create the left heading column -->
                 <p class="eyebrow mb-3">Admin</p> <!-- Display a small uppercase admin label -->
                 <h1 class="page-title mb-3">Dashboard</h1> <!-- Display the admin dashboard heading -->
-                <p class="page-copy mb-0">Manage drops, review lifecycle states, and prepare future product releases.</p> <!-- Display a short admin dashboard description -->
+                <p class="page-copy mb-0">Manage monthly drops, review lifecycle states, and prepare future product releases for {{ BRAND_NAME }}.</p> <!-- Display a short admin dashboard description -->
             </div> <!-- Close the left heading column -->
             <div class="col-lg-4 text-lg-end"> <!-- Create the right heading column -->
                 <a href="{{ url_for('admin.create_drop') }}" class="btn btn-dark">Create Drop</a> <!-- Add a button linking to the create-drop page -->

@@ -14,7 +14,7 @@ def register_commands(app):  # Define a function that registers custom made comm
             drop_number="0001",  # Set the active drop
             season=1,  # Set the active drop season
             name="Silent Horizon",  # Set the active drop name
-            description="A one-time T-shirt drop available for a limited window before entering the Archive Collection permanently.",  # Set the active drop description
+            description="The first monthly T-shirt design from The Only Drop. Available while stock lasts, then archived permanently.",  # Set the active drop description
             price=59,  # Set the fixed active drop price
             status=DROP_STATUS_ACTIVE,  # Mark this drop as the current active drop
         )  # Close the active drop object creation
@@ -23,7 +23,7 @@ def register_commands(app):  # Define a function that registers custom made comm
             drop_number="0002",  # Set the first archived drop number
             season=1,  # Set the first archived drop season
             name="Frozen Signal",  # Set the first archived drop name
-            description="A finished limited drop from the first collection.",  # Set the first archived drop description
+            description="An archived monthly T-shirt design from The Only Drop collection.",  # Set the first archived drop description
             price=59,  # Set the first archived drop price
             status=DROP_STATUS_ARCHIVED,  # Mark this drop as archived
         )  # Close the first archived drop object creation
@@ -32,7 +32,7 @@ def register_commands(app):  # Define a function that registers custom made comm
             drop_number="0003",  # Set the second archived drop number
             season=1,  # Set the second archived drop season
             name="Cold Archive",  # Set the second archived drop name
-            description="A finished limited drop from the first collection.",  # Set the second archived drop description
+            description="An archived monthly T-shirt design from The Only Drop collection.",  # Set the second archived drop description
             price=59,  # Set the second archived drop price
             status=DROP_STATUS_ARCHIVED,  # Mark this drop object creation
         )  # Close the second archived drop object creation

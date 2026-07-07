@@ -1,6 +1,6 @@
 {% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
 
-{% block title %}Current Drop | The Only Tee{% endblock %} <!-- Set the browser title for the homepage -->
+{% block title %}Current Drop | {{ BRAND_NAME }}{% endblock %} <!-- Set the browser title for the homepage -->
 
 {% block content %} <!-- Start the page-specific content block -->
 <section class="hero-section d-flex align-items-center"> <!-- Create the main homepage hero section -->
@@ -8,14 +8,14 @@
         {% if active_drop %} <!-- Check if the database returned an active drop -->
         <div class="row align-items-center g-5"> <!-- Create a responsive Bootstrap row with spacing between columns -->
             <div class="col-lg-6"> <!-- Create the left column for text and actions -->
-                <p class="eyebrow mb-3">Current Drop · Season {{ active_drop.season }}</p> <!-- Display a small uppercase context label -->
+                <p class="eyebrow mb-3">{{ DROP_CADENCE_LABEL }} · Season {{ active_drop.season }}</p> <!-- Display a small uppercase context label -->
                 <h1 class="hero-title mb-3">{{ active_drop.name }}</h1> <!-- Display the active drop name as the main page heading -->
                 <p class="hero-copy mb-4">{{ active_drop.description }}</p> <!-- Display the active drop description from the database -->
 
                 <div class="product-showcase mobile-product-showcase mx-auto mb-4 d-lg-none"> <!-- Show the product image on mobile right after the description -->
                     <div class="product-frame"> <!-- Create the main product visual frame -->
                         <div class="product-placeholder"> <!-- Create the temporary product visual placeholder -->
-                            <span>THE<br>ONLY<br>TEE</span> <!-- Display stacked placeholder text inside the product visual -->
+                            <span>THE<br>ONLY<br>DROP</span> <!-- Display stacked placeholder text inside the product visual -->
                         </div> <!-- Close the temporary product visual placeholder -->
                     </div> <!-- Close the product visual frame -->
 
@@ -44,7 +44,7 @@
                 </div> <!-- Close the metadata area -->
 
                 <div class="d-grid d-sm-flex gap-3"> <!-- Create responsive action buttons that stack on mobile -->
-                    <a href="#" class="btn btn-dark btn-lg px-4">Reserve Drop</a> <!-- Add the future reservation button -->
+                    <a href="#" class="btn btn-dark btn-lg px-4">Buy Current Drop</a> <!-- Add the future reservation button -->
                     <a href="{{ url_for('main.archive') }}" class="btn btn-outline-dark btn-lg px-4">Explore Archive</a> <!-- Add the archive navigation button -->
                 </div> <!-- Close the action button wrapper -->
             </div> <!-- Close the left column -->
@@ -53,7 +53,7 @@
                 <div class="product-showcase mx-auto"> <!-- Create a centered product showcase wrapper -->
                     <div class="product-frame"> <!-- Create the main product visual frame -->
                         <div class="product-placeholder"> <!-- Create the temporary product visual placeholder -->
-                            <span>THE<br>ONLY<br>TEE</span> <!-- Display stacked placeholder text inside the product visual -->
+                            <span>THE<br>ONLY<br>DROP</span> <!-- Display stacked placeholder text inside the product visual -->
                         </div> <!-- Close the temporary product visual placeholder -->
                     </div> <!-- Close the product visual frame -->
 
@@ -70,8 +70,8 @@
         {% else %} <!-- Run this block if there is no active drop -->
         <div class="empty-state text-center mx-auto"> <!-- Create a centered empty state wrapper -->
             <p class="eyebrow mb-3">No Active Drop</p> <!-- Display a small empty-state label -->
-            <h1 class="fw-bold mb-3">The next drop is being prepared.</h1> <!-- Display the empty-state heading -->
-            <p class="lead text-muted mb-4">Check back soon for the next limited release.</p> <!-- Display the empty-state copy -->
+            <h1 class="fw-bold mb-3">The next monthly drop is being prepared.</h1> <!-- Display the empty-state heading -->
+            <p class="lead text-muted mb-4">Check back soon for the next limited release from {{ BRAND_NAME }}.</p> <!-- Display the empty-state copy -->
             <a href="{{ url_for('main.archive') }}" class="btn btn-outline-dark btn-lg px-4">Explore Archive</a> <!-- Add a button linking to the archive -->
         </div> <!-- Close the empty-state wrapper -->
         {% endif %} <!-- End the active_drop conditional -->

@@ -1,6 +1,6 @@
 {% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
 
-{% block title %}About | The Only Tee{% endblock %} <!-- Replace the page title for this about page -->
+{% block title %}About | {{ BRAND_NAME }}{% endblock %} <!-- Replace the page title for this about page -->
 
 {% block content %} <!-- Start the page specific content block -->
 <section class="page-section"> <!-- Create a standard page section wrapper -->
@@ -8,9 +8,10 @@
         <div class="row justify-content-center"> <!-- Create a row and center its content horizontally -->
             <div class="col-lg-8"> <!-- Limit the text width for better readability -->
                 <p class="eyebrow mb-3">About the system</p> <!-- Display a small uppercase section label -->
-                <h1 class="page-title mb-4">A limited-drop product platform.</h1> <!-- Display the about page heading -->
-                <p class="page-copy">The Only Tee is built around one active product at a time, automatic drop rotation, permanent archive history, and future fulfillment integration.</p> <!-- Explain the project concept -->
-                <p class="page-copy">This portfolio project demonstrates Flask structure, server-rendered templates, authentication, database modeling, automation, external API integration, and deployment with MariaDB.</p> <!-- Explain the technical value of the project -->
+                <h1 class="page-title mb-4">A monthly limited-drop product platform.</h1> <!-- Display the about page heading -->
+                <p class="page-copy">{{ BRAND_NAME }} launches one curated {{ PRODUCT_CATEGORY_SINGULAR|lower }} design per month. Each design uses one selected shirt color, multiple sizes, and remains available while stock exists through our fulfillment partner.</p> <!-- Explain the project concept -->
+                <p class="page-copy">At the first second of each new month, the active design changes and the previous design becomes part of the previous design becomes part of the permanent Archive Collection.</p> <!-- Explain the monthly lifecycle model -->
+                <p class="page-copy">This portfolio project demonstrates Flask structure, server-rendered templates, authentication, admin tooling, database modeling, automation, external API integrations, payment flow planning, and deployment with MariaDB.</p> <!-- Explain the technical value of the project -->
             </div> <!-- Close the centered text column -->
         </div> <!-- Close the row -->
     </div> <!-- Close the container -->

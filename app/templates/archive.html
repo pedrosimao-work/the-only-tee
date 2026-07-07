@@ -1,6 +1,6 @@
 {% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
 
-{% block title %}Archive Collection | The Only Tee{% endblock %} <!-- Set the browser title for the archive page -->
+{% block title %}Archive Collection | {{ BRAND_NAME }}{% endblock %} <!-- Set the browser title for the archive page -->
 
 {% block content %} <!-- Start the page-specific content block -->
 <section class="page-section"> <!-- Create a standard page section for inner pages -->
@@ -9,7 +9,7 @@
             <div class="col-lg-8"> <!-- Create the left heading column -->
                 <p class="eyebrow mb-3">Permanent Collection</p> <!-- Display a small uppercase archive label -->
                 <h1 class="page-title mb-3">The Archive Collection</h1> <!-- Display the archive page heading -->
-                <p class="page-copy mb-0">Every finished drop becomes part of the permanent collection. No missed section. No repeated designs. Just the full timeline.</p> <!-- Display the archive concept text -->
+                <p class="page-copy mb-0">Every previous monthly design from {{ BRAND_NAME }} becomes part of the permanent archive. No repeated drops. Just the full timeline.</p> <!-- Display the archive concept text -->
             </div> <!-- Close the left heading column -->
             <div class="col-lg-4 text-lg-end"> <!-- Create the right heading column aligned right on large screens -->
                 <a href="{{ url_for('main.home') }}" class="btn btn-outline-dark">View Current Drop</a> <!-- Add a button back to the active drop page -->
@@ -37,7 +37,7 @@
         <div class="empty-state archive-empty-state text-center mx-auto"> <!-- Create a centered empty archive state -->
             <p class="eyebrow mb-3">Archive Empty</p> <!-- Display a small empty archive label -->
             <h2 class="fw-bold mb-3">No drops have entered the archive yet.</h2> <!-- Display the empty archive heading -->
-            <p class="text-muted mb-0">Once a drop expires, it will appear here permanently.</p> <!-- Explain when archive records will appear -->
+            <p class="text-muted mb-0">Once a monthly drop expires, it will appear here permanently.</p> <!-- Explain when archive records will appear -->
         </div> <!-- Close the empty archive state -->
         {% endif %} <!-- End the archived_drops conditional -->
     </div> <!-- Close the Bootstrap container -->
