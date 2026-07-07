@@ -10,3 +10,10 @@ VALID_DROP_STATUSES = (  # Store all valid drop statuses in one reusable tuple
 )  # Close the valid statuses tuple
 
 
+BRAND_NAME = "The Only Drop"  # Store the public brand name used accross the website
+BRAND_NAME_UPPER = "THE ONLY DROP"  # Store the uppercase brand named used in navigation and footer
+PRIMARY_DOMAIN = "the-only-drop.com"  # Store the planned production domain for the project
+PRODUCT_CATEGORY_SINGULAR = "T-shirt"  # Store the current singular product category
+PRODUCT_CATEGORY_PLURAL = "T-shirts"  # Store the current plural product category
+DROP_CADENCE_LABEL = "Monthly Drop"  # Store the public cadence label for current drops
+BRAND_TAGLINE = "One monthly design. Available while stock lasts. Archived forever."  # Store the main product positioning line

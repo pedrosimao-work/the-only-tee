@@ -2,6 +2,7 @@ from flask import Flask  # Import the Flask class used to create the web applica
 from flask_migrate import Migrate  # Import Flask-Migrate to manage database migrations
 
 from app.config import Config  # Import the main configuration class
+from app.constants import BRAND_NAME, BRAND_NAME_UPPER, BRAND_TAGLINE, DROP_CADENCE_LABEL, PRIMARY_DOMAIN, PRODUCT_CATEGORY_PLURAL, PRODUCT_CATEGORY_SINGULAR  # Import brand constants used globally in templates
 from app.extensions import db, login_manager  # Import the shared SQLAlchemy database object
 
 
@@ -20,6 +21,18 @@ def create_app():  # Define the application factory function used to build and c
     login_manager.login_view = "auth.login"  # Redirect unauthenticated users to the login page when needed
     login_manager.login_message = "Please log in to access this page."  # Set the message shown when login is required
     login_manager.login_message_category = "warning"  # Set the Boostrap-style category for the Login-required message
+
+    @app.context_processor  # Register a function that injects shared variables into all templates
+    def inject_brand_context():  # Define the template context function for brand values
+        return {  # Return a dictionary of values available in every Jinja template
+            "BRAND_NAME": BRAND_NAME,  # Make the public brand name available to templates
+            "BRAND_NAME_UPPER": BRAND_NAME_UPPER,  # Make the uppercase brand name available to templates
+            "BRAND_TAGLINE": BRAND_TAGLINE,  # Make the brand tagline available to templates
+            "DROP_CADENCE_LABEL": DROP_CADENCE_LABEL,  # Make the monthly cadence label available to templates
+            "PRIMARY_DOMAIN": PRIMARY_DOMAIN,  # Make the planned domain available to templates
+            "PRODUCT_CATEGORY_SINGULAR": PRODUCT_CATEGORY_SINGULAR,  # Make the singular product category available to templates
+            "PRODUCT_CATEGORY_PLURAL": PRODUCT_CATEGORY_PLURAL,  # Make the plural product category available to templates
+        }  # Close the template context dictionary
 
     from app import models  # Import models so Flask-Migrate can detect database tables
 
