@@ -3,9 +3,9 @@ from datetime import datetime  # Import datetime so we can store creation and li
 from flask_login import UserMixin  # Import UserMixin to provide default Flask-Login user methods
 from werkzeug.security import check_password_hash, generate_password_hash  # Import secure password hashing helpers
 
-from app.constants import DROP_STATUS_DRAFT  # Import the default draft status constant
+from app.constants import DEFAULT_SHIRT_COLOR, DROP_PRODUCT_TYPE_TSHIRT, DROP_STATUS_DRAFT  # Import default drop constants
 from app.extensions import db, login_manager  # Import the shared SQLAlchemy database object
-from app.validators import validate_drop_status  # Import the reusable drop status validation function
+from app.validators import validate_drop_status, validate_product_type  # Import the reusable drop validation functions
 
 
 class User(UserMixin, db.Model):  # Create a database model class representing one registered user
@@ -38,8 +38,16 @@ class Drop(db.Model):  # Create a database model class representing one limited 
     name = db.Column(db.String(120), nullable=False)  # Store the public name of the drop
     description = db.Column(db.Text, nullable=False)  # Store the longer description of the drop
     price = db.Column(db.Integer, nullable=False, default=59)  # Store the price in euros as a simple integer for now
-    status = db.Column(db.String(20), nullable=False, default="draft")  # Store the lifecycle status, such as draft, active, or archived
+    status = db.Column(db.String(20), nullable=False, default=DROP_STATUS_DRAFT)  # Store the lifecycle status using the default constant
+    product_type = db.Column(db.String(50), nullable=False, default=DROP_PRODUCT_TYPE_TSHIRT, server_default=DROP_PRODUCT_TYPE_TSHIRT)  # Store the product type for this monthly drop
+    shirt_color = db.Column(db.String(80), nullable=False, default=DEFAULT_SHIRT_COLOR, server_default=DEFAULT_SHIRT_COLOR)  # Store the selected shirt color for this design
     image_url = db.Column(db.String(255), nullable=True)  # Store an optional product image URL for future Printify or uploaded images
+    printify_product_id = db.Column(db.String(120), nullable=True)  # Store the Printify product ID connected to this drop
+    printify_variant_ids = db.Column(db.Text, nullable=True)  # Store selected Printify variant IDs for available sizes as text for future parsing
+    stripe_product_id = db.Column(db.String(120), nullable=True)  # Store the Stripe product ID connected to this drop
+    stripe_price_id = db.Column(db.String(120), nullable=True)  # Store the Stripe price ID used for hosted Checkout
+    instagram_media_id = db.Column(db.String(120), nullable=True)  # Store the Instagram media ID after publishing a launch reel
+    instagram_permalink = db.Column(db.String(255), nullable=True)  # Store the Instagram post permalink after publishing
     starts_at = db.Column(db.DateTime, nullable= True)  # Store when the drop becomes active
     ends_at = db.Column(db.DateTime, nullable=True)  # Store when the drop expires
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)  # Store when the database record was created
@@ -48,6 +56,8 @@ class Drop(db.Model):  # Create a database model class representing one limited 
     def __init__(self, **kwargs):  # Define custom initialization logic for new Drop objects
         super().__init__(**kwargs)  # Let SQLAlchemy assign the provided fields normally first
         validate_drop_status(self.status)  # Validate the drop status immediately after object creation
+        validate_product_type(self.product_type)  # Validate the product type immediately after object creation
+
 
     def __repr__(self):  # Define the developer-friendly representation of a Drop object
         return f"<Drop #{self.drop_number} - {self.name}>"  # Return a readable lable when debugging Drop records

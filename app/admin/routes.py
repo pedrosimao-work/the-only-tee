@@ -6,10 +6,17 @@ from flask_login import current_user, login_required  # Import login helpers for
 from app.admin.forms import DropForm  # Import the drop creation form
 from app.extensions import db  # Import the database object so admin routes can save records
 from app.models import Drop  # Import the Drop model so admin routes can query and create drops
-from app.validators import validate_drop_status  # Import the reusable drop status validation function
+from app.validators import validate_drop_status, validate_product_type  # Import reusable drop validation functions
 
 
-admin = Blueprint("admin", __name__, url_prefix="/admin")
+admin = Blueprint("admin", __name__, url_prefix="/admin")  # Create the admin blueprint with an /admin URL prefix
+
+
+def clean_optional_text(value):  # Define a helper function for cleaning optional text form fields
+    if not value:  # Check if the submitted value is missing or empty
+        return None  # Store empty optional values as None in the database
+
+    return value.strip() or None  # Strip whitespace and return None if the result is empty
 
 
 def admin_required(route_function):  # Define a reusable decorator for admin-only routes
@@ -64,6 +71,8 @@ def create_drop():  # Define the function that handles creating new drops
             return render_template("admin/create_drop.html", form=form)  # Re-render the create-drop form
 
         validated_status = validate_drop_status(form.status.data)  # Validate the submitted status using shared validation logic
+        validated_product_type = validate_product_type(form.product_type.data)  # Validate the submitted product type using shared validation logic
+
 
         drop = Drop(  # Create a new Drop object from the form data
             drop_number=form.drop_number.data.strip(),  # Store the cleaned drop number
@@ -72,7 +81,15 @@ def create_drop():  # Define the function that handles creating new drops
             description=form.description.data.strip(),  # Store the cleaned drop description
             price=form.price.data,  # Store the submitted price
             status=validated_status,  # Store the validated lifecycle status
-            image_url=form.image_url.data.strip() or None,  # Store the cleaned image URL or None
+            product_type=validated_product_type,  # Store the validated product type
+            shirt_color=form.shirt_color.data.strip(),  # Store the selected shirt color
+            image_url=clean_optional_text(form.image_url.data),  # Store the optional image URL or None
+            printify_product_id=clean_optional_text(form.printify_product_id.data),  # Store the optional Printify product ID or None
+            printify_variant_ids=clean_optional_text(form.printify_variant_ids.data),  # Store the optional Printify variant IDs or None
+            stripe_product_id=clean_optional_text(form.stripe_product_id.data),  # Store the optional Stripe product ID or None
+            stripe_price_id=clean_optional_text(form.stripe_price_id.data),  # Store the optional Stripe price ID or None
+            instagram_media_id=clean_optional_text(form.instagram_media_id.data),  # Store the optional Instagram media ID or None
+            instagram_permalink=clean_optional_text(form.instagram_permalink.data),  # Store the optional Instagram permalink or None
         )  # Close the Drop object creation
 
         db.session.add(drop)  # Add the new drop to the database session

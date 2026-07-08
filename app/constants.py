@@ -10,6 +10,17 @@ VALID_DROP_STATUSES = (  # Store all valid drop statuses in one reusable tuple
 )  # Close the valid statuses tuple
 
 
+DROP_PRODUCT_TYPE_TSHIRT = "t-shirt"  # Store the current supported product type for monthly drops
+
+
+VALID_PRODUCT_TYPES = (  # Store all valid product types supported by the platform
+    DROP_PRODUCT_TYPE_TSHIRT,  # Allow T-shirt drops as the current product category
+)  # Close the valid product types tuple
+
+
+DEFAULT_SHIRT_COLOR = "Black"  # Store the default shirt color used when seed data is created
+
+
 BRAND_NAME = "The Only Drop"  # Store the public brand name used accross the website
 BRAND_NAME_UPPER = "THE ONLY DROP"  # Store the uppercase brand named used in navigation and footer
 PRIMARY_DOMAIN = "the-only-drop.com"  # Store the planned production domain for the project

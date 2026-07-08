@@ -6,10 +6,10 @@
 <section class="auth-section"> <!-- Use the auth-style section spacing for form-centered pages -->
     <div class="container"> <!-- Center create-drop content inside a Bootstrap container -->
         <div class="row justify-content-center"> <!-- Center the form column horizontally -->
-            <div class="col-lg-7"> <!-- Limit the create-drop form width -->
+            <div class="col-lg-8"> <!-- Limit the create-drop form width -->
                 <div class="auth-card"> <!-- Reuse the card style for form layout -->
                     <p class="eyebrow mb-3">Admin</p> <!-- Display a small uppercase admin label -->
-                    <h1 class="h2 fw-bold mb-4">Create drop</h1> <!-- Display the create-drop heading -->
+                    <h1 class="h2 fw-bold mb-4">Create monthly drop</h1> <!-- Display the create-drop heading -->
 
                     <form method="POST"> <!-- Create a POST form for creating drops -->
                         {{ form.hidden_tag() }} <!-- Render hidden CSRF protection fields -->
@@ -41,7 +41,7 @@
 
                             <div class="col-12"> <!-- Create the full-width description field row -->
                                 {{ form.description.label(class="form-label") }} <!-- Render the description label -->
-                                {{ form.description(class="form-control", rows="4", placeholder="Describe this limited drop.") }} <!-- Render the description textarea -->
+                                {{ form.description(class="form-control", rows="4", placeholder="Describe this monthly drop.") }} <!-- Render the description textarea -->
                                 {% for error in form.description.errors %} <!-- Loop through description validation errors -->
                                 <div class="form-error">{{ error }}</div> <!-- Display each description error -->
                                 {% endfor %} <!-- End the description errors loop -->
@@ -63,6 +63,22 @@
                                 {% endfor %} <!-- End the status errors loop -->
                             </div> <!-- Close the status column -->
 
+                            <div class="col-md-6"> <!-- Create the product type column -->
+                                {{ form.product_type.label(class="form-label") }} <!-- Render the product type label -->
+                                {{ form.product_type(class="form-select") }} <!-- Render the product type dropdown -->
+                                {% for error in form.product_type.erros %} <!-- Loop through product type validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each product type error -->
+                                {% endfor %} <!-- End the product type column -->
+                            </div> <!-- Close the product type column -->
+
+                            <div class="col-md-6"> <!-- Create the shirt color column -->
+                                {{ form.shirt_color.label(class="form-label") }} <!-- Render the shirt color label -->
+                                {{ form.shirt_color(class="form-control", placeholder="Black") }} <!-- Render the shirt color input -->
+                                {% for error in form.shirt_color.errors %} <!-- Loop through shirt color validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each shirt color error -->
+                                {% endfor %} <!-- End the shirt color errors loop -->
+                            </div> <!-- Close the shirt color column -->
+
                             <div class="col-12"> <!-- Create the full-width image URL row -->
                                 {{ form.image_url.label(class="form-label") }} <!-- Render the image URL label -->
                                 {{ form.image_url(class="form-control", placeholder="https://example.com/image.jpg") }} <!-- Render the image URL input -->
@@ -70,7 +86,57 @@
                                 <div class="form-error">{{ error }}</div> <!-- Display each image URL error -->
                                 {% endfor %} <!-- End the image URL errors loop -->
                             </div> <!-- Close the image URL row -->
+
+                            <div class="col-md-6"> <!-- Create the Printify product ID column -->
+                                {{ form.printify_product_id.label(class="form-label") }} <!-- Render the Printify product ID label -->
+                                {{ form.printify_product_id(class="form-control", placeholder="Printify product ID") }} <!-- Render the Printify product ID input -->
+                                {% for error in form.printify_product_id.errors %} <!-- Loop through Printify product ID validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each Printify product ID error -->
+                                {% endfor %} <!-- End the Printify product ID errors loop -->
+                            </div> <!-- Close the Printify product ID column -->
+
+                            <div class="col-md-6"> <!-- Create the Stripe price ID column -->
+                                {{ form.stripe_price_id.label(class="form-label") }} <!-- Render the Stripe price ID label -->
+                                {{ form.stripe_price_id(class="form-control", placeholder="price_...") }} <!-- Render the Stripe price ID input -->
+                                {% for error in form.stripe_price_id.errors %} <!-- Loop through Stripe price ID validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each Stripe price ID error -->
+                                {% endfor %} <!-- End the Stripe price ID errors loop -->
+                            </div> <!-- Close the Stripe price ID column -->
+
+                            <div class="col-12"> <!-- Create the full-width Printify variant IDs row -->
+                                {{ form.printify_variant_ids.label(class="form-label") }} <!-- Render the Printify variant IDs label -->
+                                {{ form.printify_variant_ids(class="form-control", rows="3", placeholder="Example: 12345, 67890, 54321") }} <!-- Render the Printify variant IDs textarea -->
+                                {% for error in form.printify_variant_ids.errors %} <!-- Loop through Printify variant IDs validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each Printify variant IDs error -->
+                                {% endfor %} <!-- End the Printify variant IDs errors loop -->
+                            </div> <!-- Close the Printify variant IDs row -->
+
+                            <div class="col-md-6"> <!-- Create the Stripe product ID column -->
+                                {{ form.stripe_product_id.label(class="form-label") }} <!-- Render the Stripe product ID label -->
+                                {{ form.stripe_product_id(class="form-control", placeholder="prod_...") }} <!-- Render the Stripe product ID input -->
+                                {% for error in form.stripe_product_id.errors %} <!-- Loop through Stripe product ID validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each Stripe product ID error -->
+                                {% endfor %} <!-- End the Stripe product ID errors loop -->
+                            </div> <!-- Close the Stripe product ID column -->
+
+                            <div class="col-md-6"> <!-- Create the Instagram media ID column -->
+                                {{ form.instagram_media_id.label(class="form-label") }} <!-- Render the Instagram media ID label -->
+                                {{ form.instagram_media_id(class="form-control", placeholder="Instagram media ID") }} <!-- Render the Instagram media ID input -->
+                                {% for error in form.instagram_media_id.errors %} <!-- Loop through Instagram media ID validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each Instagram media ID error -->
+                                {% endfor %} <!-- End the Instagram media ID errors loop -->
+                            </div> <!-- Close the Instagram media ID column -->
+
+                            <div class="col-12"> <!-- Create the full-width Instagram permalink row -->
+                                {{ form.instagram_permalink.label(class="form-label") }} <!-- Render the Instagram permalink label -->
+                                {{ form.instagram_permalink(class="form-control", placeholder="https://www.instagram.com/reel/...") }} <!-- Render the Instagram permalink input -->
+                                {% for error in form.instagram_permalink.errors %} <!-- Loop through Instagram permalink validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each Instagram permalink error -->
+                                {% endfor %} <!-- End the Instagram permalink errors loop -->
+                            </div> <!-- Close the Instagram permalink row -->
                         </div> <!-- Close the responsive form grid -->
+
+
 
                         <div class="d-grid d-sm-flex gap-3 mt-4"> <!-- Create a responsive action button row -->
                             {{ form.submit(class="btn btn-dark btn-lg px-4") }} <!-- Render the create-drop submit button -->

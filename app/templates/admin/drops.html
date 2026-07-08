@@ -9,7 +9,7 @@
             <div class="col-lg-8"> <!-- Create the left heading column -->
                 <p class="eyebrow mb-3">Admin</p> <!-- Display a small uppercase admin label -->
                 <h1 class="page-title mb-3">Manage Drops</h1> <!-- Display the drop management heading -->
-                <p class="page-copy mb-0">Review all drop records currently stored in the database.</p> <!-- Display a short description -->
+                <p class="page-copy mb-0">Review all monthly drop records currently stored in the database.</p> <!-- Display a short description -->
             </div> <!-- Close the left heading column -->
             <div class="col-lg-4 text-lg-end"> <!-- Create the right heading column -->
                 <a href="{{ url_for('admin.create_drop') }}" class="btn btn-dark">Create Drop</a> <!-- Add a button linking to create a new drop -->
@@ -23,6 +23,8 @@
                     <tr> <!-- Create the header row -->
                         <th>Drop</th> <!-- Create the drop number header -->
                         <th>Name</th> <!-- Create the name header -->
+                        <th>Product</th> <!-- Create the product type header -->
+                        <th>Color</th> <!-- Create the shirt color header -->
                         <th>Season</th> <!-- Create the season header -->
                         <th>Price</th> <!-- Create the price header -->
                         <th>Status</th> <!-- Create the status header -->
@@ -33,6 +35,8 @@
                     <tr> <!-- Create one table row for the current drop -->
                         <td>#{{ drop.drop_number }}</td> <!-- Display the drop number -->
                         <td>{{ drop.name }}</td> <!-- Display the drop name -->
+                        <td>{{ drop.product_type|title }}</td> <!-- Display the product type -->
+                        <td>{{ drop.shirt_color }}</td> <!-- Display the selected shirt color -->
                         <td>{{ drop.season }}</td> <!-- Display the season number -->
                         <td>€{{ drop.price }}</td> <!-- Display the drop price -->
                         <td>{{ drop.status|capitalize }}</td> <!-- Display the drop status -->
