@@ -91,6 +91,16 @@ Seed development drop data:
 flask seed-drops
 ```
 
+Run monthly drop lifecycle automation manually:
+
+```bash
+flask rotate-drops
+```
+
+This command archives expired active drops and activates the next scheduled draft drop when its start date has arrived.
+
+In production, this command is intended to run through a DirectAdmin cron job at the first second of the first day of each month.
+
 Run the app:
 
 ```bash

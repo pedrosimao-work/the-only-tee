@@ -28,6 +28,8 @@
                         <th>Season</th> <!-- Create the season header -->
                         <th>Price</th> <!-- Create the price header -->
                         <th>Status</th> <!-- Create the status header -->
+                        <th>Starts</th> <!-- Create the scheduled start header -->
+                        <th>Ends</th> <!-- Create the scheduled end header -->
                     </tr> <!-- Close the header row -->
                 </thead> <!-- End the table header -->
                 <tbody> <!-- Start the table body -->
@@ -40,6 +42,20 @@
                         <td>{{ drop.season }}</td> <!-- Display the season number -->
                         <td>€{{ drop.price }}</td> <!-- Display the drop price -->
                         <td>{{ drop.status|capitalize }}</td> <!-- Display the drop status -->
+                        <td> <!-- Start the scheduled start cell -->
+                            {% if drop.starts_at %} <!-- Check if the drop has a start date -->
+                            {{ drop.starts_at.strftime("%Y-%m-%d %H:%M") }} <!-- Display the formatted start date -->
+                            {% else %} <!-- Run this block if there is no start date -->
+                            Not scheduled <!-- Display a fallback value -->
+                            {% endif %} <!-- End the start date condition -->
+                        </td> <!-- Close the scheduled start cell -->
+                        <td> <!-- Start the scheduled end cell -->
+                            {% if drop.ends_at %} <!-- Check if the drop has an end date -->
+                            {{ drop.ends_at.strftime("%Y-%m-%d %H:%M") }} <!-- Display the formatted end date -->
+                            {% else %} <!-- Run this block if there is no end date -->
+                            Not scheduled <!-- Display a fallback value -->
+                            {% endif %} <!-- End the end date condition -->
+                        </td> <!-- Close the scheduled end cell -->
                     </tr> <!-- Close the current table row -->
                     {% endfor %} <!-- End the drops loop -->
                 </tbody> <!-- End the table body -->

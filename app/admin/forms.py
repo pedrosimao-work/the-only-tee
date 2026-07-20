@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm  # Import FlaskForm as the base class for secure Flask forms
-from wtforms import IntegerField, SelectField, StringField, SubmitField, TextAreaField  # Import form field types for drop management
+from wtforms import DateTimeLocalField, IntegerField, SelectField, StringField, SubmitField, TextAreaField  # Import form field types for drop management
 from wtforms.validators import DataRequired, Length, NumberRange, Optional  # Import reusable form validation rules
 
 from app.constants import VALID_DROP_STATUSES, VALID_PRODUCT_TYPES  # Import the allowed statuses and product types
@@ -82,5 +82,17 @@ class DropForm(FlaskForm):  # Create a form class for creating new drop records
         "Instagram Permalink",  # Set the human-readable label for the Instagram permalink field
         validators=[Optional(), Length(max=255)],  # Allow the field to be empty but limit length when filled
     )  # Close the Instagram permalink field definition
+
+    starts_at = DateTimeLocalField(  # Create the optional drop start datetime field
+        "Starts At",  # Set the human-readable label for the start datetime field
+        format="%Y-%m-%dT%H:%M",  # Match the HTML datetime-local input format
+        validators=[Optional()],  # Allow admins to leave the start date empty for unscheduled drafts
+    )  # Close the start datetime field definition
+
+    ends_at = DateTimeLocalField(  # Create the optional drop end datetime field
+        "Ends At",  # Set the human-readable label for the end datetime field
+        format="%Y-%m-%dT%H:%M",  # Match the HTML datetime-local input format
+        validators=[Optional()],  # Allow admins to leave the end date empty if it should be calculated later
+    )  # Close the end datetime field definition
 
     submit = SubmitField("Create Drop")  # Create the submit button for the create-dropform

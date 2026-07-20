@@ -28,3 +28,6 @@ PRODUCT_CATEGORY_SINGULAR = "T-shirt"  # Store the current singular product cate
 PRODUCT_CATEGORY_PLURAL = "T-shirts"  # Store the current plural product category
 DROP_CADENCE_LABEL = "Monthly Drop"  # Store the public cadence label for current drops
 BRAND_TAGLINE = "One monthly design. Available while stock lasts. Archived forever."  # Store the main product positioning line
+
+
+APP_TIMEZONE = "Europe/Lisbon"  # Store the business timezone used for monthly drop rotation
