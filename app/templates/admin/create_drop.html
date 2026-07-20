@@ -9,7 +9,7 @@
             <div class="col-lg-8"> <!-- Limit the create-drop form width -->
                 <div class="auth-card"> <!-- Reuse the card style for form layout -->
                     <p class="eyebrow mb-3">Admin</p> <!-- Display a small uppercase admin label -->
-                    <h1 class="h2 fw-bold mb-4">Create monthly drop</h1> <!-- Display the create-drop heading -->
+                    <h1 class="h2 fw-bold mb-4">Create scheduled monthly drop</h1> <!-- Display the create-drop heading -->
 
                     <form method="POST"> <!-- Create a POST form for creating drops -->
                         {{ form.hidden_tag() }} <!-- Render hidden CSRF protection fields -->
@@ -78,6 +78,22 @@
                                 <div class="form-error">{{ error }}</div> <!-- Display each shirt color error -->
                                 {% endfor %} <!-- End the shirt color errors loop -->
                             </div> <!-- Close the shirt color column -->
+
+                            <div class="col-md-6">  <!-- Create the scheduled start datetime column -->
+                                {{ form.starts_at.label(class="form-label") }}  <!--Render the starts_at label -->
+                                {{ form.starts_at(class="form-control") }}  <!-- Render the starts_at datetime-local input -->
+                                {% for error in form.starts_at.errors %}  <!-- Loop through starts_at validation errors -->
+                                <div class="form-error">{{ error }}</div>
+                                {% endfor %} <!-- End the starts_at errors loop -->
+                            </div>  <!-- Close the scheduled start datetime column -->
+
+                            <div class="col-md-6">  <!-- Create the scheduled end datetime column -->
+                                {{ form.ends_at.label(class="form-label") }} <!-- Render the ends_at label -->
+                                {{ form.ends_at(class="form-control") }} <!-- Render the ends_at datetime-local input -->
+                                {% for error in form.ends_at.errors %} <!-- Loop through ends_at validation errors -->
+                                <div class="form-error">{{ error }}</div> <!-- Display each ends_at error -->
+                                {% endfor %} <!-- End the ends_at errors loop -->
+                            </div> <!-- Close the scheduled end datetime column -->
 
                             <div class="col-12"> <!-- Create the full-width image URL row -->
                                 {{ form.image_url.label(class="form-label") }} <!-- Render the image URL label -->

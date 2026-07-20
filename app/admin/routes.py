@@ -4,6 +4,7 @@ from flask import Blueprint, abort, flash, redirect, render_template, url_for  #
 from flask_login import current_user, login_required  # Import login helpers for protected admin routes
 
 from app.admin.forms import DropForm  # Import the drop creation form
+from app.constants import DROP_STATUS_ACTIVE, DROP_STATUS_ARCHIVED, DROP_STATUS_DRAFT  # Import reusable status constants
 from app.extensions import db  # Import the database object so admin routes can save records
 from app.models import Drop  # Import the Drop model so admin routes can query and create drops
 from app.validators import validate_drop_status, validate_product_type  # Import reusable drop validation functions
@@ -35,9 +36,9 @@ def admin_required(route_function):  # Define a reusable decorator for admin-onl
 @admin_required  # Require the logged-in user to be an admin
 def dashboard():  # Define the function that renders the admin dashboard
     total_drops = Drop.query.count()  # Count all drops in the database
-    active_drops = Drop.query.filter_by(status="active").count()  # Count active drops in the database
-    archived_drops = Drop.query.filter_by(status="archived").count()  # Count archived drops in the database
-    draft_drops = Drop.query.filter_by(status="draft").count()  # Count draft drops in the database
+    active_drops = Drop.query.filter_by(status=DROP_STATUS_ACTIVE).count()  # Count active drops in the database
+    archived_drops = Drop.query.filter_by(status=DROP_STATUS_ARCHIVED).count()  # Count archived drops in the database
+    draft_drops = Drop.query.filter_by(status=DROP_STATUS_DRAFT).count()  # Count draft drops in the database
 
     return render_template(  # Render the admin dashboard template
         "admin/dashboard.html",  # Use the admin dashboard template file
@@ -70,6 +71,10 @@ def create_drop():  # Define the function that handles creating new drops
             flash("A drop with that number already exists.", "danger")  # Show a duplicate drop error message
             return render_template("admin/create_drop.html", form=form)  # Re-render the create-drop form
 
+        if form.starts_at.data and form.ends_at.data and form.ends_at.data <= form.starts_at.data:  # Check if the end time is not after the start time
+            flash("The drop end date must be after the start date.", "danger")  # Show a date validation error message
+            return render_template("admin/create_drop.html", form=form)  # Re-render the create-drop form
+
         validated_status = validate_drop_status(form.status.data)  # Validate the submitted status using shared validation logic
         validated_product_type = validate_product_type(form.product_type.data)  # Validate the submitted product type using shared validation logic
 
@@ -90,6 +95,8 @@ def create_drop():  # Define the function that handles creating new drops
             stripe_price_id=clean_optional_text(form.stripe_price_id.data),  # Store the optional Stripe price ID or None
             instagram_media_id=clean_optional_text(form.instagram_media_id.data),  # Store the optional Instagram media ID or None
             instagram_permalink=clean_optional_text(form.instagram_permalink.data),  # Store the optional Instagram permalink or None
+            starts_at=form.starts_at.data,  # Store the optional scheduled start date
+            ends_at=form.ends_at.data,  # Store the optional scheduled end date
         )  # Close the Drop object creation
 
         db.session.add(drop)  # Add the new drop to the database session
