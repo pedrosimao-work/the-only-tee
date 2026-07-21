@@ -113,6 +113,55 @@ Open:
 http://127.0.0.1:5000
 ```
 
+## Database Configuration
+
+The app uses environment-based database configuration.
+
+For local development, the default fallback is SQLite:
+
+```text
+sqlite:///the_only_drop.db
+```
+
+For production, the app is prepared for MariaDB using PyMySQL:
+
+```text
+mysql+pymysql://database_user:database_password@localhost/database_name
+```
+
+Real database credentials must be stored in environment variables and must never be committed to Git.
+
+You can safely inspect the active database configuration with:
+
+```bash
+flask db-info
+```
+
+This command shows the database driver, host, and database name while hiding the password.
+
+### DirectAdmin MariaDB Notes
+
+When preparing the production deployment, create a MariaDB database and database user inside DirectAdmin.
+
+Then set the production `DATABASE_URL` using this format:
+
+```text
+mysql+pymysql://database_user:database_password@localhost/database_name
+```
+
+If the password contains special characters, URL-encode the password before placing it inside `DATABASE_URL`.
+
+Example:
+
+```text
+@ becomes %40
+# becomes %23
+/ becomes %2F
+: becomes %3A
+```
+
+The production database setup will be completed during the DirectAdmin deployment phase.
+
 ## Development Workflow
 
 This project uses a professional GitHub workflow:

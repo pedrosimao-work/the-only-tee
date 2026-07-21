@@ -1,4 +1,5 @@
 import click  # Import Click so we can display styled messages in the terminal
+from sqlalchemy.engine.url import make_url  # Import make_url so we can safely inspect the database URI
 
 from app.constants import DEFAULT_SHIRT_COLOR, DROP_PRODUCT_TYPE_TSHIRT, DROP_STATUS_ACTIVE, DROP_STATUS_ARCHIVED, DROP_STATUS_DRAFT  # Import reusable status constants for seed data
 from app.extensions import db  # Import the database object so we can save and delete records
@@ -91,3 +92,14 @@ def register_commands(app):  # Define a function that registers custom made comm
             click.echo(f"Activated drop: #{result['activated_drop'].drop_number} - {result['activated_drop'].name}")  # Display the activated drop information
         else:  # Run this block if no scheduled drop was activated
             click.echo("Activated drop: none")  # Display that no drop was activated
+
+
+    @app.cli.command("db-info")  # Create a custom terminal command named flask db-info
+    def db_info():  # Define the function that displays safe database connection information
+        database_uri = app.config["SQLALCHEMY_DATABASE_URI"]  # Read the configured SQLAlchemy database URI
+        parsed_uri = make_url(database_uri)  # Parse the URI into safe structured parts
+
+        click.echo(f"Database driver: {parsed_uri.drivername}")  # Display the database driver without exposing secrets
+        click.echo(f"Database host: {parsed_uri.host or 'local file'}")  # Display the database host or local file fallback
+        click.echo(f"Database name: {parsed_uri.database}")  # Display the database name or SQLite file path
+        click.echo("Database password: hidden")  # Confirm that password output is intentionally hidden
