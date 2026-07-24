@@ -21,4 +21,8 @@ class Config:  # Create a base configuration class for the Flask application
         "pool_pre_ping": True,  # Check database connections before using them to avoid stale connection errors
         "pool_recycle": 280,  # Recycle database connections before shared-hosting timeouts commonly close them
     }  # Close the SQLAlchemy engine options dictionary
+    PRINTIFY_API_BASE_URL = os.environ.get("PRINTIFY_API_BASE_URL", "https://api.printify.com/v1")  # Store the Printify API base URL
+    PRINTIFY_API_TOKEN = os.environ.get("PRINTIFY_API_TOKEN")  # Store the Printify API token from the environment
+    PRINTIFY_SHOP_ID = os.environ.get("PRINTIFY_SHOP_ID")  # Store the Printify shop ID from the environment
+
     

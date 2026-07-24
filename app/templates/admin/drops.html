@@ -25,11 +25,12 @@
                         <th>Name</th> <!-- Create the name header -->
                         <th>Product</th> <!-- Create the product type header -->
                         <th>Color</th> <!-- Create the shirt color header -->
-                        <th>Season</th> <!-- Create the season header -->
                         <th>Price</th> <!-- Create the price header -->
                         <th>Status</th> <!-- Create the status header -->
+                        <th>Printify</th> <!-- Create the Printify status header -->
                         <th>Starts</th> <!-- Create the scheduled start header -->
                         <th>Ends</th> <!-- Create the scheduled end header -->
+                        <th>Action</th> <!-- Create the action header -->
                     </tr> <!-- Close the header row -->
                 </thead> <!-- End the table header -->
                 <tbody> <!-- Start the table body -->
@@ -39,9 +40,15 @@
                         <td>{{ drop.name }}</td> <!-- Display the drop name -->
                         <td>{{ drop.product_type|title }}</td> <!-- Display the product type -->
                         <td>{{ drop.shirt_color }}</td> <!-- Display the selected shirt color -->
-                        <td>{{ drop.season }}</td> <!-- Display the season number -->
                         <td>€{{ drop.price }}</td> <!-- Display the drop price -->
                         <td>{{ drop.status|capitalize }}</td> <!-- Display the drop status -->
+                        <td> <!-- Start the Printify status cell -->
+                            {% if drop.printify_product_id %} <!-- Check if this drop has a Printify product ID -->
+                            <span class="badge text-bg-success">Connected</span> <!-- Show connected status -->
+                            {% else %} <!-- Run this block if the drop has no Printify product ID -->
+                            <span class="badge text-bg-secondary">Missing</span> <!-- Show missing status -->
+                            {% endif %} <!-- End the Printify status condition -->
+                        </td> <!-- Close the Printify status cell -->
                         <td> <!-- Start the scheduled start cell -->
                             {% if drop.starts_at %} <!-- Check if the drop has a start date -->
                             {{ drop.starts_at.strftime("%Y-%m-%d %H:%M") }} <!-- Display the formatted start date -->
@@ -56,6 +63,16 @@
                             Not scheduled <!-- Display a fallback value -->
                             {% endif %} <!-- End the end date condition -->
                         </td> <!-- Close the scheduled end cell -->
+                        <td> <!-- Start the action cell -->
+                            {% if drop.printify_product_id %} <!-- Check if this drop can be synced with Printify -->
+                            <form method="POST" action="{{ url_for('admin.sync_printify_drop', drop_id=drop.id) }}"> <!-- Create a POST form for syncing this drop -->
+                                {{ sync_form.hidden_tag() }} <!-- Render CSRF protection for the sync action -->
+                                <button type="submit" class="btn btn-outline-dark btn-sm">Sync Printify</button> <!-- Add the Printify sync button -->
+                            </form> <!-- Close the sync form -->
+                            {% else %} <!-- Run this block if no Printify product ID exists -->
+                            <span class="text-muted small">Add product ID</span> <!-- Tell the admin what is missing -->
+                            {% endif %} <!-- End the sync action condition -->
+                        </td> <!-- Close the action cell -->
                     </tr> <!-- Close the current table row -->
                     {% endfor %} <!-- End the drops loop -->
                 </tbody> <!-- End the table body -->
