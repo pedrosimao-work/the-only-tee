@@ -280,3 +280,69 @@ a { /* Target all links */
     border-radius: var(--radius-large); /* Apply large rounded corners to the table wrapper */
     overflow: hidden; /* Clip the table corners inside the rounded wrapper */
 } /* End the admin table wrapper styling block */
+
+.product-carousel { /* Target the Bootstrap carousel used for product mockup images */
+    height: 100%; /* Make the carousel fill the product frame height */
+    width: 100%; /* Make the carousel fill the product frame width */
+} /* End the product carousel styling block */
+
+.product-carousel .carousel-inner { /* Target the inner carousel wrapper */
+    height: 100%; /* Make carousel slides fill the frame height */
+} /* End the carousel inner styling block */
+
+.product-carousel .carousel-item { /* Target each carousel slide */
+    height: 100%; /* Make each carousel slide fill the frame height */
+} /* End the carousel item styling block */
+
+.product-mockup-image { /* Target synced Printify product mockup images */
+    height: 100%; /* Make product mockup images fill the visual frame height */
+    object-fit: cover; /* Crop the image neatly inside the frame without distortion */
+    width: 100%; /* Make product mockup images fill the visual frame width */
+} /* End the product mockup image styling block */
+
+.product-carousel .carousel-control-prev-icon, /* Target the previous carousel icon */
+.product-carousel . carousel-control-next-icon { /* Target the next carousel icon */
+    filter: invert(1); /* Make carousel icons visible on light product images */
+} /* End the carousel icon styling block */
+
+.product-visual-wrapper { /* Target the wrapper around product mockups and zoom controls */
+    height: 100%; /* Make the wrapper fill the product frame height */
+    position: relative; /* Allow the zoom button to sit over the product image */
+    width: 100%; /* Make the wrapper fill the product frame width */
+} /* End the product visual wrapper styling block */
+
+.mockup-zoom-button { /* Target the product mockup zoom button */
+    background-color: rgba(255, 255, 255, 0.92); /* Give the button a readable white background */
+    border: 1px solid var(--color-border); /* Add a subtle border around the zoom button */
+    border-radius: 999px; /* Make the zoom button pill-shaped */
+    bottom: 1rem; /* Position the zoom button near the bottom of the product frame */
+    font-size: 0.8rem; /* Keep the zoom button compact */
+    font-weight: 700; /* Make the zoom button text bold */
+    letter-spacing: 0.08rem; /* Add slight letter spacing for brand consistency */
+    padding: 0.55rem 0.9rem; /* Add internal spacing to the zoom button */
+    position: absolute; /* Place the button over the product image */
+    right: 1rem; /* Position the zoom button near the right edge */
+    text-transform: uppercase; /* Make the zoom button text uppercase */
+    z-index: 5; /* Keep the zoom button above carousel images */
+} /* End the mockup zoom button styling block */
+
+.mockup-zoom-button:hover { /* Target the zoom button hover state */
+    background-color: #ffffff; /* Make the button fully white on hover */
+} /* End the zoom button hover styling block */
+
+.mockup-modal-content { /* Target the modal content for mockup zoom */
+    border: 0; /* Remove the default modal border */
+    border-radius: var(--radius-large); /* Apply the project rounded corner style */
+    overflow: hidden; /* Clip modal content inside rounded corners */
+} /* End the mockup modal content styling block */
+
+.mockup-zoom-image { /* Target enlarged mockup images inside the modal */
+    max-height: 80vh; /* Prevent enlarged images from exceeding most of the viewport height */
+    object-fit: contain; /* Show the full product mockup without cropping */
+    width: 100%; /* Make the enlarged image responsive */
+} /* End the enlarged mockup image styling block */
+
+.mockup-modal-content .carousel-control-prev-icon, /* Target the previous icon inside the zoom modal */
+.mockup-modal-content .carousel-control-next-icon { /* Target the next icon inside the zoom modal */
+    filter: invert(1); /* Make modal carousel icons visible on light mockups */
+} /* End the modal carousel icon styling block */

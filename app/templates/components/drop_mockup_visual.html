@@ -1,0 +1,91 @@
+{% set mockup_images = active_drop.get_mockup_images() %} <!-- Read the active drop mockup image URLs from the model helper -->
+
+{% if mockup_images|length > 1 %} <!-- Check if the drop has multiple mockup images -->
+<div class="product-visual-wrapper"> <!-- Create a wrapper for the carousel and zoom button -->
+    <div id="{{ carousel_id }}" class="carousel slide product-carousel" data-bs-ride="carousel"> <!-- Create a Bootstrap carousel for product mockups -->
+        <div class="carousel-inner"> <!-- Create the carousel inner wrapper -->
+            {% for image_url in mockup_images %} <!-- Loop through each mockup image URL -->
+            <div class="carousel-item {% if loop.first %}active{% endif %}"> <!-- Create one carousel slide and mark the first one as active -->
+                <img src="{{ image_url }}" class="d-block w-100 product-mockup-image" alt="{{ active_drop.name }} mockup {{ loop.index }}"> <!-- Display the Printify mockup image -->
+            </div> <!-- Close the carousel slide -->
+            {% endfor %} <!-- End the mockup image loop -->
+        </div> <!-- Close the carousel inner wrapper -->
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="prev"> <!-- Create the previous carousel button -->
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span> <!-- Display the previous icon -->
+            <span class="visually-hidden">Previous</span> <!-- Add accessible text for the previous button -->
+        </button> <!-- Close the previous carousel button -->
+
+        <button class="carousel-control-next" type="button" data-bs-target="#{{ carousel_id }}" data-bs-slide="next"> <!-- Create the next carousel button -->
+            <span class="carousel-control-next-icon" aria-hidden="true"></span> <!-- Display the next icon -->
+            <span class="visually-hidden">Next</span> <!-- Add accessible text for the next button -->
+        </button> <!-- Close the next carousel button -->
+    </div> <!-- Close the Bootstrap carousel -->
+
+    <button class="mockup-zoom-button" type="button" data-bs-toggle="modal" data-bs-target="#{{ carousel_id }}ZoomModal"> <!-- Create a button that opens the zoom modal -->
+        View Larger <!-- Display the zoom button text -->
+    </button> <!-- Close the zoom button -->
+</div> <!-- Close the visual wrapper -->
+
+<div class="modal fade" id="{{ carousel_id }}ZoomModal" tabindex="-1" aria-labelledby="{{ carousel_id }}ZoomModalLabel" aria-hidden="true"> <!-- Create the zoom modal for this carousel -->
+    <div class="modal-dialog modal-dialog-centered modal-xl"> <!-- Create a large centered modal dialog -->
+        <div class="modal-content mockup-modal-content"> <!-- Create the modal content wrapper -->
+            <div class="modal-header"> <!-- Create the modal header -->
+                <h2 class="modal-title h5" id="{{ carousel_id }}ZoomModalLabel">{{ active_drop.name }}</h2> <!-- Display the drop name as the modal title -->
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> <!-- Add the modal close button -->
+            </div> <!-- Close the modal header -->
+
+            <div class="modal-body"> <!-- Create the modal body -->
+                <div id="{{ carousel_id }}ZoomCarousel" class="carousel slide" data-bs-ride="false"> <!-- Create a larger carousel inside the modal -->
+                    <div class="carousel-inner"> <!-- Create the zoom carousel inner wrapper -->
+                        {% for image_url in mockup_images %} <!-- Loop through each mockup image URL -->
+                        <div class="carousel-item {% if loop.first %}active{% endif %}"> <!-- Create one zoom carousel slide -->
+                            <img src="{{ image_url }}" class="d-block w-100 mockup-zoom-image" alt="{{ active_drop.name }} enlarged mockup {{ loop.index }}"> <!-- Display the enlarged mockup image -->
+                        </div> <!-- Close the zoom carousel slide -->
+                        {% endfor %} <!-- End the zoom image loop -->
+                    </div> <!-- Close the zoom carousel inner wrapper -->
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#{{ carousel_id }}ZoomCarousel" data-bs-slide="prev"> <!-- Create the previous button for the zoom carousel -->
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span> <!-- Display the previous icon -->
+                        <span class="visually-hidden">Previous</span> <!-- Add accessible previous text -->
+                    </button> <!-- Close the previous zoom carousel button -->
+
+                    <button class="carousel-control-next" type="button" data-bs-target="#{{ carousel_id }}ZoomCarousel" data-bs-slide="next"> <!-- Create the next button for the zoom carousel -->
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span> <!-- Display the next icon -->
+                        <span class="visually-hidden">Next</span> <!-- Add accessible next text -->
+                    </button> <!-- Close the next zoom carousel button -->
+                </div> <!-- Close the zoom carousel -->
+            </div> <!-- Close the modal body -->
+        </div> <!-- Close the modal content wrapper -->
+    </div> <!-- Close the modal dialog -->
+</div> <!-- Close the zoom modal -->
+
+{% elif mockup_images|length == 1 %} <!-- Check if the drop has exactly one mockup image -->
+<div class="product-visual-wrapper"> <!-- Create a wrapper for the single image and zoom button -->
+    <img src="{{ mockup_images[0] }}" class="product-mockup-image" alt="{{ active_drop.name }} mockup"> <!-- Display the single Printify mockup image -->
+
+    <button class="mockup-zoom-button" type="button" data-bs-toggle="modal" data-bs-target="#{{ carousel_id }}ZoomModal"> <!-- Create a button that opens the zoom modal -->
+        View Larger <!-- Display the zoom button text -->
+    </button> <!-- Close the zoom button -->
+</div> <!-- Close the visual wrapper -->
+
+<div class="modal fade" id="{{ carousel_id }}ZoomModal" tabindex="-1" aria-labelledby="{{ carousel_id }}ZoomModalLabel" aria-hidden="true"> <!-- Create the zoom modal for the single image -->
+    <div class="modal-dialog modal-dialog-centered modal-xl"> <!-- Create a large centered modal dialog -->
+        <div class="modal-content mockup-modal-content"> <!-- Create the modal content wrapper -->
+            <div class="modal-header"> <!-- Create the modal header -->
+                <h2 class="modal-title h5" id="{{ carousel_id }}ZoomModalLabel">{{ active_drop.name }}</h2> <!-- Display the drop name as the modal title -->
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> <!-- Add the modal close button -->
+            </div> <!-- Close the modal header -->
+
+            <div class="modal-body"> <!-- Create the modal body -->
+                <img src="{{ mockup_images[0] }}" class="d-block w-100 mockup-zoom-image" alt="{{ active_drop.name }} enlarged mockup"> <!-- Display the enlarged single mockup image -->
+            </div> <!-- Close the modal body -->
+        </div> <!-- Close the modal content wrapper -->
+    </div> <!-- Close the modal dialog -->
+</div> <!-- Close the zoom modal -->
+
+{% else %} <!-- Run this block if the drop has no mockup images -->
+<div class="product-placeholder"> <!-- Create the temporary product visual placeholder -->
+    <span>THE<br>ONLY<br>DROP</span> <!-- Display stacked placeholder text inside the product visual -->
+</div> <!-- Close the temporary product visual placeholder -->
+{% endif %} <!-- End the mockup image condition -->

@@ -14,9 +14,9 @@
 
                 <div class="product-showcase mobile-product-showcase mx-auto mb-4 d-lg-none"> <!-- Show the product image on mobile right after the description -->
                     <div class="product-frame"> <!-- Create the main product visual frame -->
-                        <div class="product-placeholder"> <!-- Create the temporary product visual placeholder -->
-                            <span>THE<br>ONLY<br>DROP</span> <!-- Display stacked placeholder text inside the product visual -->
-                        </div> <!-- Close the temporary product visual placeholder -->
+                        {% with carousel_id = "desktopDropCarousel" %} <!-- Set a unique carousel ID for the desktop carousel -->
+                            {% include "components/drop_mockup_visual.html" %} <!-- Render the active drop mockup image or carousel -->
+                        {% endwith %} <!-- End the desktop carousel ID context -->
                     </div> <!-- Close the product visual frame -->
 
                     <div class="product-summary mt-3"> <!-- Create a compact summary card below the product visual -->
@@ -52,9 +52,9 @@
             <div class="col-lg-6 d-none d-lg-block"> <!-- Show the product presentation as a right column only on desktop -->
                 <div class="product-showcase mx-auto"> <!-- Create a centered product showcase wrapper -->
                     <div class="product-frame"> <!-- Create the main product visual frame -->
-                        <div class="product-placeholder"> <!-- Create the temporary product visual placeholder -->
-                            <span>THE<br>ONLY<br>DROP</span> <!-- Display stacked placeholder text inside the product visual -->
-                        </div> <!-- Close the temporary product visual placeholder -->
+                        {% with carousel_id = "mobileDropCarousel" %} <!-- Set a unique carousel ID for the mobile carousel -->
+                            {% include "components/drop_mockup_visual.html" %} <!-- Render the active drop mockup image or carousel -->
+                        {% endwith %} <!-- End the mobile carousel ID context -->
                     </div> <!-- Close the product visual frame -->
 
                     <div class="product-summary mt-4"> <!-- Create a summary card below the product visual -->
