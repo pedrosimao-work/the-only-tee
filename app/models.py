@@ -1,3 +1,4 @@
+import json  # Import json so drop mockup image URL's can be stored and read as JSON text
 from datetime import datetime  # Import datetime so we can store creation and lifecycle dates
 
 from flask_login import UserMixin  # Import UserMixin to provide default Flask-Login user methods
@@ -42,6 +43,7 @@ class Drop(db.Model):  # Create a database model class representing one limited 
     product_type = db.Column(db.String(50), nullable=False, default=DROP_PRODUCT_TYPE_TSHIRT, server_default=DROP_PRODUCT_TYPE_TSHIRT)  # Store the product type for this monthly drop
     shirt_color = db.Column(db.String(80), nullable=False, default=DEFAULT_SHIRT_COLOR, server_default=DEFAULT_SHIRT_COLOR)  # Store the selected shirt color for this design
     image_url = db.Column(db.String(255), nullable=True)  # Store an optional product image URL for future Printify or uploaded images
+    mockup_image_urls = db.Column(db.Text, nullable=True)  # Store multiple Printify mockup image URLs as JSON text
     printify_product_id = db.Column(db.String(120), nullable=True)  # Store the Printify product ID connected to this drop
     printify_variant_ids = db.Column(db.Text, nullable=True)  # Store selected Printify variant IDs for available sizes as text for future parsing
     stripe_product_id = db.Column(db.String(120), nullable=True)  # Store the Stripe product ID connected to this drop
@@ -57,6 +59,22 @@ class Drop(db.Model):  # Create a database model class representing one limited 
         super().__init__(**kwargs)  # Let SQLAlchemy assign the provided fields normally first
         validate_drop_status(self.status)  # Validate the drop status immediately after object creation
         validate_product_type(self.product_type)  # Validate the product type immediately after object creation
+
+
+    def get_mockup_images(self):  # Define a helper method that returns all usable mockup image URLs
+        if self.mockup_image_urls:  # Check if the drop has a stored JSON list of mockup images
+            try:  # Start a protected block in case the stored JSON text is invalid
+                images = json.loads(self.mockup_image_urls)  # Convert the stored JSON text into a Python list
+            except json.JSONDecodeError:  # Catch invalid JSON data safely
+                images = []  # Use an empty list if the stored JSON cannot be decoded
+
+            if images:  # Check if the decoded image list contains URLs
+                return images  # Return the stored mockup image URLs
+
+        if self.image_url:  # Check if the drop has one fallback image URL
+            return [self.image_url]  # Return a single image URL inside a list
+
+        return []  # Return an empty list when the drop has no mockup images
 
 
     def __repr__(self):  # Define the developer-friendly representation of a Drop object

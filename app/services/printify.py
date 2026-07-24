@@ -1,3 +1,4 @@
+import json  # Import json so multiple mockup image URLs can be stored as JSON text
 import requests  # Import requests so the app can call the Printify HTTP API
 from flask import current_app  # Import current_app so the service can read Flask configuration values
 
@@ -125,6 +126,33 @@ def get_default_product_image(product):  # Define a helper function that finds t
     return None  # Return None when the product has no images
 
 
+def get_product_mockup_images(product, limit=4):  # Define a helper function that returns the best mockup image in display order
+    images = product.get("images", [])  # Read the product images list from the Printify response
+    default_images = []  # Create a list for Printify primary/default images
+    other_images = []  # Create a list for non-primary mockup images
+    selected_urls = []  # Create a final list for unique mockup image URLs
+
+    for image in images:  # Loop through every Printify image
+        image_src = image.get("src")  # Read the image URL from the Printify image object
+
+        if not image_src:  # Check if this image has no usable URL
+            continue
+
+        if image.get("is_default"):  # Check if Printify marked this image as the primary/default mockup
+            default_images.append(image_src)  # Add the primary/default image first
+        else:  # Run this block for normal mockup images
+            other_images.append(image_src)  # Add the non-primary image to the secondary list
+
+    for image_src in default_images + other_images:  # Loop through primary images first, then the remaining images in Printify order
+        if image_src not in selected_urls:  # Check if this URL has not already been added
+            selected_urls.append(image_src)  # Add the unique mockup image URL to the final list
+
+        if len(selected_urls) == limit:  # Check if the carousel image limit has been reached
+            break  # Stop collecting image URLs
+
+    return selected_urls  # Return the selected mockup imaged URLs
+
+
 def get_product_variant_summary(product, selected_variant_ids=None):  # Define a helper function that summarizes product variant availability
     selected_variant_ids = selected_variant_ids or []  # Use an empty list if no selected ID's were provided
     selected_variant_ids_as_text = {str(variant_id) for variant_id in selected_variant_ids}  # Normalize selected IDs to strings
@@ -164,10 +192,14 @@ def sync_drop_with_printify(drop):  # Define a service function that syncs one d
     product = get_printify_product(drop.printify_product_id)  # Retrieve the Printify product connected to this drop
     selected_variant_ids = parse_variant_ids(drop.printify_variant_ids)  # Parse the drop's selected variant IDs
     variant_summary = get_product_variant_summary(product, selected_variant_ids)  # Build a variant availability summary
-    default_image_url = get_default_product_image(product)  # Find the best mockup image URL
+    mockup_image_urls = get_product_mockup_images(product)  # Collect the best Printify mockup image URLs for the drop carousel
+    default_image_url = mockup_image_urls[0] if mockup_image_urls else get_default_product_image(product)  # Use the first carousel image as the primary image
 
     if default_image_url:  # Check if a Printify product image was found
-        drop.image_url = default_image_url  # Store the Printify mockup image URL on the drop
+        drop.image_url = default_image_url  # Store the primary Printify mockup image URL on the drop
+
+    if mockup_image_urls:  # Check if Printify returned usable mockup image URLs
+        drop.mockup_image_urls = json.dumps(mockup_image_urls)  # Store multiple mockup image URLs as JSON text
 
     if selected_variant_ids:  # Check if the admin already selected variant IDs
         drop.printify_variant_ids = normalize_variant_ids(selected_variant_ids)  # Normalize the stored variant ID formatting
@@ -177,6 +209,7 @@ def sync_drop_with_printify(drop):  # Define a service function that syncs one d
     return {  # Return a sync report for admin UI and CLI output
         "product": product,  # Include the raw product response for inspected fields
         "default_image_url": default_image_url,  # Include the synced product image URL
+        "mockup_image_urls": mockup_image_urls,  # Include all synced mockup image URLs
         "variant_summary": variant_summary,  # Include variant availability details
     }  # Close the sync report dictionary
 
