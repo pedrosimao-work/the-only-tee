@@ -96,3 +96,7 @@ class DropForm(FlaskForm):  # Create a form class for creating new drop records
     )  # Close the end datetime field definition
 
     submit = SubmitField("Create Drop")  # Create the submit button for the create-dropform
+
+
+class EmptyForm(FlaskForm):  # Create a minimal CSRF-protected form for button-only POST actions
+    submit = SubmitField("Submit")  # Create a generic submit button field

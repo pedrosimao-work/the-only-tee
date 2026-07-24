@@ -3,10 +3,11 @@ from functools import wraps  # Import wraps so custom decorators preserve functi
 from flask import Blueprint, abort, flash, redirect, render_template, url_for  # Import Flask helpers for admin routes
 from flask_login import current_user, login_required  # Import login helpers for protected admin routes
 
-from app.admin.forms import DropForm  # Import the drop creation form
+from app.admin.forms import DropForm, EmptyForm  # Import admin forms for drop creation and button-only POST actions
 from app.constants import DROP_STATUS_ACTIVE, DROP_STATUS_ARCHIVED, DROP_STATUS_DRAFT  # Import reusable status constants
 from app.extensions import db  # Import the database object so admin routes can save records
 from app.models import Drop  # Import the Drop model so admin routes can query and create drops
+from app.services.printify import PrintifyAPIError, PrintifyConfigError, sync_drop_with_printify  # Import Printify sync helpers
 from app.validators import validate_drop_status, validate_product_type  # Import reusable drop validation functions
 
 
@@ -52,10 +53,11 @@ def dashboard():  # Define the function that renders the admin dashboard
 @admin.route("/drops")  # Register the admin drops list route
 @login_required  # Require the user to be logged in
 @admin_required  # Require the logged-in user to be an admin
-def drops():  # Define a function that renders the admin drop list
-    all_drops = Drop.query.order_by(Drop.drop_number.asc()).all()  # Query all drops by drop number
+def drops():  # Define the function that renders the admin drop list
+    all_drops = Drop.query.order_by(Drop.drop_number.asc()).all()  # Query all drops ordered by drop number
+    sync_form = EmptyForm()  # Create a CSRF-protected form for Printify sync buttons
 
-    return render_template("admin/drops.html", drops=all_drops)  # Render the drop list template with all drops
+    return render_template("admin/drops.html", drops=all_drops, sync_form=sync_form)  # Render the drop list template with all drops and sync form
 
 
 @admin.route("/drops/create", methods=["GET", "POST"])  # Register the create-drop route for GET and POST requests
@@ -77,7 +79,6 @@ def create_drop():  # Define the function that handles creating new drops
 
         validated_status = validate_drop_status(form.status.data)  # Validate the submitted status using shared validation logic
         validated_product_type = validate_product_type(form.product_type.data)  # Validate the submitted product type using shared validation logic
-
 
         drop = Drop(  # Create a new Drop object from the form data
             drop_number=form.drop_number.data.strip(),  # Store the cleaned drop number
@@ -106,3 +107,28 @@ def create_drop():  # Define the function that handles creating new drops
         return redirect(url_for("admin.drops"))  # Redirect the admin user to the drop list
 
     return render_template("admin/create_drop.html", form=form)  # Render the create-drop form for GET requests or invalid submissions
+
+
+@admin.route("/drops/<int:drop_id>/sync-printify", methods=["POST"])  # Register a POST route for syncing one drop with Printify
+@login_required  # Require the user to be logged in
+@admin_required  # Require the logged-in user to be an admin
+def sync_printify_drop(drop_id):  # Define the function that syncs one drop with Printify
+    form = EmptyForm()  # Create a CSRF-protected empty form instance
+
+    if not form.validate_on_submit():  # Check if the CSRF-protected POST is invalid
+        flash("Invalid sync request.", "danger")  # Show a safe error message
+        return redirect(url_for("admin.drops"))  # Redirect back to the admin drops page
+
+    drop = Drop.query.get_or_404(drop_id)  # Find the requested drop or return a 404 page
+
+    try:  # Start a protected block for Printify sync
+        result = sync_drop_with_printify(drop)  # Sync the drop with its connected Printify product
+    except (PrintifyConfigError, PrintifyAPIError) as error:  # Catch Printify configuration and API errors
+        flash(str(error), "danger")  # Show the error message to the admin user
+        return redirect(url_for("admin.drops"))  # Redirect back to the admin drops page
+
+    selected_count = len(result["variant_summary"]["selected_variants"])  # Count selected variants found on the Printify product
+    selected_available_count = len(result["variant_summary"]["selected_available_variants"])  # Count selected variants currently available
+
+    flash(f"Printify sync complete. Selected variants available: {selected_available_count}/{selected_count}.", "success")  # Show the sync result
+    return redirect(url_for("admin.drops"))  # Redirect back to the admin drops page

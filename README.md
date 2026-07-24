@@ -162,6 +162,48 @@ Example:
 
 The production database setup will be completed during the DirectAdmin deployment phase.
 
+
+## Printify Configuration
+
+The app is prepared to connect monthly drops to existing Printify products.
+
+Required environment variables:
+
+```text
+PRINTIFY_API_BASE_URL=https://api.printify.com/v1
+PRINTIFY_API_TOKEN=your-printify-api-token
+PRINTIFY_SHOP_ID=your-printify-shop-id
+```
+
+Useful commands:
+
+```bash
+flask printify-shops
+```
+
+Lists Printify shops connected to the configured API token.
+
+```bash
+flask printify-product PRINTIFY_PRODUCT_ID
+```
+
+Shows a Printify product summary and available enabled variants.
+
+```bash
+flask printify-sync-drop 0001
+```
+
+Syncs a local drop with its configured Printify product ID, validates selected variant availability, and stores the default Printify mockup image URL on the drop.
+
+### Current Printify Scope
+
+This phase connects drops to Printify products and validates product variants.
+
+The app does not submit Printify orders yet.
+
+Order submission will be connected after Stripe Checkout because fulfillment requires paid order data and customer shipping details.
+
+
 ## Development Workflow
 
 This project uses a professional GitHub workflow:

@@ -5,6 +5,8 @@ from app.constants import DEFAULT_SHIRT_COLOR, DROP_PRODUCT_TYPE_TSHIRT, DROP_ST
 from app.extensions import db  # Import the database object so we can save and delete records
 from app.models import Drop  # Import the Drop model so we can create drop records
 from app.services.drop_lifecycle import get_current_time, get_month_start, get_next_month_start, get_previous_month_start, rotate_monthly_drops  # Import monthly lifecycle helpers
+from app.services.printify import PrintifyAPIError, PrintifyConfigError, get_printify_product, get_printify_products, get_printify_shops, sync_drop_with_printify  # Import Printify helpers for CLI commands
+
 
 def register_commands(app):  # Define a function that registers custom made commands on the Flask app
     @app.cli.command("seed-drops")  # Create a custom terminal command named flask seed-drops
@@ -103,3 +105,81 @@ def register_commands(app):  # Define a function that registers custom made comm
         click.echo(f"Database host: {parsed_uri.host or 'local file'}")  # Display the database host or local file fallback
         click.echo(f"Database name: {parsed_uri.database}")  # Display the database name or SQLite file path
         click.echo("Database password: hidden")  # Confirm that password output is intentionally hidden
+
+
+    @app.cli.command("printify-shops")  # Create a custom terminal command named flask printify-shops
+    def printify_shops():  # Define the function that lists connected Printify shops
+        try:  # Start a protected block for Printify API access
+            shops = get_printify_shops()  # Retrieve the Printify shops connected to this account
+        except (PrintifyConfigError, PrintifyAPIError) as error:  # Catch Printify configuration and API errors
+            click.echo(f"Printify error: {error}")  # Display the Printify error in the terminal
+            return  # Stop the command after printing the error
+
+        if not shops:  # Check if the API returned no shops
+            click.echo("No Printify shops found.")  # Display an empty result message
+            return  # Stop the command because there are no shops to display
+
+        for shop in shops:  # Loop through each Printify shop
+            click.echo(f"{shop.get('id')} - {shop.get('title')} - {shop.get('sales_channel')}")  # Display the shop ID, title, and sales channel
+
+
+    @app.cli.command("printify-products")  # Create a custom terminal command named flask printify-products
+    def printify_products():  # Define the function that lists Printify products from the configured shop
+        try:  # Start a protected block for Printify API access
+            products_response = get_printify_products()  # Retrieve products from the configured Printify shop
+        except (PrintifyConfigError, PrintifyAPIError) as error:  # Catch Printify configuration and API errors
+            click.echo(f"Printify error: {error}")  # Display the Printify error in the terminal
+            return  # Stop the command after printing the error
+
+        products = products_response.get("data", products_response)  # Support paginated and direct-list response shapes
+
+        if not products:  # Check if no products were returned
+            click.echo("No Printify products found.")  # Display an empty result message
+            return  # Stop the command because there are no products
+
+        for product in products:  # Loop through each Printify product
+            click.echo(f"{product.get('id')} - {product.get('title')}")  # Display the product ID and product title
+
+
+    @app.cli.command("printify-product")  # Create a custom terminal command named flask printify-product
+    @click.argument("product_id")  # Require a Printify product ID argument
+    def printify_product(product_id):  # Define the function that inspects one Printify product
+        try:  # Start a protected block for Printify API access
+            product = get_printify_product(product_id)  # Retrieve the Printify product by ID
+        except (PrintifyConfigError, PrintifyAPIError) as error:  # Catch Printify configuration and API errors
+            click.echo(f"Printify error: {error}")  # Display the Printify error in the terminal
+            return  # Stop the command after printing the error
+
+        click.echo(f"Product ID: {product.get('id')}")  # Display the Printify product ID
+        click.echo(f"Title: {product.get('title')}")  # Display the Printify product title
+        click.echo(f"Visible: {product.get('visible')}")  # Display whether the Printify product is visible
+        click.echo(f"Locked: {product.get('is_locked')}")  # Display whether the Printify product is locked
+        click.echo(f"Variant count: {len(product.get('variants', []))}")  # Display how many variants the product has
+        click.echo("Available enabled variants:")  # Display a heading for available variants
+
+        for variant in product.get("variants", []):  # Loop through every Printify variant
+            if variant.get("is_enabled") and variant.get("is_available"):  # Check if the variant can currently be sold
+                click.echo(f"- {variant.get('id')} | {variant.get('title')} | {variant.get('sku')}")  # Display variant ID, title, and SKU
+
+    @app.cli.command("printify-sync-drop")  # Create a custom terminal command named flask printify-sync-drop
+    @click.argument("drop_number")  # Require a local drop number argument
+    def printify_sync_drop(drop_number):  # Define the function that syncs a local drop with Printify
+        drop = Drop.query.filter_by(drop_number=drop_number).first()  # Find the local drop by drop number
+
+        if not drop:  # Check if no local drop matched the provided number
+            click.echo(f"Drop #{drop_number} was not found.")  # Display a clear not-found message
+            return  # Stop the command because there is no drop to sync
+
+        try:  # Start a protected block for Printify sync
+            result = sync_drop_with_printify(drop)  # Sync the local drop with Printify
+        except (PrintifyConfigError, PrintifyAPIError) as error:  # Catch Printify configuration and API errors
+            click.echo(f"Printify error: {error}")  # Display the Printify error in the terminal
+            return  # Stop the command after printing the error
+
+        variant_summary = result["variant_summary"]  # Store the returned variant summary locally
+        selected_count = len(variant_summary["selected_variants"])  # Count selected variants found on the product
+        selected_available_count = len(variant_summary["selected_available_variants"])  # Count selected variants currently available
+
+        click.echo(f"Synced Drop #{drop.drop_number} with Printify product {drop.printify_product_id}.")  # Display the synced drop and product
+        click.echo(f"Image URL synced: {bool(result['default_image_url'])}")  # Display whether a mockup image was synced
+        click.echo(f"Selected variants available: {selected_available_count}/{selected_count}")  # Display selected variant availability
