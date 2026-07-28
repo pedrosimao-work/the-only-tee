@@ -1,0 +1,19 @@
+{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+
+{% block title %}Checkout Success | {{ BRAND_NAME }}{% endblock %} <!-- Set the browser title for the checkout success page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section"> <!-- Create a standard page section -->
+    <div class="container"> <!-- Center the checkout success content inside a Bootstrap container -->
+        <div class="empty-state text-center mx-auto"> <!-- Create a centered success state -->
+            <p class="eyebrow mb-3">Payment Received</p> <!-- Display a small success label -->
+            <h1 class="fw-bold mb-3">Your order is confirmed.</h1> <!-- Display the success heading -->
+            <p class="text-muted mb-4">Stripe has processed your checkout. Fulfillment details will be handled next.</p> <!-- Explain what happened after payment -->
+            {% if session_id %} <!-- Check if a Checkout Session ID was passed back -->
+            <p class="small text-muted mb-4">Checkout Session: {{ session_id }}</p> <!-- Display the session ID for development visibility -->
+            {% endif %} <!-- End the session ID condition -->
+            <a href="{{ url_for('main.home') }}" class="btn btn-dark btn-lg px-4">Back to Current Drop</a> <!-- Add a button back to the homepage -->
+        </div> <!-- Close the success state -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the success section -->
+{% endblock %} <!-- End the page specific content block -->

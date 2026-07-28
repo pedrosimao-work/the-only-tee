@@ -1,0 +1,16 @@
+{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+
+{% block title %}Checkout Cancelled | {{ BRAND_NAME }}{% endblock %} <!-- Set the browser title for the checkout cancel page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section"> <!-- Create a standard page section -->
+    <div class="container"> <!-- Center the checkout cancel content inside a Bootstrap container -->
+        <div class="empty-state text-center mx-auto"> <!-- Create a centered cancel state -->
+            <p class="eyebrow mb-3">Checkout Cancelled</p> <!-- Display a small cancel label -->
+            <h1 class="fw-bold mb-3">No payment was completed.</h1> <!-- Display the cancel heading -->
+            <p class="text-muted mb-4">You can return to the current monthly drop and try again whenever you are ready.</p> <!-- Explain the cancel state -->
+            <a href="{{ url_for('main.home') }}" class="btn btn-outline-dark btn-lg px-4">Back to Current Drop</a> <!-- Add a button back to the homepage -->
+        </div> <!-- Close the cancel state -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the cancel section -->
+{% endblock %} <!-- End the page-specific content block -->
