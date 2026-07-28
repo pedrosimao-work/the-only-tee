@@ -44,7 +44,9 @@
                 </div> <!-- Close the metadata area -->
 
                 <div class="d-grid d-sm-flex gap-3"> <!-- Create responsive action buttons that stack on mobile -->
-                    <a href="#" class="btn btn-dark btn-lg px-4">Buy Current Drop</a> <!-- Add the future reservation button -->
+                    <form method="POST" action="{{ url_for('checkout.current_drop_checkout') }}"> <!-- Create a POST form to start Stripe Checkout for the active drop -->
+                        <button type="submit" class="btn btn-dark btn-lg px-4 w-100 w-sm-auto">Buy Current Drop</button> <!-- Submit the customer to Stripe-hosted Checkout -->
+                    </form> <!-- Close the Stripe Checkout form -->
                     <a href="{{ url_for('main.archive') }}" class="btn btn-outline-dark btn-lg px-4">Explore Archive</a> <!-- Add the archive navigation button -->
                 </div> <!-- Close the action button wrapper -->
             </div> <!-- Close the left column -->

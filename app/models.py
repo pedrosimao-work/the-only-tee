@@ -79,3 +79,25 @@ class Drop(db.Model):  # Create a database model class representing one limited 
 
     def __repr__(self):  # Define the developer-friendly representation of a Drop object
         return f"<Drop #{self.drop_number} - {self.name}>"  # Return a readable lable when debugging Drop records
+
+
+class Order(db.Model):  # Create a database model class representing one Stripe checkout order
+    id = db.Column(db.Integer, primary_key=True)  # Create the primary key column for each order record
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)  # Store the user ID if the customer is logged in
+    drop_id = db.Column(db.Integer, db.ForeignKey("drop.id"), nullable=False)  # Store the purchased drop ID
+    stripe_checkout_session_id = db.Column(db.String(255), nullable=False, unique=True, index=True)  # Store the Stripe Checkout Session ID
+    stripe_payment_intent_id = db.Column(db.String(255), nullable=True, index=True)  # Store the Stripe PaymentIntent ID after payment completion
+    payment_status = db.Column(db.String(50), nullable=False, default="created")  # Store the payment status returned by Stripe
+    customer_email = db.Column(db.String(255), nullable=True)  # Store the customer email returned by Stripe Checkout
+    quantity = db.Column(db.Integer, nullable=False, default=1)  # Store the purchased quantity
+    amount_total = db.Column(db.Integer, nullable=True)  # Store the total paid amount in the smallest currency unit
+    currency = db.Column(db.String(10), nullable=True)  # Store the Stripe currency code
+    printify_order_id = db.Column(db.String(120), nullable=True)  # Store the future Printify order ID after fulfillment
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)  # Store when the local order was created
+    paid_at = db.Column(db.DateTime, nullable=True)  # Store when Stripe confirmed payment completion
+
+    user = db.relationship("User", backref="orders")  # Connect the order to the option user record
+    drop = db.relationship("Drop", backref="orders")  # Connect the order to the purchased drop record
+
+    def __repr__(self):  # Define the developer-friendly representation of an Order object
+        return f"<Order {self.id} - {self.payment_status}>"  # Return a readable label when debugging Order records

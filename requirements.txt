@@ -7,3 +7,4 @@ Flask-Login==0.6.3  # Add session-based user authentication support
 Flask-WTF==1.2.1  # Add Flask form handling and CSRF protection
 email-validator==2.2.0  # Add email validation support for WTForms email fields
 requests==2.34.2  # Add HTTP client support for Printify API requests
+stripe==12.5.0  # Add Stripe SDK support for Checkout Sessions and webhook verification

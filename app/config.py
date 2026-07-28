@@ -24,5 +24,6 @@ class Config:  # Create a base configuration class for the Flask application
     PRINTIFY_API_BASE_URL = os.environ.get("PRINTIFY_API_BASE_URL", "https://api.printify.com/v1")  # Store the Printify API base URL
     PRINTIFY_API_TOKEN = os.environ.get("PRINTIFY_API_TOKEN")  # Store the Printify API token from the environment
     PRINTIFY_SHOP_ID = os.environ.get("PRINTIFY_SHOP_ID")  # Store the Printify shop ID from the environment
-
+    STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")  # Store the Stripe secret key from the environment
+    STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")  # Store the Stripe webhook signing secret from the environment
     
