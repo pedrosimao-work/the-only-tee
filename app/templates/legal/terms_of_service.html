@@ -1,0 +1,49 @@
+{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+
+{% block title %}Terms of Service | {{ BRAND_NAME }}{% endblock %} <!-- Set the browser title for the Terms of Service page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section legal-page"> <!-- Create a standard section for legal content -->
+    <div class="container"> <!-- Center the legal content inside a Bootstrap container -->
+        <div class="legal-content mx-auto"> <!-- Create a readable legal content wrapper -->
+            <p class="eyebrow mb-3">Legal</p> <!-- Display a small legal page label -->
+            <h1 class="fw-bold mb-3">Terms of Service</h1> <!-- Display the page heading -->
+            <p class="text-muted">Last updated: July 28, 2026</p> <!-- Display the current policy update date -->
+
+            <div class="alert alert-warning my-4" role="alert"> <!-- Create a visible MVP legal notice -->
+                This page is MVP placeholder legal copy for development and should be reviewed before live commercial launch. <!-- Explain that the terms are not final legal advice -->
+            </div> <!-- Close the MVP legal notice -->
+
+            <h2>Overview</h2> <!-- Create the overview section heading -->
+            <p>{{ BRAND_NAME }} offers limited monthly apparel drops. Each drop is available only while active and may not be restocked after the drop period ends.</p> <!-- Explain the basic business model -->
+
+            <h2>Eligibility</h2> <!-- Create the eligibility section heading -->
+            <p>By using this website, you agree to use it lawfully and only for personal shopping, account management, or browsing purposes.</p> <!-- Explain acceptable website use -->
+
+            <h2>Monthly drops</h2> <!-- Create the monthly drops section heading -->
+            <p>Products are sold as limited monthly drops. Product availability, size availability, mockup images, descriptions, and pricing may change before checkout is completed.</p> <!-- Explain the limited drop model -->
+
+            <h2>Orders and payment</h2> <!-- Create the orders and payment section heading -->
+            <p>Checkout is processed through Stripe-hosted Checkout. An order is not confirmed until payment is successfully completed and accepted.</p> <!-- Explain payment confirmation logic -->
+
+            <h2>Shipping scope</h2> <!-- Create the shipping scope section heading -->
+            <p>The MVP currently supports shipping to the United States only. Orders with shipping addresses outside the United States are not supported during this phase.</p> <!-- Explain US-only MVP shipping -->
+
+            <h2>Product production</h2> <!-- Create the product production section heading -->
+            <p>Products may be produced on demand through Printify and its print-provider network. Product colors, print placement, and mockups may vary slightly from the images shown on the website.</p> <!-- Explain print-on-demand production expectations -->
+
+            <h2>Account responsibility</h2> <!-- Create the account responsibility section heading -->
+            <p>You are responsible for keeping your account login details secure and for providing accurate checkout and shipping information.</p> <!-- Explain customer account responsibility -->
+
+            <h2>Prohibited use</h2> <!-- Create the prohibited use section heading -->
+            <p>You may not misuse the website, attempt unauthorized access, interfere with checkout, submit fraudulent information, or use the site for unlawful activity.</p> <!-- Explain prohibited behavior -->
+
+            <h2>Limitation of availability</h2> <!-- Create the availability section heading -->
+            <p>We may pause, update, or remove website features during development, maintenance, or operational changes.</p> <!-- Explain that the MVP may change -->
+
+            <h2>Contact</h2> <!-- Create the contact section heading -->
+            <p>For questions about these terms, contact us at <a href="mailto:support@the-only-drop.com">support@the-only-drop.com</a>.</p> <!-- Provide the terms contact email -->
+        </div> <!-- Close the legal content wrapper -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the legal page section -->
+{% endblock %} <!-- End the page-specific content block -->

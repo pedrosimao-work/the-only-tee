@@ -1,0 +1,46 @@
+{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+
+{% block title %}Privacy Policy | {{ BRAND_NAME }}{% endblock %} <!-- Set the browser title for the Privacy Policy page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section legal-page"> <!-- Create a standard section for legal content -->
+    <div class="container"> <!-- Center the legal content inside a Bootstrap container -->
+        <div class="legal-content mx-auto"> <!-- Create a readable legal content wrapper -->
+            <p class="eyebrow mb-3">Legal</p> <!-- Display a small legal page label -->
+            <h1 class="fw-bold mb-3">Privacy Policy</h1> <!-- Display the page heading -->
+            <p class="text-muted">Last updated: July 28, 2026</p> <!-- Display the current policy update date -->
+
+            <div class="alert alert-warning my-4" role="alert"> <!-- Create a visible MVP legal notice -->
+                This page is MVP placeholder legal copy for development and should be reviewed before live commercial launch. <!-- Explain that the policy is not final legal advice -->
+            </div> <!-- Close the MVP legal notice -->
+
+            <h2>Overview</h2> <!-- Create the overview section heading -->
+            <p>{{ BRAND_NAME }} is a monthly limited-edition apparel drop project. This Privacy Policy explains what information may be collected when you browse the site, create an account, or place an order.</p> <!-- Explain the purpose of the privacy policy -->
+
+            <h2>Information we collect</h2> <!-- Create the collected information section heading -->
+            <p>We may collect account information such as your email address, username, and encrypted password. When you place an order, Stripe may collect payment details, billing details, shipping details, and customer contact information.</p> <!-- Explain basic account and checkout data collection -->
+
+            <h2>How we use information</h2> <!-- Create the usage section heading -->
+            <p>We use information to operate the website, manage user accounts, process checkout, confirm orders, support customers, prevent abuse, and improve the product experience.</p> <!-- Explain the main processing purposes -->
+
+            <h2>Payment processing</h2> <!-- Create the payment processing section heading -->
+            <p>Payments are processed through Stripe-hosted Checkout. {{ BRAND_NAME }} does not store full card numbers on this website.</p> <!-- Explain that card processing happens through Stripe -->
+
+            <h2>Fulfillment partners</h2> <!-- Create the fulfillment partners section heading -->
+            <p>Products may be produced and fulfilled through Printify and its print-provider network. Order information needed to produce and ship purchased products may be shared with fulfillment partners.</p> <!-- Explain that fulfillment requires sharing order details -->
+
+            <h2>Cookies and sessions</h2> <!-- Create the cookies section heading -->
+            <p>The site may use essential cookies or session storage for login, security, checkout flow, and basic website functionality.</p> <!-- Explain essential technical cookie usage -->
+
+            <h2>Data retention</h2> <!-- Create the retention section heading -->
+            <p>We keep account and order information only as long as reasonably needed for site operation, customer support, accounting, fraud prevention, and legal obligations.</p> <!-- Explain basic retention logic -->
+
+            <h2>Your rights</h2> <!-- Create the rights section heading -->
+            <p>Depending on your location, you may have rights to access, correct, delete, restrict, or object to certain uses of your personal information.</p> <!-- Explain user privacy rights at a high level -->
+
+            <h2>Contact</h2> <!-- Create the contact section heading -->
+            <p>For privacy questions, contact us at <a href="mailto:support@the-only-drop.com">support@the-only-drop.com</a>.</p> <!-- Provide the privacy contact email -->
+        </div> <!-- Close the legal content wrapper -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the legal page section -->
+{% endblock %} <!-- End the page-specific content block -->

@@ -1,0 +1,43 @@
+{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+
+{% block title %}Shipping & Returns | {{ BRAND_NAME }}{% endblock %} <!-- Set the browser title for the Shipping & Returns page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section legal-page"> <!-- Create a standard section for legal content -->
+    <div class="container"> <!-- Center the legal content inside a Bootstrap container -->
+        <div class="legal-content mx-auto"> <!-- Create a readable legal content wrapper -->
+            <p class="eyebrow mb-3">Customer Support</p> <!-- Display a small support page label -->
+            <h1 class="fw-bold mb-3">Shipping & Returns</h1> <!-- Display the page heading -->
+            <p class="text-muted">Last updated: July 28, 2026</p> <!-- Display the current policy update date -->
+
+            <div class="alert alert-warning my-4" role="alert"> <!-- Create a visible MVP legal notice -->
+                This page is MVP placeholder customer-service copy for development and should be reviewed before live commercial launch. <!-- Explain that the page is not final legal advice -->
+            </div> <!-- Close the MVP legal notice -->
+
+            <h2>Shipping area</h2> <!-- Create the shipping area section heading -->
+            <p>The MVP currently supports shipping to the United States only. Stripe Checkout will only accept United States shipping addresses during this phase.</p> <!-- Explain US-only shipping support -->
+
+            <h2>Production timeline</h2> <!-- Create the production timeline section heading -->
+            <p>Products are produced on demand after checkout is completed. Production and shipping timelines may vary depending on the print provider, product availability, destination, and carrier conditions.</p> <!-- Explain print-on-demand timing -->
+
+            <h2>Shipping confirmation</h2> <!-- Create the shipping confirmation section heading -->
+            <p>When fulfillment is connected, customers may receive shipping or tracking details after the order is produced and handed to the carrier.</p> <!-- Explain future tracking behavior -->
+
+            <h2>Address accuracy</h2> <!-- Create the address accuracy section heading -->
+            <p>Customers are responsible for entering a complete and accurate shipping address during Stripe Checkout. Incorrect addresses may delay or prevent delivery.</p> <!-- Explain customer responsibility for shipping address accuracy -->
+
+            <h2>Returns and exchanges</h2> <!-- Create the returns section heading -->
+            <p>Because products are limited monthly drops and may be produced on demand, returns or exchanges for wrong size selection, buyer's remorse, or preference changes may not be supported during the MVP.</p> <!-- Explain print-on-demand return limitation -->
+
+            <h2>Damaged or defective items</h2> <!-- Create the damaged items section heading -->
+            <p>If an item arrives damaged, defective, or with a production issue, contact us with your order details and clear photos of the issue so we can review the case with the fulfillment provider.</p> <!-- Explain damaged item support process -->
+
+            <h2>Refund timing</h2> <!-- Create the refund timing section heading -->
+            <p>If a refund is approved, the refund will usually be returned through the original payment method handled by Stripe. Bank and card processing times may vary.</p> <!-- Explain refund processing path -->
+
+            <h2>Contact</h2> <!-- Create the contact section heading -->
+            <p>For order support, contact us at <a href="mailto:support@the-only-drop.com">support@the-only-drop.com</a>.</p> <!-- Provide the order support contact email -->
+        </div> <!-- Close the legal content wrapper -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the legal page section -->
+{% endblock %} <!-- End the page-specific content block -->
