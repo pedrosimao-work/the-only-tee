@@ -17,8 +17,21 @@ def current_drop_checkout():  # Define the route that starts Stripe Checkout for
         flash("There is no active drop available right now.", "warning")  # Show a safe message
         return redirect(url_for("main.home"))  # Redirect back to the homepage
 
+    selected_size = request.form.get("selected_size", "").strip().upper()  # Read and normalize the selected size from the checkout form
+    available_sizes = active_drop.get_available_sizes()  # Read available sizes from the active drop
+
+    if selected_size not in available_sizes:  # Check if the submitted size is missing or unavailable
+        flash("Please select an available size before checkout.", "warning")  # Show a clear validation message
+        return redirect(url_for("main.home"))  # Redirect back to the homepage
+
+    printify_variant_id = active_drop.get_printify_variant_id_for_size(selected_size)  # Find the Printify variant ID for the selected size
+
+    if not printify_variant_id:  # Check if no Printify variant exists for this size
+        flash("This size is not connected to a Printify variant yet.", "danger")  # Show a safe configuration error
+        return redirect(url_for("main.home"))  # Redirect back to the homepage
+
     try:  # Start a protected block for Checkout Session creation
-        session = create_checkout_session_for_drop(active_drop)  # Create a Stripe Checkout Session for the active drop
+        session = create_checkout_session_for_drop(active_drop, selected_size, printify_variant_id)  # Create a Stripe Checkout Session for the selected size
     except (StripeConfigError, StripeCheckoutError) as error:  # Catch Stripe configuration and checkout errors
         flash(str(error), "danger")  # Show the error message to the user
         return redirect(url_for("main.home"))  # Redirect back to the homepage

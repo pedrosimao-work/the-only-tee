@@ -14,9 +14,9 @@
 
                 <div class="product-showcase mobile-product-showcase mx-auto mb-4 d-lg-none"> <!-- Show the product image on mobile right after the description -->
                     <div class="product-frame"> <!-- Create the main product visual frame -->
-                        {% with carousel_id = "desktopDropCarousel" %} <!-- Set a unique carousel ID for the desktop carousel -->
+                        {% with carousel_id = "mobileDropCarousel" %} <!-- Set a unique carousel ID for the mobile carousel -->
                             {% include "components/drop_mockup_visual.html" %} <!-- Render the active drop mockup image or carousel -->
-                        {% endwith %} <!-- End the desktop carousel ID context -->
+                        {% endwith %} <!-- End the mobile carousel ID context -->
                     </div> <!-- Close the product visual frame -->
 
                     <div class="product-summary mt-3"> <!-- Create a compact summary card below the product visual -->
@@ -43,20 +43,21 @@
                     </div> <!-- Close the collection metadata box -->
                 </div> <!-- Close the metadata area -->
 
-                <div class="d-grid d-sm-flex gap-3"> <!-- Create responsive action buttons that stack on mobile -->
-                    <form method="POST" action="{{ url_for('checkout.current_drop_checkout') }}"> <!-- Create a POST form to start Stripe Checkout for the active drop -->
-                        <button type="submit" class="btn btn-dark btn-lg px-4 w-100 w-sm-auto">Buy Current Drop</button> <!-- Submit the customer to Stripe-hosted Checkout -->
-                    </form> <!-- Close the Stripe Checkout form -->
-                    <a href="{{ url_for('main.archive') }}" class="btn btn-outline-dark btn-lg px-4">Explore Archive</a> <!-- Add the archive navigation button -->
-                </div> <!-- Close the action button wrapper -->
+                <div class="hero-actions"> <!-- Create a dedicated action area for checkout and secondary navigation -->
+                    {% with checkout_form_id = "currentDropCheckout" %} <!-- Set a unique ID prefix for the checkout size inputs -->
+                        {% include "components/drop_checkout_form.html" %} <!-- Render the current drop checkout form with size selection -->
+                    {% endwith %} <!-- End the checkout form ID context -->
+
+                    <a href="{{ url_for('main.archive') }}" class="btn btn-outline-dark btn-lg px-4 archive-action-link">Explore Archive</a> <!-- Add the archive navigation button below checkout -->
+                </div> <!-- Close the hero action area -->
             </div> <!-- Close the left column -->
 
             <div class="col-lg-6 d-none d-lg-block"> <!-- Show the product presentation as a right column only on desktop -->
                 <div class="product-showcase mx-auto"> <!-- Create a centered product showcase wrapper -->
                     <div class="product-frame"> <!-- Create the main product visual frame -->
-                        {% with carousel_id = "mobileDropCarousel" %} <!-- Set a unique carousel ID for the mobile carousel -->
+                        {% with carousel_id = "desktopDropCarousel" %} <!-- Set a unique carousel ID for the desktop carousel -->
                             {% include "components/drop_mockup_visual.html" %} <!-- Render the active drop mockup image or carousel -->
-                        {% endwith %} <!-- End the mobile carousel ID context -->
+                        {% endwith %} <!-- End the desktop carousel ID context -->
                     </div> <!-- Close the product visual frame -->
 
                     <div class="product-summary mt-4"> <!-- Create a summary card below the product visual -->

@@ -1,0 +1,28 @@
+{% set available_sizes = active_drop.get_available_sizes() %} <!-- Read available sizes from the active drop -->
+
+<form method="POST" action="{{ url_for('checkout.current_drop_checkout') }}" class="drop-checkout-form"> <!-- Create a POST form to start Stripe Checkout -->
+    {% if active_drop.shirt_color %} <!-- Check if the active drop has a selected shirt color -->
+    <p class="drop-color-note mb-3">Color: {{ active_drop.shirt_color }}</p> <!-- Show the fixed color because customers only choose size -->
+    {% endif %} <!-- End the selected color condition -->
+
+    {% if available_sizes %} <!-- Check if the active drop has available sizes -->
+    <div class="mb-4"> <!-- Create spacing around the size selector -->
+        <p class="checkout-size-label mb-2">Select size</p> <!-- Display the size selector label -->
+
+        <div class="size-options d-flex flex-wrap gap-2"> <!-- Create a responsive group for size buttons -->
+            {% for size in available_sizes %} <!-- Loop through each available size -->
+            <input class="btn-check" type="radio" name="selected_size" id="{{ checkout_form_id }}Size{{ loop.index }}" value="{{ size }}" required {% if loop.first %}checked{% endif %}> <!-- Create one selectable size input -->
+            <label class="btn btn-outline-dark size-option" for="{{ checkout_form_id }}Size{{ loop.index }}">{{ size }}</label> <!-- Create the visible size button -->
+            {% endfor %} <!-- End the available size loop -->
+        </div> <!-- Close the size options group -->
+    </div> <!-- Close the size selector spacing wrapper -->
+
+    <button type="submit" class="btn btn-dark btn-lg px-4 w-100 w-sm-auto">Buy Current Drop</button> <!-- Submit the selected size to Stripe Checkout -->
+    {% else %} <!-- Run this block if no sizes are available -->
+    <div class="alert alert-warning" role="alert"> <!-- Create a visible unavailable message -->
+        Size selection is not ready for this drop yet. <!-- Tell the customer/admin that checkout cannot start without sizes -->
+    </div> <!-- Close the unavailable message -->
+
+    <button type="button" class="btn btn-secondary btn-lg px-4 w-100 w-sm-auto" disabled>Unavailable</button> <!-- Show a disabled checkout button -->
+    {% endif %} <!-- End the available sizes condition -->
+</form> <!-- Close the Stripe Checkout form -->

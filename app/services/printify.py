@@ -3,6 +3,8 @@ import requests  # Import requests so the app can call the Printify HTTP API
 from flask import current_app  # Import current_app so the service can read Flask configuration values
 
 from app.extensions import db  # Import the database object so synced drop changes can be saved
+from app.constants import DROP_SIZE_ORDER  # Import the preferred storefront size order
+
 
 
 class PrintifyConfigError(Exception):  # Create a custom error for missing Printify configuration
@@ -153,8 +155,61 @@ def get_product_mockup_images(product, limit=4):  # Define a helper function tha
     return selected_urls  # Return the selected mockup imaged URLs
 
 
+def get_variant_size(variant):  # Define a helper function that extracts the size label from a Printify variant
+    variant_title = variant.get("title", "")  # Read the Printify variant title safely
+
+    if "/" in variant_title:  # Check if the title uses the usual "Color / Size" format
+        return variant_title.split("/")[-1].strip()  # Return the final part as the size label
+
+    return variant_title.strip()  # Return the full title as a fallback size label
+
+
+def sort_size_variant_map(size_variant_map):  # Define a helper function that sorts the size-to-variant map
+    sorted_map = {}  # Create an empty dictionary for ordered size entries
+
+    for size in DROP_SIZE_ORDER:  # Loop through the preferred storefront size order
+        if size in size_variant_map:  # Check if this size exists in the generated map
+            sorted_map[size] = size_variant_map[size]  # Add this size in the preferred order
+
+    for size in sorted(size_variant_map):  # Loop through any remaining unexpected sizes alphabetically
+        if size not in sorted_map:  # Check if this size has not already been added
+            sorted_map[size] = size_variant_map[size]  # Add the remaining size at the end
+
+    return sorted_map  # Return the sorted size-to-variant map
+
+
+def build_size_variant_map(product, selected_variant_ids):  # Define a helper function that maps storefront sizes to Printify variant IDs
+    if isinstance(selected_variant_ids, str):  # Check if selected variant IDs were passed as stored text
+        selected_variant_ids = parse_variant_ids(selected_variant_ids)  # Convert stored text into a clean list of variant IDs
+
+    selected_variant_ids_as_text = {str(variant_id).strip() for variant_id in selected_variant_ids}  # Convert selected variant IDs into a text set for fast comparison
+    size_variant_map = {}  # Create an empty dictionary for size-to-variant mapping
+
+    for variant in product.get("variants", []):  # Loop through every Printify variant on the product
+        variant_id = str(variant.get("id")).strip()  # Read the variant ID as clean text for comparison
+
+        if variant_id not in selected_variant_ids_as_text:  # Check if this variant is not selected for this monthly drop
+            continue  # Skip variants that do not belong to the selected color and sizes
+
+        if not variant.get("is_enabled"):  # Check if the Printify variant is not enabled
+            continue  # Skip disabled variants
+
+        if not variant.get("is_available"):  # Check if the Printify variant is not available
+            continue  # Skip unavailable variants
+
+        variant_size = get_variant_size(variant)  # Extract the customer-facing size from the Printify variant title
+
+        if not variant_size:  # Check if no size could be extracted
+            continue  # Skip variants without a usable size
+
+        if variant_size not in size_variant_map:  # Check if this size has not already been mapped
+            size_variant_map[variant_size] = variant_id  # Store the Printify variant ID for this size
+
+    return sort_size_variant_map(size_variant_map)  # Return the size map in storefront order
+
+
 def get_product_variant_summary(product, selected_variant_ids=None):  # Define a helper function that summarizes product variant availability
-    selected_variant_ids = selected_variant_ids or []  # Use an empty list if no selected ID's were provided
+    selected_variant_ids = selected_variant_ids or []  # Use an empty list if no selected IDs were provided
     selected_variant_ids_as_text = {str(variant_id) for variant_id in selected_variant_ids}  # Normalize selected IDs to strings
     variants = product.get("variants", [])  # Read product variants from the Printify product response
     selected_variants = []  # Create a list for selected variants
@@ -192,6 +247,7 @@ def sync_drop_with_printify(drop):  # Define a service function that syncs one d
     product = get_printify_product(drop.printify_product_id)  # Retrieve the Printify product connected to this drop
     selected_variant_ids = parse_variant_ids(drop.printify_variant_ids)  # Parse the drop's selected variant IDs
     variant_summary = get_product_variant_summary(product, selected_variant_ids)  # Build a variant availability summary
+    size_variant_map = build_size_variant_map(product, drop.printify_variant_ids)  # Build a size-to-Printify-variant map from selected available variants
     mockup_image_urls = get_product_mockup_images(product)  # Collect the best Printify mockup image URLs for the drop carousel
     default_image_url = mockup_image_urls[0] if mockup_image_urls else get_default_product_image(product)  # Use the first carousel image as the primary image
 
@@ -204,6 +260,9 @@ def sync_drop_with_printify(drop):  # Define a service function that syncs one d
     if selected_variant_ids:  # Check if the admin already selected variant IDs
         drop.printify_variant_ids = normalize_variant_ids(selected_variant_ids)  # Normalize the stored variant ID formatting
 
+    if size_variant_map:  # Check if usable size variants were found
+        drop.printify_size_variant_map = json.dumps(size_variant_map)  # Store the size-to-variant map as JSON text
+
     db.session.commit()  # Save synced drop changes to the database
 
     return {  # Return a sync report for admin UI and CLI output
@@ -211,6 +270,7 @@ def sync_drop_with_printify(drop):  # Define a service function that syncs one d
         "default_image_url": default_image_url,  # Include the synced product image URL
         "mockup_image_urls": mockup_image_urls,  # Include all synced mockup image URLs
         "variant_summary": variant_summary,  # Include variant availability details
+        "size_variant_map": size_variant_map,  # Include the synced size-to-variant map
     }  # Close the sync report dictionary
 
 
