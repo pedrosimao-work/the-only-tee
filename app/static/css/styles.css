@@ -346,3 +346,34 @@ a { /* Target all links */
 .mockup-modal-content .carousel-control-next-icon { /* Target the next icon inside the zoom modal */
     filter: invert(1); /* Make modal carousel icons visible on light mockups */
 } /* End the modal carousel icon styling block */
+
+.legal-content { /* Target the readable wrapper for legal pages */
+    max-width: 780px; /* Keep legal text from becoming too wide on desktop */
+} /* End the legal content wrapper styling block */
+
+.legal-content h2 { /* Target section headings inside legal pages */
+    font-size: 1.25rem; /* Keep legal section headings smaller than the page heading */
+    font-weight: 800; /* Make legal section headings strong and scannable */
+    margin-top: 2rem; /* Add space above each legal section */
+} /* End legal section heading styling block */
+
+.legal-content p { /* Target paragraphs inside legal pages */
+    line-height: 1.8; /* Improve readability for longer legal text */
+} /* End legal paragraph styling block */
+
+.footer-links { /* Target the wrapper around footer legal links */
+    margin-top: 1rem; /* Add clear space between footer text and legal links */
+} /* End footer links wrapper styling block */
+
+.footer-link { /* Target footer legal links */
+    color: var(--color-text); /* Use the main text color so footer links remain visible */
+    font-size: 0.95rem; /* Make footer legal links slightly easier to read */
+    font-weight: 600; /* Give footer legal links stronger visual weight */
+    opacity: 0.85; /* Keep the links slightly softer than primary content */
+    text-decoration: none; /* Remove default underline from footer links */
+} /* End footer link styling block */
+
+.footer-link:hover { /* Target footer legal links on hover */
+    opacity: 1; /* Make the footer link fully visible on hover */
+    text-decoration: underline; /* Add underline on hover for clarity */
+} /* End footer link hover styling block */

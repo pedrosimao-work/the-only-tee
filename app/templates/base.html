@@ -81,8 +81,15 @@
         <div class="row align-items-center gy-3"> <!-- Create a responsive footer row with vertical spacing on mobile -->
             <div class="col-md-6"> <!-- Create the left footer column -->
                 <p class="mb-1 fw-semibold tracking-brand">{{ BRAND_NAME_UPPER }}</p> <!-- Display the brand name in the footer -->
-                <p class="mb-0 small text-muted">{{ BRAND_TAGLINE }}</p> <!-- Display a short technical product description -->
+                <p class="mb-2 small text-muted">{{ BRAND_TAGLINE }}</p> <!-- Display a short technical product description -->
+
+                <div class="footer-links d-flex flex-wrap gap-3"> <!-- Create a responsive footer link group -->
+                    <a href="{{ url_for('legal.privacy_policy') }}" class="footer-link">Privacy Policy</a> <!-- Link to the Privacy Policy page -->
+                    <a href="{{ url_for('legal.terms_of_service') }}" class="footer-link">Terms of Service</a> <!-- Link to the Terms of Service page -->
+                    <a href="{{ url_for('legal.shipping_returns') }}" class="footer-link">Shipping & Returns</a> <!-- Link to the Shipping & Returns page -->
+                </div> <!-- Close the footer link group -->
             </div> <!-- Close the left footer column -->
+
             <div class="col-md-6 text-md-end"> <!-- Create the right footer column and align text right on medium screens and above -->
                 <p class="mb-0 small text-muted">© 2026 {{ BRAND_NAME_UPPER }}. All rights reserved.</p> <!-- Display the copyright text -->
                 <p class="mb-0 small text-muted">{{ PRIMARY_DOMAIN }}</p> <!-- Display the planned production domain -->
