@@ -4,7 +4,7 @@ from datetime import datetime  # Import datetime so we can store creation and li
 from flask_login import UserMixin  # Import UserMixin to provide default Flask-Login user methods
 from werkzeug.security import check_password_hash, generate_password_hash  # Import secure password hashing helpers
 
-from app.constants import DEFAULT_SHIRT_COLOR, DROP_PRODUCT_TYPE_TSHIRT, DROP_STATUS_DRAFT  # Import default drop constants
+from app.constants import DROP_SIZE_ORDER, DEFAULT_SHIRT_COLOR, DROP_PRODUCT_TYPE_TSHIRT, DROP_STATUS_DRAFT  # Import default drop constants
 from app.extensions import db, login_manager  # Import the shared SQLAlchemy database object
 from app.validators import validate_drop_status, validate_product_type  # Import the reusable drop validation functions
 
@@ -46,6 +46,7 @@ class Drop(db.Model):  # Create a database model class representing one limited 
     mockup_image_urls = db.Column(db.Text, nullable=True)  # Store multiple Printify mockup image URLs as JSON text
     printify_product_id = db.Column(db.String(120), nullable=True)  # Store the Printify product ID connected to this drop
     printify_variant_ids = db.Column(db.Text, nullable=True)  # Store selected Printify variant IDs for available sizes as text for future parsing
+    printify_size_variant_map = db.Column(db.Text, nullable=True)  # Store a JSON map connecting customer sizes to Printify variant IDs
     stripe_product_id = db.Column(db.String(120), nullable=True)  # Store the Stripe product ID connected to this drop
     stripe_price_id = db.Column(db.String(120), nullable=True)  # Store the Stripe price ID used for hosted Checkout
     instagram_media_id = db.Column(db.String(120), nullable=True)  # Store the Instagram media ID after publishing a launch reel
@@ -77,6 +78,33 @@ class Drop(db.Model):  # Create a database model class representing one limited 
         return []  # Return an empty list when the drop has no mockup images
 
 
+    def get_size_variant_map(self):  # Define a helper method that returns the stored size-to-variant map
+        if not self.printify_size_variant_map:  # Check if no size map has been stored yet
+            return {}  # Return an empty dictionary when there is no size map
+
+        try:  # Start a protected block in case the stored JSON is invalid
+            size_variant_map = json.loads(self.printify_size_variant_map)  # Convert the stored JSON text into a Python dictionary
+        except json.JSONDecodeError:  # Catch invalid JSON safely
+            return {}  # Return an empty dictionary if the JSON cannot be decoded
+
+        if not isinstance(size_variant_map, dict):  # Check if the decoded value is not a dictionary
+            return {}  # Return an empty dictionary because the size map format is invalid
+
+        return size_variant_map  # Return the valid size-to-variant map
+
+    def get_available_sizes(self):  # Define a helper method that returns available sizes in storefront order
+        size_variant_map = self.get_size_variant_map()  # Read the stored size-to-variant map
+
+        ordered_sizes = [size for size in DROP_SIZE_ORDER if size in size_variant_map]  # Keep known sizes in the preferred order
+        extra_sizes = sorted(size for size in size_variant_map if size not in DROP_SIZE_ORDER)  # Sort any unexpected extra sizes alphabetically
+
+        return ordered_sizes + extra_sizes  # Return known sizes first, then any extra sizes
+
+    def get_printify_variant_id_for_size(self, selected_size):  # Define a helper method that returns the Printify variant ID for one size
+        size_variant_map = self.get_size_variant_map()  # Read the stored size-to-variant map
+        return size_variant_map.get(selected_size)  # Return the matching Printify variant ID or None
+
+
     def __repr__(self):  # Define the developer-friendly representation of a Drop object
         return f"<Drop #{self.drop_number} - {self.name}>"  # Return a readable lable when debugging Drop records
 
@@ -89,6 +117,8 @@ class Order(db.Model):  # Create a database model class representing one Stripe 
     stripe_payment_intent_id = db.Column(db.String(255), nullable=True, index=True)  # Store the Stripe PaymentIntent ID after payment completion
     payment_status = db.Column(db.String(50), nullable=False, default="created")  # Store the payment status returned by Stripe
     customer_email = db.Column(db.String(255), nullable=True)  # Store the customer email returned by Stripe Checkout
+    selected_size = db.Column(db.String(20), nullable=True)  # Store the customer-selected shirt size for fulfillment
+    printify_variant_id = db.Column(db.String(120), nullable=True)  # Store the Printify variant ID connected to the selected size
     quantity = db.Column(db.Integer, nullable=False, default=1)  # Store the purchased quantity
     amount_total = db.Column(db.Integer, nullable=True)  # Store the total paid amount in the smallest currency unit
     currency = db.Column(db.String(10), nullable=True)  # Store the Stripe currency code

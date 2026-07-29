@@ -377,3 +377,66 @@ a { /* Target all links */
     opacity: 1; /* Make the footer link fully visible on hover */
     text-decoration: underline; /* Add underline on hover for clarity */
 } /* End footer link hover styling block */
+
+.drop-color-note { /* Target the fixed color note inside the checkout form */
+    color: var(--color-muted); /* Use muted text so the note supports the size selector */
+    font-size: 0.95rem; /* Keep the fixed color note readable but secondary */
+    font-weight: 600; /* Make the fixed color note feel intentional */
+} /* End the drop color note styling block */
+
+.checkout-size-label { /* Target the size selector label */
+    color: var(--color-text); /* Use the main text color for readability */
+    font-size: 0.85rem; /* Keep the label compact */
+    font-weight: 800; /* Make the size label strong */
+    letter-spacing: 0.08rem; /* Add brand-style letter spacing */
+    text-transform: uppercase; /* Make the label feel like product UI */
+} /* End the checkout size label styling block */
+
+.size-options { /* Target the wrapper around size buttons */
+    max-width: 420px; /* Keep size buttons from stretching too far on desktop */
+} /* End the size options wrapper styling block */
+
+.size-option { /* Target each visible size selection button */
+    border-radius: 999px; /* Make size options pill-shaped */
+    font-size: 0.9rem; /* Keep size text compact */
+    font-weight: 700; /* Make size labels strong */
+    min-width: 58px; /* Give each size button a consistent clickable width */
+    padding: 0.55rem 0.9rem; /* Add comfortable spacing inside each size button */
+} /* End the size option styling block */
+
+.drop-checkout-form .btn-check:checked + .size-option { /* Target the selected size button inside the checkout form */
+    background-color: #111111; /* Fill the selected size button with a reliable dark color */
+    border-color: #111111; /* Match the selected border to the dark background */
+    color: #ffffff; /* Make the selected size text clearly visible */
+} /* End the selected size button styling block */
+
+.drop-checkout-form .btn-check:focus + .size-option { /* Target keyboard focus on size buttons */
+    box-shadow: 0 0 0 0.2rem rgba(17, 17, 17, 0.18); /* Add a subtle accessible focus ring */
+} /* End the size button focus styling block */
+
+.drop-checkout-form .size-option:hover { /* Target size buttons on hover */
+    background-color: #111111; /* Fill hovered size buttons with dark color */
+    border-color: #111111; /* Match hovered border to the dark background */
+    color: #ffffff; /* Make hovered size text clearly visible */
+} /* End the size button hover styling block */
+
+.drop-checkout-form .alert { /* Target alerts inside the checkout form */
+    max-width: 420px; /* Keep checkout form alerts aligned with the size selector width */
+} /* End checkout form alert styling block */
+
+.hero-actions { /* Target the homepage action area */
+    align-items: flex-start; /* Keep action elements aligned cleanly to the left on desktop */
+    display: flex; /* Use flexbox for controlled vertical spacing */
+    flex-direction: column; /* Stack checkout form and archive link vertically */
+    gap: 1rem; /* Add clean spacing between checkout and archive actions */
+} /* End the homepage action area styling block */
+
+.archive-action-link { /* Target the secondary archive button near checkout */
+    width: fit-content; /* Keep the archive button from stretching awkwardly on desktop */
+} /* End the archive action link styling block */
+
+@media (max-width: 575.98px) { /* Target small mobile screens */
+    .archive-action-link { /* Target the archive button on mobile */
+        width: 100%; /* Make the archive button full-width on mobile for clean stacking */
+    } /* End the mobile archive button styling block */
+} /* End the small mobile media query */

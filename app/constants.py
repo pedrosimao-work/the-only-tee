@@ -11,7 +11,7 @@ VALID_DROP_STATUSES = (  # Store all valid drop statuses in one reusable tuple
 
 
 DROP_PRODUCT_TYPE_TSHIRT = "t-shirt"  # Store the current supported product type for monthly drops
-
+DROP_SIZE_ORDER = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"]  # Store the preferred storefront size display order
 
 VALID_PRODUCT_TYPES = (  # Store all valid product types supported by the platform
     DROP_PRODUCT_TYPE_TSHIRT,  # Allow T-shirt drops as the current product category
