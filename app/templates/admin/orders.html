@@ -47,7 +47,17 @@
                             {% endif %} <!-- End the payment status condition -->
                         </td> <!-- Close the payment status cell -->
                         <td>{{ order.get_amount_display() }}</td> <!-- Display the formatted Stripe amount -->
-                        <td>{{ order.get_fulfillment_status_label() }}</td> <!-- Display the fulfillment readiness label -->
+                        <td> <!-- Start the fulfillment status cell -->
+                            {% if order.printify_order_id %} <!-- Check if the order was submitted to Printify -->
+                            <span class="badge text-bg-info">{{ order.get_fulfillment_status_label() }}</span> <!-- Display the Printify status badge -->
+                            {% elif order.printify_last_error %} <!-- Check if the latest Printify attempt failed -->
+                            <span class="badge text-bg-danger">Printify error</span> <!-- Display the Printify error badge -->
+                            {% elif order.is_ready_for_fulfillment() %} <!-- Check if the order is ready for Printify -->
+                            <span class="badge text-bg-warning">Ready</span> <!-- Display the ready for fulfillment badge -->
+                            {% else %} <!-- Run this block for unpaid or incomplete orders -->
+                            <span class="badge text-bg-secondary">{{ order.get_fulfillment_status_label() }}</span> <!-- Display the fallback fulfillment label -->
+                            {% endif %} <!-- End the fulfillment status condition -->
+                        </td> <!-- Close the fulfillment status cell -->
                         <td> <!-- Start the action cell -->
                             <a href="{{ url_for('admin.order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline-dark">View</a> <!-- Link to the order detail page -->
                         </td> <!-- Close the action cell -->
