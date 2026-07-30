@@ -1,7 +1,9 @@
 import json  # Import json so multiple mockup image URLs can be stored as JSON text
 import requests  # Import requests so the app can call the Printify HTTP API
 from flask import current_app  # Import current_app so the service can read Flask configuration values
+from datetime import datetime  # Import datetime so submitted orders can store submission time
 
+from app.services.stripe_checkout import StripeCheckoutError, retrieve_checkout_session  # Import Stripe session retrieval for shipping details
 from app.extensions import db  # Import the database object so synced drop changes can be saved
 from app.constants import DROP_SIZE_ORDER  # Import the preferred storefront size order
 
@@ -274,5 +276,124 @@ def sync_drop_with_printify(drop):  # Define a service function that syncs one d
     }  # Close the sync report dictionary
 
 
+class PrintifyFulfillmentError(Exception):  # Create a custom error for Printify fulfillment validation problems
+    pass  # Keep the custom exception body empty because the class name explains the error type
 
 
+def split_customer_name(full_name):  # Define a helper function that splits a full customer name into first and last name
+    cleaned_name = (full_name or "").strip()  # Clean the provided customer name safely
+
+    if not cleaned_name:  # Check if Stripe did not provide a usable name
+        return "Customer", "Unknown"  # Return safe placeholder names for Printify
+
+    name_parts = cleaned_name.split()  # Split the full name into separate words
+
+    if len(name_parts) == 1:  # Check if the customer only entered one name
+        return name_parts[0], "Unknown"  # Use the single name as first name and a safe fallback last name
+
+    return name_parts[0], " ".join(name_parts[1:])  # Return the first word as first name and the rest as last name
+
+
+def get_checkout_shipping_details(stripe_session):  # Define a helper function that reads shipping details from a Stripe Checkout Session
+    shipping_details = stripe_session.get("shipping_details") or {}  # Read shipping details from the standard Checkout Session field
+    collected_information = stripe_session.get("collected_information") or {}  # Read newer collected information data if present
+
+    if not shipping_details:  # Check if the standard shipping details field is empty
+        shipping_details = collected_information.get("shipping_details") or {}  # Fall back to collected information shipping details
+
+    return shipping_details  # Return the best available shipping details object
+
+
+def build_printify_address_to(order, stripe_session):  # Define a helper function that builds Printify recipient data from Stripe checkout data
+    shipping_details = get_checkout_shipping_details(stripe_session)  # Read shipping details from the Stripe Checkout Session
+    customer_details = stripe_session.get("customer_details") or {}  # Read customer details from the Stripe Checkout Session
+    address = shipping_details.get("address") or {}  # Read the nested shipping address object
+
+    full_name = shipping_details.get("name") or customer_details.get("name")  # Prefer the shipping name and fall back to customer name
+    first_name, last_name = split_customer_name(full_name)  # Split the customer name for Printify recipient fields
+
+    email = customer_details.get("email") or order.customer_email  # Prefer Stripe customer email and fall back to the local order email
+    phone = customer_details.get("phone") or ""  # Read the customer phone if Stripe collected it
+
+    address_to = {  # Create the Printify address_to object
+        "first_name": first_name,  # Store the recipient first name
+        "last_name": last_name,  # Store the recipient last name
+        "email": email,  # Store the recipient email
+        "phone": phone,  # Store the recipient phone or an empty fallback
+        "country": address.get("country"),  # Store the two-letter country code from Stripe
+        "region": address.get("state") or "",  # Store the state/region from Stripe
+        "address1": address.get("line1"),  # Store the first address line from Stripe
+        "address2": address.get("line2") or "",  # Store the second address line or an empty fallback
+        "city": address.get("city"),  # Store the city from Stripe
+        "zip": address.get("postal_code"),  # Store the postal code from Stripe
+    }  # Close the Printify address object
+
+    required_fields = ["first_name", "last_name", "email", "country", "address1", "city", "zip"]  # Define required Printify recipient fields
+    missing_fields = [field for field in required_fields if not address_to.get(field)]  # Collect missing required fields
+
+    if missing_fields:  # Check if any required shipping field is missing
+        raise PrintifyFulfillmentError(f"Missing shipping details for Printify: {', '.join(missing_fields)}.")  # Raise a clear validation error
+
+    if address_to["country"] != "US":  # Check if the shipping address is outside the MVP country
+        raise PrintifyFulfillmentError("Printify fulfillment is currently limited to US shipping addresses.")  # Raise a clear MVP scope error
+
+    return address_to  # Return the validated Printify recipient object
+
+
+def build_printify_order_payload(order, stripe_session):  # Define a helper function that builds the Printify order payload
+    if not order.drop:  # Check if the local order is missing its connected drop
+        raise PrintifyFulfillmentError("This order is missing its connected drop.")  # Raise a clear fulfillment error
+
+    if not order.drop.printify_product_id:  # Check if the drop has no connected Printify product
+        raise PrintifyFulfillmentError("This drop is missing a Printify product ID.")  # Raise a clear fulfillment error
+
+    if not order.printify_variant_id:  # Check if the order has no selected Printify variant
+        raise PrintifyFulfillmentError("This order is missing a Printify variant ID.")  # Raise a clear fulfillment error
+
+    address_to = build_printify_address_to(order, stripe_session)  # Build and validate the recipient address for Printify
+
+    return {  # Return the Printify order payload
+        "external_id": f"the-only-drop-order-{order.id}",  # Store a unique external order ID for tracking
+        "label": f"TOD-{order.id:06d}",  # Store a readable order label for Printify
+        "line_items": [  # Create the Printify line items list
+            {  # Start the single Printify line item
+                "product_id": order.drop.printify_product_id,  # Use the synced Printify product ID from the purchased drop
+                "variant_id": int(order.printify_variant_id),  # Use the customer-selected Printify variant ID as an integer
+                "quantity": order.quantity or 1,  # Use the local order quantity or a safe fallback
+                "external_id": f"the-only-drop-order-{order.id}-item-1",  # Store a unique external line item ID
+            }  # Close the single Printify line item
+        ],  # Close the Printify line items list
+        "shipping_method": 1,  # Use Printify standard shipping for the MVP
+        "send_shipping_notification": False,  # Keep shipping notification handling controlled by the app for now
+        "address_to": address_to,  # Attach the validated shipping recipient data
+    }  # Close the Printify order payload
+
+
+def submit_order_to_printify(order):  # Define a service function that submits one paid local order to Printify
+    if not current_app.config.get("PRINTIFY_FULFILLMENT_ENABLED"):  # Check if real Printify fulfillment is disabled
+        raise PrintifyFulfillmentError("Printify fulfillment is disabled. Set PRINTIFY_FULFILLMENT_ENABLED=true only when you intentionally want to submit real Printify orders.")  # Raise a safety error
+
+    if order.payment_status != "paid":  # Check if the order is not paid
+        raise PrintifyFulfillmentError("Only paid orders can be submitted to Printify.")  # Stop unpaid orders from being fulfilled
+
+    if order.printify_order_id:  # Check if this order was already submitted to Printify
+        raise PrintifyFulfillmentError("This order was already submitted to Printify.")  # Stop duplicate Printify orders
+
+    try:  # Start a protected block for Stripe session retrieval and Printify order submission
+        stripe_session = retrieve_checkout_session(order.stripe_checkout_session_id)  # Retrieve the Stripe Checkout Session for shipping details
+        payload = build_printify_order_payload(order, stripe_session)  # Build the Printify order payload
+        shop_id = require_printify_shop_id()  # Read the configured Printify shop ID
+        printify_order = printify_request("POST", f"shops/{shop_id}/orders.json", json=payload)  # Submit the order to Printify
+    except (StripeCheckoutError, PrintifyAPIError, PrintifyFulfillmentError) as error:  # Catch expected fulfillment errors
+        order.printify_last_error = str(error)  # Store the latest fulfillment error on the local order
+        db.session.commit()  # Save the error message for admin visibility
+        raise  # Re-raise the error so the admin route can flash it
+
+    order.printify_order_id = printify_order.get("id")  # Store the Printify order ID returned by Printify
+    order.printify_status = printify_order.get("status") or "submitted"  # Store the Printify order status or a safe fallback
+    order.printify_last_error = None  # Clear any previous fulfillment error after success
+    order.printify_submitted_at = datetime.utcnow()  # Store when the order was submitted to Printify
+
+    db.session.commit()  # Save the successful Printify fulfillment update
+
+    return printify_order  # Return the Printify order response for admin feedback

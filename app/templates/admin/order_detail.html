@@ -67,9 +67,34 @@
                             <dt class="col-sm-5">Printify order ID</dt> <!-- Display the Printify order ID label -->
                             <dd class="col-sm-7">{{ order.printify_order_id or "Not sent yet" }}</dd> <!-- Display the future Printify order ID or fallback -->
 
+                            <dt class="col-sm-5">Printify status</dt> <!-- Display the Printify status label -->
+                            <dd class="col-sm-7">{{ order.printify_status or "Not submitted" }}</dd> <!-- Display the Printify order status or fallback -->
+
+                            <dt class="col-sm-5">Submitted to Printify</dt> <!-- Display the Printify submitted timestamp label -->
+                            <dd class="col-sm-7">{{ order.printify_submitted_at.strftime("%Y-%m-%d %H:%M") if order.printify_submitted_at else "Not submitted yet" }}</dd> <!-- Display the Printify submitted timestamp or fallback -->
+
                             <dt class="col-sm-5">Ready for fulfillment</dt> <!-- Display the fulfillment readiness label -->
                             <dd class="col-sm-7">{{ "Yes" if order.is_ready_for_fulfillment() else "No" }}</dd> <!-- Display whether the order is ready for Printify fulfillment -->
                         </dl> <!-- Close the drop and fulfillment list -->
+
+                        {% if order.printify_last_error %} <!-- Check if the latest Printify fulfillment attempt failed -->
+                        <div class="alert alert-danger mt-4" role="alert"> <!-- Create a visible admin error alert -->
+                            <strong>Printify error:</strong> {{ order.printify_last_error }} <!-- Display the latest Printify error message -->
+                        </div> <!-- Close the Printify error alert -->
+                        {% endif %} <!-- End the Printify error condition -->
+
+                        {% if order.is_ready_for_fulfillment() %} <!-- Check if the order is ready to submit to Printify -->
+                            {% if printify_fulfillment_enabled %} <!-- Check if real Printify fulfillment is enabled -->
+                            <form method="POST" action="{{ url_for('admin.fulfill_printify_order', order_id=order.id) }}" class="mt-4"> <!-- Create the Printify fulfillment form -->
+                                {{ fulfill_form.hidden_tag() }} <!-- Render CSRF protection fields -->
+                                <button type="submit" class="btn btn-dark">Submit to Printify</button> <!-- Submit the paid order to Printify -->
+                            </form> <!-- Close the Printify fulfillment form -->
+                            {% else %} <!-- Run this block when fulfillment is disabled -->
+                            <div class="alert alert-warning mt-4" role="alert"> <!-- Create a safety warning alert -->
+                                Printify fulfillment is disabled. Set PRINTIFY_FULFILLMENT_ENABLED=true only when you intentionally want to submit real Printify orders. <!-- Explain why the button is hidden -->
+                            </div> <!-- Close the fulfillment disabled alert -->
+                            {% endif %} <!-- End the fulfillment enabled condition -->
+                        {% endif %} <!-- End the ready for fulfillment condition -->
                     </div> <!-- Close the card body -->
                 </div> <!-- Close the drop and fulfillment card -->
             </div> <!-- Close the second detail column -->

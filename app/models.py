@@ -123,6 +123,9 @@ class Order(db.Model):  # Create a database model class representing one Stripe 
     amount_total = db.Column(db.Integer, nullable=True)  # Store the total paid amount in the smallest currency unit
     currency = db.Column(db.String(10), nullable=True)  # Store the Stripe currency code
     printify_order_id = db.Column(db.String(120), nullable=True)  # Store the future Printify order ID after fulfillment
+    printify_status = db.Column(db.String(80), nullable=True)  # Store the latest known Printify order status
+    printify_last_error = db.Column(db.Text, nullable=True)  # Store the latest Printify fulfillment error message
+    printify_submitted_at = db.Column(db.DateTime, nullable=True)  # Store when the order was submitted to Printify
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)  # Store when the local order was created
     paid_at = db.Column(db.DateTime, nullable=True)  # Store when Stripe confirmed payment completion
 
@@ -141,7 +144,10 @@ class Order(db.Model):  # Create a database model class representing one Stripe 
 
     def get_fulfillment_status_label(self):  # Define a helper method that explains fulfillment readiness
         if self.printify_order_id:  # Check if the order has already been sent to Printify
-            return "Sent to Printify"  # Return the completed fulfillment label
+            return self.printify_status or "Submitted to Printify"  # Return the Printify status or a safe submitted label
+
+        if self.printify_last_error:  # Check if the latest Printify submission attempt failed
+            return "Printify error"  # Return an error label for admin visibility
 
         if self.payment_status == "paid" and self.printify_variant_id:  # Check if the order is paid and has a fulfillment variant
             return "Ready for fulfillment"  # Return the ready-for-Printify label

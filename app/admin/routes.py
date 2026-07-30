@@ -1,13 +1,13 @@
 from functools import wraps  # Import wraps so custom decorators preserve function metadata
 
-from flask import Blueprint, abort, flash, redirect, render_template, url_for  # Import Flask helpers for admin routes
+from flask import Blueprint, abort, current_app, flash, redirect, render_template, url_for  # Import Flask helpers for admin routes, app config, feedback, redirects, and templates
 from flask_login import current_user, login_required  # Import login helpers for protected admin routes
 
 from app.admin.forms import DropForm, EmptyForm  # Import admin forms for drop creation and button-only POST actions
 from app.constants import DROP_STATUS_ACTIVE, DROP_STATUS_ARCHIVED, DROP_STATUS_DRAFT  # Import reusable status constants
 from app.extensions import db  # Import the database object so admin routes can save records
 from app.models import Drop, Order  # Import Drop and Order models so admin routes can manage drops and inspect orders
-from app.services.printify import PrintifyAPIError, PrintifyConfigError, sync_drop_with_printify  # Import Printify sync helpers
+from app.services.printify import PrintifyAPIError, PrintifyConfigError, PrintifyFulfillmentError, submit_order_to_printify, sync_drop_with_printify  # Import Printify sync and fulfillment helpers
 from app.validators import validate_drop_status, validate_product_type  # Import reusable drop validation functions
 
 
@@ -147,4 +147,27 @@ def orders():  # Define the admin view that lists local Stripe orders
 @admin_required  # Require the logged-in user to be an admin before viewing one order
 def order_detail(order_id):  # Define the admin view that shows one order
     order = Order.query.get_or_404(order_id)  # Retrieve the requested order or return a 404 page
-    return render_template("admin/order_detail.html", order=order)  # Render the admin order detail page
+    fulfill_form = EmptyForm()  # Create a CSRF-protected empty form for the Printify fulfillment button
+    printify_fulfillment_enabled = current_app.config.get("PRINTIFY_FULFILLMENT_ENABLED")  # Read whether real Printify fulfillment is enabled
+    return render_template("admin/order_detail.html", order=order, fulfill_form=fulfill_form, printify_fulfillment_enabled=printify_fulfillment_enabled)  # Render the admin order detail page
+
+
+@admin.post("/orders/<int:order_id>/fulfill-printify")  # Register the admin Printify fulfillment route
+@login_required  # Require the user to be logged in before submitting fulfillment
+@admin_required  # Require the logged-in user to be an admin before submitting fulfillment
+def fulfill_printify_order(order_id):  # Define the admin action that submits a paid order to Printify
+    order = Order.query.get_or_404(order_id)  # Retrieve the requested order or return a 404 page
+    fulfill_form = EmptyForm()  # Create the empty form used to validate the POST request
+
+    if not fulfill_form.validate_on_submit():  # Check if the CSRF-protected form submission is invalid
+        flash("Invalid fulfillment request.", "danger")  # Show a safe error message
+        return redirect(url_for("admin.order_detail", order_id=order.id))  # Redirect back to the order detail page
+
+    try:  # Start a protected block for Printify fulfillment
+        submit_order_to_printify(order)  # Submit the paid local order to Printify
+    except (PrintifyConfigError, PrintifyAPIError, PrintifyFulfillmentError) as error:  # Catch expected Printify fulfillment errors
+        flash(str(error), "danger")  # Show the error message in the admin UI
+        return redirect(url_for("admin.order_detail", order_id=order.id))  # Redirect back to the order detail page
+
+    flash(f"Order #{order.id} was submitted to Printify.", "success")  # Show a success message after successful Printify submission
+    return redirect(url_for("admin.order_detail", order_id=order.id))  # Redirect back to the order detail page

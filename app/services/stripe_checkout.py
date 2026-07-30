@@ -29,6 +29,15 @@ def configure_stripe():  # Define a helper function that configures the Stripe S
     stripe.api_key = get_stripe_secret_key()  # Set the Stripe SDK API key from Flask config
 
 
+def retrieve_checkout_session(session_id):  # Define a helper function that retrieves a Stripe Checkout Session
+    configure_stripe()  # Configure the Stripe SDK with the secret key
+
+    try:  # Start a protected block for Stripe API retrieval
+        return stripe.checkout.Session.retrieve(session_id)  # Retrieve and return the Checkout Session from Stripe
+    except stripe.StripeError as error:  # Catch Stripe SDK errors
+        raise StripeCheckoutError(f"Stripe session retrieval error: {error}") from error  # Raise a clear app-level checkout error
+
+
 def create_checkout_session_for_drop(drop, selected_size, printify_variant_id):  # Define a service function that creates a Stripe Checkout Session for one selected size
     if not drop.stripe_price_id:  # Check if the drop does not have a Stripe Price ID
         raise StripeCheckoutError("This drop does not have a Stripe Price ID.")  # Raise a clear checkout error
