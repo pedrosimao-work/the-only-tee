@@ -9,8 +9,9 @@
             <div class="col-lg-8"> <!-- Create the left heading column -->
                 <p class="eyebrow mb-3">Admin</p> <!-- Display a small uppercase admin label -->
                 <h1 class="page-title mb-3">Manage Drops</h1> <!-- Display the drop management heading -->
-                <p class="page-copy mb-0">Review all monthly drop records currently stored in the database.</p> <!-- Display a short description -->
+                <p class="page-copy mb-0">Review, sync, edit, and safely remove monthly drop records currently stored in the database.</p> <!-- Display a short description -->
             </div> <!-- Close the left heading column -->
+
             <div class="col-lg-4 text-lg-end"> <!-- Create the right heading column -->
                 <a href="{{ url_for('admin.create_drop') }}" class="btn btn-dark">Create Drop</a> <!-- Add a button linking to create a new drop -->
             </div> <!-- Close the right heading column -->
@@ -30,9 +31,10 @@
                         <th>Printify</th> <!-- Create the Printify status header -->
                         <th>Starts</th> <!-- Create the scheduled start header -->
                         <th>Ends</th> <!-- Create the scheduled end header -->
-                        <th>Action</th> <!-- Create the action header -->
+                        <th>Actions</th> <!-- Create the actions header -->
                     </tr> <!-- Close the header row -->
                 </thead> <!-- End the table header -->
+
                 <tbody> <!-- Start the table body -->
                     {% for drop in drops %} <!-- Loop through every drop record -->
                     <tr> <!-- Create one table row for the current drop -->
@@ -42,6 +44,7 @@
                         <td>{{ drop.shirt_color }}</td> <!-- Display the selected shirt color -->
                         <td>€{{ drop.price }}</td> <!-- Display the drop price -->
                         <td>{{ drop.status|capitalize }}</td> <!-- Display the drop status -->
+
                         <td> <!-- Start the Printify status cell -->
                             {% if drop.printify_product_id %} <!-- Check if this drop has a Printify product ID -->
                             <span class="badge text-bg-success">Connected</span> <!-- Show connected status -->
@@ -49,6 +52,7 @@
                             <span class="badge text-bg-secondary">Missing</span> <!-- Show missing status -->
                             {% endif %} <!-- End the Printify status condition -->
                         </td> <!-- Close the Printify status cell -->
+
                         <td> <!-- Start the scheduled start cell -->
                             {% if drop.starts_at %} <!-- Check if the drop has a start date -->
                             {{ drop.starts_at.strftime("%Y-%m-%d %H:%M") }} <!-- Display the formatted start date -->
@@ -56,6 +60,7 @@
                             Not scheduled <!-- Display a fallback value -->
                             {% endif %} <!-- End the start date condition -->
                         </td> <!-- Close the scheduled start cell -->
+
                         <td> <!-- Start the scheduled end cell -->
                             {% if drop.ends_at %} <!-- Check if the drop has an end date -->
                             {{ drop.ends_at.strftime("%Y-%m-%d %H:%M") }} <!-- Display the formatted end date -->
@@ -63,15 +68,27 @@
                             Not scheduled <!-- Display a fallback value -->
                             {% endif %} <!-- End the end date condition -->
                         </td> <!-- Close the scheduled end cell -->
+
                         <td> <!-- Start the action cell -->
-                            {% if drop.printify_product_id %} <!-- Check if this drop can be synced with Printify -->
-                            <form method="POST" action="{{ url_for('admin.sync_printify_drop', drop_id=drop.id) }}"> <!-- Create a POST form for syncing this drop -->
-                                {{ sync_form.hidden_tag() }} <!-- Render CSRF protection for the sync action -->
-                                <button type="submit" class="btn btn-outline-dark btn-sm">Sync Printify</button> <!-- Add the Printify sync button -->
-                            </form> <!-- Close the sync form -->
-                            {% else %} <!-- Run this block if no Printify product ID exists -->
-                            <span class="text-muted small">Add product ID</span> <!-- Tell the admin what is missing -->
-                            {% endif %} <!-- End the sync action condition -->
+                            <div class="d-flex flex-wrap gap-2"> <!-- Create a flexible action group for this drop -->
+                                <a href="{{ url_for('admin.edit_drop', drop_id=drop.id) }}" class="btn btn-outline-dark btn-sm">Edit</a> <!-- Link to the edit page for this drop -->
+
+                                {% if drop.printify_product_id %} <!-- Check if this drop can be synced with Printify -->
+                                <form method="POST" action="{{ url_for('admin.sync_printify_drop', drop_id=drop.id) }}" class="d-inline"> <!-- Create a POST form for syncing this drop -->
+                                    {{ sync_form.hidden_tag() }} <!-- Render CSRF protection for the sync action -->
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">Sync Printify</button> <!-- Add the Printify sync button -->
+                                </form> <!-- Close the sync form -->
+                                {% else %} <!-- Run this block if no Printify product ID exists -->
+                                <span class="text-muted small align-self-center">Add product ID</span> <!-- Tell the admin what is missing -->
+                                {% endif %} <!-- End the sync action condition -->
+
+                                {% if drop.status != "active" %} <!-- Only show delete for drops that are not currently active -->
+                                <form method="POST" action="{{ url_for('admin.delete_drop', drop_id=drop.id) }}" class="d-inline"> <!-- Create a POST form for deleting this drop -->
+                                    {{ delete_form.hidden_tag() }} <!-- Render CSRF protection for the delete action -->
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button> <!-- Add the safe drop delete button -->
+                                </form> <!-- Close the delete form -->
+                                {% endif %} <!-- End the safe delete button condition -->
+                            </div> <!-- Close the flexible action group -->
                         </td> <!-- Close the action cell -->
                     </tr> <!-- Close the current table row -->
                     {% endfor %} <!-- End the drops loop -->

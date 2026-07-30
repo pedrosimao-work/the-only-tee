@@ -1,15 +1,21 @@
 # The Only Drop
 
-A full-stack Python web app for managing monthly limited product drops, user accounts, archive collections, payment flow planning, fulfillment integration, and launch automation.
+A full-stack Python web app for managing monthly limited T-shirt drops, user accounts, archive collections, Stripe-hosted checkout, Printify product synchronization, guarded Printify fulfillment, admin order visibility, and monthly drop lifecycle automation.
 
 ## Current Product Model
 
 The Only Drop currently focuses on T-shirts.
 
-The production domain is planned as:
+The public portfolio demo domain is planned as:
 
 ```text
-the-only-drop.com
+theonlydrop.pedrosimao.work
+```
+
+The support/contact email for the portfolio demo is:
+
+```text
+hello@pedrosimao.work
 ```
 
 The current business rules are:
@@ -18,6 +24,7 @@ The current business rules are:
 - One selected shirt color per design
 - Multiple sizes per design
 - No user-selected color changes
+- Customers select size only
 - Availability depends on Printify stock
 - At the first second of each new month, the current design becomes archived
 - The next scheduled design becomes the active monthly drop
@@ -28,18 +35,36 @@ The current business rules are:
 The project currently includes:
 
 - Flask application factory structure
+- Blueprint-based application organization
 - Bootstrap-based public layout
 - SQLAlchemy database configuration
 - Flask-Migrate migrations
 - Drop model
 - User model
+- Order model
 - User registration and login
 - Password hashing
 - Flask-Login session handling
 - Admin-only dashboard
 - Admin drop creation form
+- Admin orders page
+- Admin order detail page
+- Admin test-order deletion action
 - Database-powered homepage and archive page
+- Monthly drop lifecycle automation
 - Development seed command
+- Printify shop and product lookup commands
+- Printify product synchronization
+- Printify mockup image synchronization
+- Printify mockup carousel
+- Checkout size selection
+- Stripe-hosted Checkout integration
+- Stripe webhook payment status handling
+- Guarded Printify fulfillment flow
+- Privacy Policy page
+- Terms of Service page
+- Shipping & Returns page
+- Portfolio/demo checkout safety notices
 
 ## Tech Stack
 
@@ -51,17 +76,20 @@ The project currently includes:
 - Flask-Migrate
 - Flask-Login
 - Flask-WTF
+- Requests
+- Stripe Python SDK
 - SQLite for local development
 - MariaDB planned for production
 - PyMySQL for future MariaDB connection
+- DirectAdmin planned for production deployment
 
 ## Planned Integrations
 
-- Printify product and fulfillment integration
-- Stripe Checkout hosted payment flow
-- Instagram Reel launch automation
+- Stripe product and price synchronization from admin drops
 - DirectAdmin deployment with MariaDB
-- Cron-based monthly drop rotation
+- Cron-based monthly drop rotation in production
+- Launch logging and error handling
+- README and portfolio presentation polish
 
 ## Local Setup
 
@@ -162,10 +190,9 @@ Example:
 
 The production database setup will be completed during the DirectAdmin deployment phase.
 
-
 ## Printify Configuration
 
-The app is prepared to connect monthly drops to existing Printify products.
+The app connects monthly drops to existing Printify products and can submit paid orders to Printify through a guarded admin action.
 
 Required environment variables:
 
@@ -173,6 +200,7 @@ Required environment variables:
 PRINTIFY_API_BASE_URL=https://api.printify.com/v1
 PRINTIFY_API_TOKEN=your-printify-api-token
 PRINTIFY_SHOP_ID=your-printify-shop-id
+PRINTIFY_FULFILLMENT_ENABLED=false
 ```
 
 Useful commands:
@@ -193,16 +221,70 @@ Shows a Printify product summary and available enabled variants.
 flask printify-sync-drop 0001
 ```
 
-Syncs a local drop with its configured Printify product ID, validates selected variant availability, and stores the default Printify mockup image URL on the drop.
+Syncs a local drop with its configured Printify product ID, validates selected variant availability, stores mockup image URLs, and stores the size-to-Printify-variant map used during checkout.
 
 ### Current Printify Scope
 
-This phase connects drops to Printify products and validates product variants.
+The app can sync local drops with Printify products, validate selected variants, store product mockups, store available sizes, and prepare paid orders for fulfillment.
 
-The app does not submit Printify orders yet.
+Printify fulfillment is disabled by default through:
 
-Order submission will be connected after Stripe Checkout because fulfillment requires paid order data and customer shipping details.
+```text
+PRINTIFY_FULFILLMENT_ENABLED=false
+```
 
+When fulfillment is intentionally enabled, paid orders can be submitted to Printify from the admin order detail page.
+
+The app prevents unpaid orders, orders without a selected Printify variant, and already-submitted orders from being submitted to Printify.
+
+## Stripe Configuration
+
+The app uses Stripe-hosted Checkout for payment simulation in the portfolio demo.
+
+Required environment variables:
+
+```text
+STRIPE_SECRET_KEY=sk_test_your-stripe-secret-key
+STRIPE_WEBHOOK_SECRET=whsec_your-stripe-webhook-secret
+```
+
+The checkout flow currently supports:
+
+- Stripe-hosted Checkout Session creation
+- US-only shipping address collection
+- Customer size selection before checkout
+- Selected size stored in Stripe metadata
+- Printify variant ID stored in Stripe metadata
+- Local Order creation before redirecting to Stripe
+- Webhook handling for `checkout.session.completed`
+- Local payment status update after webhook completion
+- Customer email update after webhook completion
+- PaymentIntent ID storage after webhook completion
+- Portfolio demo notices before and inside Stripe Checkout
+
+The public portfolio demo is intended to run with Stripe test keys only.
+
+Visitors should use Stripe test card:
+
+```text
+4242 4242 4242 4242
+```
+
+No real production order should be submitted from the portfolio demo.
+
+## Demo Safety
+
+This project is a portfolio demo and should not be treated as a live commercial store.
+
+The app includes demo-safety protections:
+
+- Stripe runs in test mode for the portfolio demo
+- Checkout pages explain that this is a portfolio project
+- Printify fulfillment is disabled by default
+- Printify fulfillment requires `PRINTIFY_FULFILLMENT_ENABLED=true`
+- Admin order deletion is labeled as local test-order deletion
+- Test-order deletion does not refund Stripe and does not cancel external Printify orders
+- Public support/contact copy uses `hello@pedrosimao.work`
 
 ## Development Workflow
 
@@ -214,13 +296,11 @@ Issue → Branch → Code → Commit → Pull Request → Merge → Done
 
 ## Planned Features
 
-- Monthly drop lifecycle automation
-- MariaDB configuration
-- Printify product and fulfillment integration
-- Stripe Checkout integration
-- Privacy Policy and Terms pages
-- Instagram Reel automation on monthly launch
+- Stripe product and price synchronization from admin drops
 - Launch logging and error handling
 - DirectAdmin deployment
+- Production MariaDB configuration
+- Cron-based monthly drop rotation in production
+- README and portfolio presentation polish
 - Tests with pytest
 - Code quality tools

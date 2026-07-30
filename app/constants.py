@@ -23,7 +23,7 @@ DEFAULT_SHIRT_COLOR = "Black"  # Store the default shirt color used when seed da
 
 BRAND_NAME = "The Only Drop"  # Store the public brand name used accross the website
 BRAND_NAME_UPPER = "THE ONLY DROP"  # Store the uppercase brand named used in navigation and footer
-PRIMARY_DOMAIN = "the-only-drop.com"  # Store the planned production domain for the project
+PRIMARY_DOMAIN = "theonlydrop.pedrosimao.work"  # Store the planned production domain for the project
 PRODUCT_CATEGORY_SINGULAR = "T-shirt"  # Store the current singular product category
 PRODUCT_CATEGORY_PLURAL = "T-shirts"  # Store the current plural product category
 DROP_CADENCE_LABEL = "Monthly Drop"  # Store the public cadence label for current drops

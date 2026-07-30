@@ -18,6 +18,11 @@
     </div> <!-- Close the size selector spacing wrapper -->
 
     <button type="submit" class="btn btn-dark btn-lg px-4 w-100 w-sm-auto">Buy Current Drop</button> <!-- Submit the selected size to Stripe Checkout -->
+
+    <p class="portfolio-demo-notice mt-3 mb-0"> <!-- Display a clear portfolio demo notice below the checkout button -->
+        Portfolio demo: Stripe runs in test mode and no real order will be submitted to production. Use Stripe test card 4242 4242 4242 4242 only. <!-- Explain the safe checkout behavior for visitors -->
+    </p> <!-- Close the portfolio demo notice -->
+
     {% else %} <!-- Run this block if no sizes are available -->
     <div class="alert alert-warning" role="alert"> <!-- Create a visible unavailable message -->
         Size selection is not ready for this drop yet. <!-- Tell the customer/admin that checkout cannot start without sizes -->

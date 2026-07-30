@@ -49,8 +49,6 @@ class Drop(db.Model):  # Create a database model class representing one limited 
     printify_size_variant_map = db.Column(db.Text, nullable=True)  # Store a JSON map connecting customer sizes to Printify variant IDs
     stripe_product_id = db.Column(db.String(120), nullable=True)  # Store the Stripe product ID connected to this drop
     stripe_price_id = db.Column(db.String(120), nullable=True)  # Store the Stripe price ID used for hosted Checkout
-    instagram_media_id = db.Column(db.String(120), nullable=True)  # Store the Instagram media ID after publishing a launch reel
-    instagram_permalink = db.Column(db.String(255), nullable=True)  # Store the Instagram post permalink after publishing
     starts_at = db.Column(db.DateTime, nullable= True)  # Store when the drop becomes active
     ends_at = db.Column(db.DateTime, nullable=True)  # Store when the drop expires
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)  # Store when the database record was created

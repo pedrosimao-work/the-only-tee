@@ -68,6 +68,16 @@ def create_checkout_session_for_drop(drop, selected_size, printify_variant_id): 
             shipping_address_collection={  # Ask Stripe Checkout to collect the shipping address
                 "allowed_countries": ["US"],  # Limit MVP shipping to the United States only
             },  # Close shipping address collection configuration
+            custom_text={  # Add portfolio demo messaging inside Stripe-hosted Checkout
+                "submit": {  # Add a message near the final payment submission area
+                    "message": "Portfolio demo checkout. Use Stripe test card 4242 4242 4242 4242 only. No real order will be submitted to production."
+                    # Explain that this is a safe test checkout
+                },  # Close the submit custom text object
+                "shipping_address": {  # Add a message near the shipping address collection area
+                    "message": "Demo checkout for a Python portfolio project. Shipping information is used only to test the checkout and fulfillment flow."
+                    # Explain why shipping details are requested
+                },  # Close the shipping address custom text object
+            },  # Close the custom text configuration
             metadata=checkout_metadata,  # Store local app metadata on the Checkout Session
             payment_intent_data={  # Attach metadata to the underlying payment
                 "metadata": checkout_metadata  # Store the same fulfillment metadata on the PaymentIntent

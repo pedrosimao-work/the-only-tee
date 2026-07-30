@@ -11,6 +11,7 @@
                 <h1 class="page-title mb-3">The Archive Collection</h1> <!-- Display the archive page heading -->
                 <p class="page-copy mb-0">Every previous monthly design from {{ BRAND_NAME }} becomes part of the permanent archive. No repeated drops. Just the full timeline.</p> <!-- Display the archive concept text -->
             </div> <!-- Close the left heading column -->
+
             <div class="col-lg-4 text-lg-end"> <!-- Create the right heading column aligned right on large screens -->
                 <a href="{{ url_for('main.home') }}" class="btn btn-outline-dark">View Current Drop</a> <!-- Add a button back to the active drop page -->
             </div> <!-- Close the right heading column -->
@@ -19,13 +20,19 @@
         {% if archived_drops %} <!-- Check if archived drops exist -->
         <div class="row g-4"> <!-- Create a responsive Bootstrap grid for archived drops -->
             {% for drop in archived_drops %} <!-- Loop through each archived drop from the database -->
+            {% set archive_images = drop.get_mockup_images() %} <!-- Read this archived drop's synced mockup image URLs -->
             <div class="col-md-6 col-lg-4"> <!-- Create one responsive grid column for each drop -->
                 <article class="archive-card h-100"> <!-- Create a semantic archive card article -->
-                    <div class="archive-placeholder"> <!-- Create the visual placeholder area for the archived product -->
-                        <span>#{{ drop.drop_number }}</span> <!-- Display the archived drop number -->
-                    </div> <!-- Close the visual placeholder area -->
+                    {% if archive_images %} <!-- Check if this archived drop has synced Printify mockup images -->
+                    <img src="{{ archive_images[0] }}" class="archive-drop-image" alt="{{ drop.name }} mockup"> <!-- Display the archived drop primary mockup image -->
+                    {% else %} <!-- Run this block if this archived drop has no synced image -->
+                    <div class="archive-placeholder"> <!-- Create the fallback visual placeholder area for the archived product -->
+                        <span>#{{ drop.drop_number }}</span> <!-- Display the archived drop number inside the fallback placeholder -->
+                    </div> <!-- Close the fallback visual placeholder area -->
+                    {% endif %} <!-- End the archived image condition -->
+
                     <div class="archive-card-body"> <!-- Create the archive card text area -->
-                        <p class="archive-meta mb-2">Season {{ drop.season }}</p> <!-- Display the drop season -->
+                        <p class="archive-meta mb-2">Season {{ drop.season }} · Drop #{{ drop.drop_number }}</p> <!-- Display the drop season and drop number -->
                         <h2 class="h5 mb-2">{{ drop.name }}</h2> <!-- Display the drop name -->
                         <p class="text-muted mb-0">Original drop price: €{{ drop.price }}</p> <!-- Display the original drop price -->
                     </div> <!-- Close the archive card text area -->

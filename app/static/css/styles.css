@@ -460,3 +460,17 @@ a { /* Target all links */
 .admin-detail-list dd { /* Target values in admin detail pages */
     margin-bottom: 1rem; /* Add spacing between admin detail rows */
 } /* End admin detail value styling block */
+
+.portfolio-demo-notice { /* Target the portfolio demo notice below checkout */
+    color: var(--color-muted); /* Use muted text so the notice supports the checkout button without overpowering it */
+    font-size: 0.9rem; /* Keep the demo notice readable but secondary */
+    line-height: 1.6; /* Improve readability for the longer safety sentence */
+    max-width: 520px; /* Keep the demo notice from becoming too wide on desktop */
+} /* End the portfolio demo notice styling block */
+
+.archive-drop-image { /* Target archived drop mockup images */
+    aspect-ratio: 1 / 1; /* Keep archived mockups square and consistent */
+    border-radius: var(--radius-large); /* Apply the project rounded corner style */
+    object-fit: cover; /* Crop the mockup neatly without distortion */
+    width: 100%; /* Make the archived mockup fill the card width */
+} /* End archived drop image styling block */
