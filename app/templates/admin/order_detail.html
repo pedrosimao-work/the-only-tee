@@ -1,0 +1,95 @@
+{% extends "base.html" %} <!-- Tell Jinja this admin page uses the shared base layout -->
+
+{% block title %}Order #{{ order.id }} | {{ BRAND_NAME }} Admin{% endblock %} <!-- Set the browser title for the order detail page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section"> <!-- Create the admin order detail section -->
+    <div class="container"> <!-- Center the order detail content inside a Bootstrap container -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4"> <!-- Create a responsive page header -->
+            <div> <!-- Create the heading text wrapper -->
+                <p class="eyebrow mb-2">Admin Order</p> <!-- Display the small admin label -->
+                <h1 class="fw-bold mb-0">Order #{{ order.id }}</h1> <!-- Display the local order ID as the heading -->
+            </div> <!-- Close the heading text wrapper -->
+
+            <a href="{{ url_for('admin.orders') }}" class="btn btn-outline-dark">Back to Orders</a> <!-- Link back to the orders list -->
+        </div> <!-- Close the page header -->
+
+        <div class="row g-4"> <!-- Create a responsive grid for order detail cards -->
+            <div class="col-lg-6"> <!-- Create the first detail column -->
+                <div class="card border-0 shadow-sm h-100"> <!-- Create the order summary card -->
+                    <div class="card-body p-4"> <!-- Create card body spacing -->
+                        <h2 class="h5 fw-bold mb-4">Order Summary</h2> <!-- Display the card heading -->
+
+                        <dl class="row mb-0 admin-detail-list"> <!-- Create a definition list for order summary fields -->
+                            <dt class="col-sm-5">Payment status</dt> <!-- Display the payment status label -->
+                            <dd class="col-sm-7">{{ order.payment_status }}</dd> <!-- Display the payment status value -->
+
+                            <dt class="col-sm-5">Fulfillment status</dt> <!-- Display the fulfillment status label -->
+                            <dd class="col-sm-7">{{ order.get_fulfillment_status_label() }}</dd> <!-- Display the fulfillment status value -->
+
+                            <dt class="col-sm-5">Amount</dt> <!-- Display the amount label -->
+                            <dd class="col-sm-7">{{ order.get_amount_display() }}</dd> <!-- Display the formatted payment amount -->
+
+                            <dt class="col-sm-5">Quantity</dt> <!-- Display the quantity label -->
+                            <dd class="col-sm-7">{{ order.quantity }}</dd> <!-- Display the order quantity -->
+
+                            <dt class="col-sm-5">Selected size</dt> <!-- Display the selected size label -->
+                            <dd class="col-sm-7">{{ order.selected_size or "Not selected" }}</dd> <!-- Display the selected size value -->
+
+                            <dt class="col-sm-5">Customer email</dt> <!-- Display the customer email label -->
+                            <dd class="col-sm-7">{{ order.customer_email or "Not available" }}</dd> <!-- Display the customer email value -->
+
+                            <dt class="col-sm-5">Created at</dt> <!-- Display the order creation label -->
+                            <dd class="col-sm-7">{{ order.created_at.strftime("%Y-%m-%d %H:%M") }}</dd> <!-- Display the order creation timestamp -->
+
+                            <dt class="col-sm-5">Paid at</dt> <!-- Display the payment completion label -->
+                            <dd class="col-sm-7">{{ order.paid_at.strftime("%Y-%m-%d %H:%M") if order.paid_at else "Not paid yet" }}</dd> <!-- Display the payment completion timestamp or fallback -->
+                        </dl> <!-- Close the order summary list -->
+                    </div> <!-- Close the card body -->
+                </div> <!-- Close the order summary card -->
+            </div> <!-- Close the first detail column -->
+
+            <div class="col-lg-6"> <!-- Create the second detail column -->
+                <div class="card border-0 shadow-sm h-100"> <!-- Create the drop and fulfillment card -->
+                    <div class="card-body p-4"> <!-- Create card body spacing -->
+                        <h2 class="h5 fw-bold mb-4">Drop & Fulfillment</h2> <!-- Display the card heading -->
+
+                        <dl class="row mb-0 admin-detail-list"> <!-- Create a definition list for drop and fulfillment fields -->
+                            <dt class="col-sm-5">Drop</dt> <!-- Display the drop label -->
+                            <dd class="col-sm-7">{{ order.drop.drop_number }} — {{ order.drop.name }}</dd> <!-- Display the purchased drop -->
+
+                            <dt class="col-sm-5">Drop color</dt> <!-- Display the drop color label -->
+                            <dd class="col-sm-7">{{ order.drop.shirt_color or "Not set" }}</dd> <!-- Display the fixed shirt color -->
+
+                            <dt class="col-sm-5">Printify variant ID</dt> <!-- Display the Printify variant label -->
+                            <dd class="col-sm-7">{{ order.printify_variant_id or "Not available" }}</dd> <!-- Display the selected Printify variant ID -->
+
+                            <dt class="col-sm-5">Printify order ID</dt> <!-- Display the Printify order ID label -->
+                            <dd class="col-sm-7">{{ order.printify_order_id or "Not sent yet" }}</dd> <!-- Display the future Printify order ID or fallback -->
+
+                            <dt class="col-sm-5">Ready for fulfillment</dt> <!-- Display the fulfillment readiness label -->
+                            <dd class="col-sm-7">{{ "Yes" if order.is_ready_for_fulfillment() else "No" }}</dd> <!-- Display whether the order is ready for Printify fulfillment -->
+                        </dl> <!-- Close the drop and fulfillment list -->
+                    </div> <!-- Close the card body -->
+                </div> <!-- Close the drop and fulfillment card -->
+            </div> <!-- Close the second detail column -->
+
+            <div class="col-12"> <!-- Create the full-width Stripe detail column -->
+                <div class="card border-0 shadow-sm"> <!-- Create the Stripe detail card -->
+                    <div class="card-body p-4"> <!-- Create card body spacing -->
+                        <h2 class="h5 fw-bold mb-4">Stripe Details</h2> <!-- Display the card heading -->
+
+                        <dl class="row mb-0 admin-detail-list"> <!-- Create a definition list for Stripe fields -->
+                            <dt class="col-md-3">Checkout Session ID</dt> <!-- Display the Checkout Session label -->
+                            <dd class="col-md-9 text-break">{{ order.stripe_checkout_session_id }}</dd> <!-- Display the Stripe Checkout Session ID -->
+
+                            <dt class="col-md-3">PaymentIntent ID</dt> <!-- Display the PaymentIntent label -->
+                            <dd class="col-md-9 text-break">{{ order.stripe_payment_intent_id or "Not available yet" }}</dd> <!-- Display the Stripe PaymentIntent ID or fallback -->
+                        </dl> <!-- Close the Stripe detail list -->
+                    </div> <!-- Close the card body -->
+                </div> <!-- Close the Stripe detail card -->
+            </div> <!-- Close the full-width Stripe detail column -->
+        </div> <!-- Close the responsive detail grid -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the admin order detail section -->
+{% endblock %} <!-- End the page-specific content block -->

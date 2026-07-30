@@ -440,3 +440,23 @@ a { /* Target all links */
         width: 100%; /* Make the archive button full-width on mobile for clean stacking */
     } /* End the mobile archive button styling block */
 } /* End the small mobile media query */
+
+.admin-table { /* Target reusable admin tables */
+    font-size: 0.95rem; /* Keep admin tables compact and readable */
+} /* End admin table styling block */
+
+.admin-table th { /* Target admin table header cells */
+    color: var(--color-muted); /* Use muted text for table headings */
+    font-size: 0.78rem; /* Make table headings compact */
+    letter-spacing: 0.06rem; /* Add subtle admin UI letter spacing */
+    text-transform: uppercase; /* Make table headings scannable */
+} /* End admin table header styling block */
+
+.admin-detail-list dt { /* Target labels in admin detail pages */
+    color: var(--color-muted); /* Use muted text for admin field labels */
+    font-weight: 700; /* Make admin field labels easy to scan */
+} /* End admin detail label styling block */
+
+.admin-detail-list dd { /* Target values in admin detail pages */
+    margin-bottom: 1rem; /* Add spacing between admin detail rows */
+} /* End admin detail value styling block */
