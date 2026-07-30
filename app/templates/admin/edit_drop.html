@@ -1,0 +1,97 @@
+{% extends "base.html" %} <!-- Tell Jinja this admin page uses the shared base layout -->
+
+{% block title %}Edit Drop #{{ drop.drop_number }} | {{ BRAND_NAME }} Admin{% endblock %} <!-- Set the browser title for the edit drop page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section"> <!-- Create the admin edit drop section -->
+    <div class="container"> <!-- Center the admin content inside a Bootstrap container -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4"> <!-- Create a responsive page header -->
+            <div> <!-- Create the heading text wrapper -->
+                <p class="eyebrow mb-2">Admin Drop</p> <!-- Display the small admin label -->
+                <h1 class="fw-bold mb-0">Edit Drop #{{ drop.drop_number }}</h1> <!-- Display the edit drop heading -->
+            </div> <!-- Close the heading text wrapper -->
+
+            <a href="{{ url_for('admin.drops') }}" class="btn btn-outline-dark">Back to Drops</a> <!-- Link back to the admin drops page -->
+        </div> <!-- Close the page header -->
+
+        <div class="card border-0 shadow-sm"> <!-- Create the edit form card -->
+            <div class="card-body p-4"> <!-- Add spacing inside the edit form card -->
+                <form method="POST"> <!-- Create the drop edit form -->
+                    {{ form.hidden_tag() }} <!-- Render CSRF protection fields -->
+
+                    <div class="row g-3"> <!-- Create a responsive form grid -->
+                        <div class="col-md-4"> <!-- Create the drop number field column -->
+                            {{ form.drop_number.label(class="form-label fw-semibold") }} <!-- Render the drop number label -->
+                            {{ form.drop_number(class="form-control") }} <!-- Render the drop number input -->
+                        </div> <!-- Close the drop number field column -->
+
+                        <div class="col-md-4"> <!-- Create the season field column -->
+                            {{ form.season.label(class="form-label fw-semibold") }} <!-- Render the season label -->
+                            {{ form.season(class="form-control") }} <!-- Render the season input -->
+                        </div> <!-- Close the season field column -->
+
+                        <div class="col-md-4"> <!-- Create the status field column -->
+                            {{ form.status.label(class="form-label fw-semibold") }} <!-- Render the status label -->
+                            {{ form.status(class="form-select") }} <!-- Render the status select -->
+                        </div> <!-- Close the status field column -->
+
+                        <div class="col-md-8"> <!-- Create the drop name field column -->
+                            {{ form.name.label(class="form-label fw-semibold") }} <!-- Render the drop name label -->
+                            {{ form.name(class="form-control") }} <!-- Render the drop name input -->
+                        </div> <!-- Close the drop name field column -->
+
+                        <div class="col-md-4"> <!-- Create the price field column -->
+                            {{ form.price.label(class="form-label fw-semibold") }} <!-- Render the price label -->
+                            {{ form.price(class="form-control") }} <!-- Render the price input -->
+                        </div> <!-- Close the price field column -->
+
+                        <div class="col-md-6"> <!-- Create the product type field column -->
+                            {{ form.product_type.label(class="form-label fw-semibold") }} <!-- Render the product type label -->
+                            {{ form.product_type(class="form-select") }} <!-- Render the product type select -->
+                        </div> <!-- Close the product type field column -->
+
+                        <div class="col-md-6"> <!-- Create the shirt color field column -->
+                            {{ form.shirt_color.label(class="form-label fw-semibold") }} <!-- Render the shirt color label -->
+                            {{ form.shirt_color(class="form-control") }} <!-- Render the shirt color input -->
+                        </div> <!-- Close the shirt color field column -->
+
+                        <div class="col-md-6"> <!-- Create the start date field column -->
+                            {{ form.starts_at.label(class="form-label fw-semibold") }} <!-- Render the start date label -->
+                            {{ form.starts_at(class="form-control") }} <!-- Render the start date input -->
+                        </div> <!-- Close the start date field column -->
+
+                        <div class="col-md-6"> <!-- Create the end date field column -->
+                            {{ form.ends_at.label(class="form-label fw-semibold") }} <!-- Render the end date label -->
+                            {{ form.ends_at(class="form-control") }} <!-- Render the end date input -->
+                        </div> <!-- Close the end date field column -->
+
+                        <div class="col-12"> <!-- Create the description field column -->
+                            {{ form.description.label(class="form-label fw-semibold") }} <!-- Render the description label -->
+                            {{ form.description(class="form-control", rows="4") }} <!-- Render the description textarea -->
+                        </div> <!-- Close the description field column -->
+
+                        {% if form.printify_product_id is defined %} <!-- Check if the form has a Printify product ID field -->
+                        <div class="col-12"> <!-- Create the Printify product ID field column -->
+                            {{ form.printify_product_id.label(class="form-label fw-semibold") }} <!-- Render the Printify product ID label -->
+                            {{ form.printify_product_id(class="form-control") }} <!-- Render the Printify product ID input -->
+                        </div> <!-- Close the Printify product ID field column -->
+                        {% endif %} <!-- End the Printify product ID field condition -->
+
+                        {% if form.printify_variant_ids is defined %} <!-- Check if the form has a Printify variant IDs field -->
+                        <div class="col-12"> <!-- Create the Printify variant IDs field column -->
+                            {{ form.printify_variant_ids.label(class="form-label fw-semibold") }} <!-- Render the Printify variant IDs label -->
+                            {{ form.printify_variant_ids(class="form-control", rows="3") }} <!-- Render the Printify variant IDs textarea -->
+                        </div> <!-- Close the Printify variant IDs field column -->
+                        {% endif %} <!-- End the Printify variant IDs field condition -->
+                    </div> <!-- Close the responsive form grid -->
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 mt-4"> <!-- Create responsive action buttons -->
+                        <button type="submit" class="btn btn-dark">Save Changes</button> <!-- Save the edited drop -->
+                        <a href="{{ url_for('admin.drops') }}" class="btn btn-outline-secondary">Cancel</a> <!-- Cancel editing and return to drops -->
+                    </div> <!-- Close responsive action buttons -->
+                </form> <!-- Close the drop edit form -->
+            </div> <!-- Close the edit form card body -->
+        </div> <!-- Close the edit form card -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the admin edit drop section -->
+{% endblock %} <!-- End the page-specific content block -->

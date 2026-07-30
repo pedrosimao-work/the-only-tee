@@ -115,6 +115,18 @@
                 </div> <!-- Close the Stripe detail card -->
             </div> <!-- Close the full-width Stripe detail column -->
         </div> <!-- Close the responsive detail grid -->
+
+        <div class="card border-danger mt-4"> <!-- Create a danger-zone card for local test order deletion -->
+            <div class="card-body p-4"> <!-- Add spacing inside the danger-zone card -->
+                <h2 class="h5 fw-bold mb-3">Danger Zone</h2> <!-- Display the danger-zone heading -->
+                <p class="text-muted mb-4">Delete this local test order from the portfolio demo database. This does not refund Stripe and does not cancel any external Printify order.</p> <!-- Explain exactly what the delete action does -->
+
+                <form method="POST" action="{{ url_for('admin.delete_order', order_id=order.id) }}"> <!-- Create the local test order delete form -->
+                    {{ delete_form.hidden_tag() }} <!-- Render CSRF protection fields -->
+                    <button type="submit" class="btn btn-outline-danger">Delete Test Order</button> <!-- Submit the local test order deletion -->
+                </form> <!-- Close the local test order delete form -->
+            </div> <!-- Close the danger-zone card body -->
+        </div> <!-- Close the danger-zone card -->
     </div> <!-- Close the Bootstrap container -->
 </section> <!-- Close the admin order detail section -->
 {% endblock %} <!-- End the page-specific content block -->
