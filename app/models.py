@@ -129,5 +129,30 @@ class Order(db.Model):  # Create a database model class representing one Stripe 
     user = db.relationship("User", backref="orders")  # Connect the order to the option user record
     drop = db.relationship("Drop", backref="orders")  # Connect the order to the purchased drop record
 
+    def get_amount_display(self):  # Define a helper method that formats the Stripe amount for admin display
+        if self.amount_total is None:  # Check if Stripe did not return an amount yet
+            return "Not available"  # Return a safe fallback when the amount is missing
+
+        if not self.currency:  # Check if Stripe did not return a currency yet
+            return "Not available"  # Return safe fallback when the currency is missing
+
+        amount = self.amount_total / 100  # Convert Stripe's smallest currency unit into normal currency units
+        return f"{self.currency.upper()} {amount:.2f}"  # Return the formatted amount with the currency code
+
+    def get_fulfillment_status_label(self):  # Define a helper method that explains fulfillment readiness
+        if self.printify_order_id:  # Check if the order has already been sent to Printify
+            return "Sent to Printify"  # Return the completed fulfillment label
+
+        if self.payment_status == "paid" and self.printify_variant_id:  # Check if the order is paid and has a fulfillment variant
+            return "Ready for fulfillment"  # Return the ready-for-Printify label
+
+        if self.payment_status == "paid":  # Check if the order is paid but missing fulfillment data
+            return "Paid, missing variant"  # Return a warning label for incomplete fulfillment data
+
+        return "Waiting for payment"  # Return the default label for unpaid or incomplete orders
+
+    def is_ready_for_fulfillment(self):  # Define a helper method that returns whether this order can be fulfilled
+        return self.payment_status == "paid" and bool(self.printify_variant_id) and not self.printify_order_id  # Return True only when the paid order has a variant and has not been sent to Printify
+
     def __repr__(self):  # Define the developer-friendly representation of an Order object
         return f"<Order {self.id} - {self.payment_status}>"  # Return a readable label when debugging Order records

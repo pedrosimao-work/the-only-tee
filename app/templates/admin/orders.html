@@ -1,0 +1,69 @@
+{% extends "base.html" %} <!-- Tell Jinja this admin page uses the shared base layout -->
+
+{% block title %}Orders | {{ BRAND_NAME }} Admin{% endblock %} <!-- Set the browser title for the admin orders page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section"> <!-- Create the admin page section -->
+    <div class="container"> <!-- Center the admin content inside a Bootstrap container -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4"> <!-- Create a responsive page header -->
+            <div> <!-- Create the heading text wrapper -->
+                <p class="eyebrow mb-2">Admin</p> <!-- Display the small admin label -->
+                <h1 class="fw-bold mb-0">Orders</h1> <!-- Display the orders page heading -->
+            </div> <!-- Close the heading text wrapper -->
+
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-dark">Back to Dashboard</a> <!-- Link back to the admin dashboard -->
+        </div> <!-- Close the page header -->
+
+        {% if orders %} <!-- Check if there are any orders to display -->
+        <div class="table-responsive"> <!-- Make the orders table scroll horizontally on small screens -->
+            <table class="table align-middle admin-table"> <!-- Create the admin orders table -->
+                <thead> <!-- Start the table header -->
+                    <tr> <!-- Start the table header row -->
+                        <th scope="col">Order</th> <!-- Create the order ID column heading -->
+                        <th scope="col">Date</th> <!-- Create the date column heading -->
+                        <th scope="col">Drop</th> <!-- Create the drop column heading -->
+                        <th scope="col">Customer</th> <!-- Create the customer column heading -->
+                        <th scope="col">Size</th> <!-- Create the selected size column heading -->
+                        <th scope="col">Payment</th> <!-- Create the payment status column heading -->
+                        <th scope="col">Amount</th> <!-- Create the amount column heading -->
+                        <th scope="col">Fulfillment</th> <!-- Create the fulfillment status column heading -->
+                        <th scope="col">Action</th> <!-- Create the action column heading -->
+                    </tr> <!-- Close the table header row -->
+                </thead> <!-- Close the table header -->
+
+                <tbody> <!-- Start the table body -->
+                    {% for order in orders %} <!-- Loop through all local orders -->
+                    <tr> <!-- Start one order row -->
+                        <td>#{{ order.id }}</td> <!-- Display the local order ID -->
+                        <td>{{ order.created_at.strftime("%Y-%m-%d %H:%M") }}</td> <!-- Display the order creation date -->
+                        <td>{{ order.drop.drop_number }} — {{ order.drop.name }}</td> <!-- Display the purchased drop -->
+                        <td>{{ order.customer_email or "Not available" }}</td> <!-- Display the customer email or fallback -->
+                        <td>{{ order.selected_size or "Not selected" }}</td> <!-- Display the selected size or fallback -->
+                        <td> <!-- Start the payment status cell -->
+                            {% if order.payment_status == "paid" %} <!-- Check if the order is paid -->
+                            <span class="badge text-bg-success">Paid</span> <!-- Display a paid badge -->
+                            {% else %} <!-- Run this block for unpaid or incomplete payment states -->
+                            <span class="badge text-bg-secondary">{{ order.payment_status }}</span> <!-- Display the raw payment status badge -->
+                            {% endif %} <!-- End the payment status condition -->
+                        </td> <!-- Close the payment status cell -->
+                        <td>{{ order.get_amount_display() }}</td> <!-- Display the formatted Stripe amount -->
+                        <td>{{ order.get_fulfillment_status_label() }}</td> <!-- Display the fulfillment readiness label -->
+                        <td> <!-- Start the action cell -->
+                            <a href="{{ url_for('admin.order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline-dark">View</a> <!-- Link to the order detail page -->
+                        </td> <!-- Close the action cell -->
+                    </tr> <!-- Close one order row -->
+                    {% endfor %} <!-- End the orders loop -->
+                </tbody> <!-- Close the table body -->
+            </table> <!-- Close the admin orders table -->
+        </div> <!-- Close the responsive table wrapper -->
+        {% else %} <!-- Run this block if there are no orders yet -->
+        <div class="empty-state text-center mx-auto"> <!-- Create an empty state message -->
+            <p class="eyebrow mb-3">No Orders Yet</p> <!-- Display the empty state label -->
+            <h2 class="fw-bold mb-3">No checkout sessions have been created.</h2> <!-- Display the empty state heading -->
+            <p class="text-muted mb-4">Orders will appear here after customers start Stripe Checkout.</p> <!-- Explain when orders appear -->
+            <a href="{{ url_for('main.home') }}" class="btn btn-dark btn-lg px-4">View Current Drop</a> <!-- Link to the current drop page -->
+        </div> <!-- Close the empty state message -->
+        {% endif %} <!-- End the orders condition -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the admin page section -->
+{% endblock %} <!-- End the page-specific content block -->

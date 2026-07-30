@@ -6,7 +6,7 @@ from flask_login import current_user, login_required  # Import login helpers for
 from app.admin.forms import DropForm, EmptyForm  # Import admin forms for drop creation and button-only POST actions
 from app.constants import DROP_STATUS_ACTIVE, DROP_STATUS_ARCHIVED, DROP_STATUS_DRAFT  # Import reusable status constants
 from app.extensions import db  # Import the database object so admin routes can save records
-from app.models import Drop  # Import the Drop model so admin routes can query and create drops
+from app.models import Drop, Order  # Import Drop and Order models so admin routes can manage drops and inspect orders
 from app.services.printify import PrintifyAPIError, PrintifyConfigError, sync_drop_with_printify  # Import Printify sync helpers
 from app.validators import validate_drop_status, validate_product_type  # Import reusable drop validation functions
 
@@ -132,3 +132,19 @@ def sync_printify_drop(drop_id):  # Define the function that syncs one drop with
 
     flash(f"Printify sync complete. Selected variants available: {selected_available_count}/{selected_count}.", "success")  # Show the sync result
     return redirect(url_for("admin.drops"))  # Redirect back to the admin drops page
+
+
+@admin.get("/orders")  # Register the admin orders list route
+@login_required  # Require the user to be logged in before viewing orders
+@admin_required  # Require the logged-in user to be an admin before viewing orders
+def orders():  # Define the admin view that lists local Stripe orders
+    order_list = Order.query.order_by(Order.created_at.desc()).all()  # Retrieve all orders newest first
+    return render_template("admin/orders.html", orders=order_list)  # Render the admin orders page
+
+
+@admin.get("/orders/<int:order_id>")  # Register the admin order detail route
+@login_required  # Require the user to be logged in before viewing one order
+@admin_required  # Require the logged-in user to be an admin before viewing one order
+def order_detail(order_id):  # Define the admin view that shows one order
+    order = Order.query.get_or_404(order_id)  # Retrieve the requested order or return a 404 page
+    return render_template("admin/order_detail.html", order=order)  # Render the admin order detail page
