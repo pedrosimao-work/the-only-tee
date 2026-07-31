@@ -24,14 +24,14 @@
                             <p class="mb-1 small text-muted">Now showing</p> <!-- Display a small contextual label -->
                             <h2 class="h5 mb-0">Drop #{{ active_drop.drop_number }}</h2> <!-- Display the active drop number -->
                         </div> <!-- Close the product summary text wrapper -->
-                        <strong>€{{ active_drop.price }}</strong> <!-- Display the active drop price -->
+                        <strong>${{ active_drop.price }}</strong> <!-- Display the active drop price -->
                     </div> <!-- Close the product summary card -->
                 </div> <!-- Close the mobile-only product showcase -->
 
                 <div class="drop-meta d-none d-md-flex gap-3 mb-4"> <!-- Hide redundant metadata on mobile and show it from tablet size upward -->
                     <div class="meta-box"> <!-- Create the price metadata box -->
                         <span class="meta-label">Price</span> <!-- Display the metadata label -->
-                        <strong>€{{ active_drop.price }}</strong> <!-- Display the active drop price -->
+                        <strong>${{ active_drop.price }}</strong> <!-- Display the active drop price -->
                     </div> <!-- Close the price metadata box -->
                     <div class="meta-box"> <!-- Create the status metadata box -->
                         <span class="meta-label">Status</span> <!-- Display the metadata label -->
@@ -65,7 +65,7 @@
                             <p class="mb-1 small text-muted">Now showing</p> <!-- Display a small contextual label -->
                             <h2 class="h5 mb-0">Drop #{{ active_drop.drop_number }}</h2> <!-- Display the active drop number -->
                         </div> <!-- Close the product summary text wrapper -->
-                        <strong>€{{ active_drop.price }}</strong> <!-- Display the active drop price -->
+                        <strong>${{ active_drop.price }}</strong> <!-- Display the active drop price -->
                     </div> <!-- Close the product summary card -->
                 </div> <!-- Close the product showcase wrapper -->
             </div> <!-- Close the desktop-only right column -->

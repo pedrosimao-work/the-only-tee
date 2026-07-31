@@ -9,6 +9,7 @@ from app.constants import DROP_STATUS_ACTIVE, DROP_STATUS_ARCHIVED, DROP_STATUS_
 from app.extensions import db  # Import the database object so admin routes can save and delete records
 from app.models import Drop, Order  # Import Drop and Order models so admin routes can manage drops and inspect orders
 from app.services.printify import PrintifyAPIError, PrintifyConfigError, PrintifyFulfillmentError, submit_order_to_printify, sync_drop_with_printify  # Import Printify sync and fulfillment helpers
+from app.services.stripe_products import archive_stripe_catalog_for_drop, ensure_stripe_product_and_price_for_drop, sync_stripe_after_drop_edit, StripeProductSyncError  # Import automatic Stripe sync and cleanup helpers
 from app.validators import validate_drop_status, validate_product_type  # Import reusable drop validation functions
 
 
@@ -91,19 +92,28 @@ def create_drop():  # Define the function that handles creating new drops
             status=validated_status,  # Store the validated lifecycle status
             product_type=validated_product_type,  # Store the validated product type
             shirt_color=form.shirt_color.data.strip(),  # Store the selected shirt color
-            image_url=clean_optional_text(form.image_url.data),  # Store the optional image URL or None
             printify_product_id=clean_optional_text(form.printify_product_id.data),  # Store the optional Printify product ID or None
             printify_variant_ids=clean_optional_text(form.printify_variant_ids.data),  # Store the optional Printify variant IDs or None
-            stripe_product_id=clean_optional_text(form.stripe_product_id.data),  # Store the optional Stripe product ID or None
-            stripe_price_id=clean_optional_text(form.stripe_price_id.data),  # Store the optional Stripe price ID or None
             starts_at=form.starts_at.data,  # Store the optional scheduled start date
             ends_at=form.ends_at.data,  # Store the optional scheduled end date
         )  # Close the Drop object creation
 
         db.session.add(drop)  # Add the new drop to the database session
-        db.session.commit()  # Save the new drop permanently to the database
 
-        flash("Drop created successfully.", "success")  # Show a success message after creating the drop
+        try:  # Try to save the new drop and sync it to Stripe
+            db.session.flush()  # Assign a local database ID before creating Stripe metadata
+            ensure_stripe_product_and_price_for_drop(drop)  # Automatically create the Stripe Product and USD Stripe Price for this drop
+            db.session.commit()  # Save the local drop and Stripe IDs permanently
+        except StripeProductSyncError as error:  # Catch automatic Stripe sync errors
+            db.session.rollback()  # Undo the local drop creation because Stripe sync failed
+            flash(str(error), "danger")  # Show the Stripe sync error to the admin user
+            return render_template("admin/create_drop.html", form=form)  # Re-render the create-drop form
+        except IntegrityError:  # Catch database-level duplicate or constraint errors
+            db.session.rollback()  # Undo the failed database transaction
+            flash("The drop could not be created because of a database constraint.", "danger")  # Show a safe database error message
+            return render_template("admin/create_drop.html", form=form)  # Re-render the create-drop form
+
+        flash(f"Drop #{drop.drop_number} was created and synced to Stripe.", "success")  # Show a success message after creating and syncing the drop
         return redirect(url_for("admin.drops"))  # Redirect the admin user to the drop list
 
     return render_template("admin/create_drop.html", form=form)  # Render the create-drop form for GET requests or invalid submissions
@@ -138,22 +148,24 @@ def edit_drop(drop_id):  # Define the function that handles editing existing dro
         drop.status = validated_status  # Update the lifecycle status
         drop.product_type = validated_product_type  # Update the product type
         drop.shirt_color = form.shirt_color.data.strip()  # Update the selected shirt color
-        drop.image_url = clean_optional_text(form.image_url.data)  # Update the optional image URL or None
         drop.printify_product_id = clean_optional_text(form.printify_product_id.data)  # Update the optional Printify product ID or None
         drop.printify_variant_ids = clean_optional_text(form.printify_variant_ids.data)  # Update the optional Printify variant IDs or None
-        drop.stripe_product_id = clean_optional_text(form.stripe_product_id.data)  # Update the optional Stripe product ID or None
-        drop.stripe_price_id = clean_optional_text(form.stripe_price_id.data)  # Update the optional Stripe price ID or None
         drop.starts_at = form.starts_at.data  # Update the optional scheduled start date
         drop.ends_at = form.ends_at.data  # Update the optional scheduled end date
 
-        try:  # Try to save the edited drop safely
-            db.session.commit()  # Save the updated drop permanently
+        try:  # Try to save the edited drop and sync Stripe changes
+            sync_stripe_after_drop_edit(drop)  # Update Stripe Product details and create a matching USD Stripe Price if needed
+            db.session.commit()  # Save the updated drop and Stripe IDs permanently
+        except StripeProductSyncError as error:  # Catch automatic Stripe sync errors
+            db.session.rollback()  # Undo the edited drop changes because Stripe sync failed
+            flash(str(error), "danger")  # Show the Stripe sync error to the admin user
+            return render_template("admin/edit_drop.html", form=form, drop=drop)  # Re-render the edit-drop form
         except IntegrityError:  # Catch database-level duplicate or constraint errors
             db.session.rollback()  # Roll back the failed database transaction
             flash("The drop could not be updated because of a database constraint.", "danger")  # Show a safe database error message
             return render_template("admin/edit_drop.html", form=form, drop=drop)  # Re-render the edit-drop form
 
-        flash(f"Drop #{drop.drop_number} was updated successfully.", "success")  # Show a success message after updating the drop
+        flash(f"Drop #{drop.drop_number} was updated and synced to Stripe.", "success")  # Show a success message after updating and syncing the drop
         return redirect(url_for("admin.drops"))  # Redirect the admin user back to the drop list
 
     return render_template("admin/edit_drop.html", form=form, drop=drop)  # Render the edit-drop form for GET requests or invalid submissions
@@ -181,10 +193,17 @@ def delete_drop(drop_id):  # Define the function that deletes safe local drops
         return redirect(url_for("admin.drops"))  # Redirect back to the admin drops page
 
     drop_number_for_message = drop.drop_number  # Store the drop number before deleting the row
-    db.session.delete(drop)  # Delete the safe local drop from the database
-    db.session.commit()  # Save the deletion permanently
 
-    flash(f"Drop #{drop_number_for_message} was deleted.", "success")  # Show a success message after deleting the drop
+    try:  # Try to clean the Stripe catalog before deleting the local drop
+        archive_stripe_catalog_for_drop(drop)  # Archive or delete the Stripe Product and deactivate active Stripe Prices
+        db.session.delete(drop)  # Delete the safe local drop from the database
+        db.session.commit()  # Save the deletion permanently
+    except StripeProductSyncError as error:  # Catch Stripe cleanup failures
+        db.session.rollback()  # Undo the local delete attempt if Stripe cleanup failed
+        flash(str(error), "danger")  # Show the Stripe cleanup error to the admin user
+        return redirect(url_for("admin.drops"))  # Redirect back to the admin drops page
+
+    flash(f"Drop #{drop_number_for_message} was deleted locally and cleaned in Stripe.", "success")  # Show a success message after deleting the drop and cleaning Stripe
     return redirect(url_for("admin.drops"))  # Redirect the admin user back to the drop list
 
 

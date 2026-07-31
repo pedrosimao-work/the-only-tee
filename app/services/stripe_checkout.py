@@ -39,7 +39,17 @@ def retrieve_checkout_session(session_id):  # Define a helper function that retr
 
 
 def create_checkout_session_for_drop(drop, selected_size, printify_variant_id):  # Define a service function that creates a Stripe Checkout Session for one selected size
-    if not drop.stripe_price_id:  # Check if the drop does not have a Stripe Price ID
+    if not drop.stripe_price_id:  # Check if this drop is missing a saved Stripe Price ID
+        from app.services.stripe_products import ensure_stripe_product_and_price_for_drop, StripeProductSyncError  # Import here to avoid a circular import with stripe_products.py
+
+        try:  # Try to create the missing Stripe Product and Price automatically
+            ensure_stripe_product_and_price_for_drop(drop)  # Create missing Stripe catalog records for this drop
+            db.session.commit()  # Save the newly created Stripe IDs before creating Checkout
+        except StripeProductSyncError as error:  # Catch Stripe product sync failures
+            db.session.rollback()  # Undo any partial local Stripe ID changes
+            raise StripeCheckoutError(str(error)) from error  # Convert the product sync error into a checkout error
+
+    if not drop.stripe_price_id:  # Check again in case automatic Stripe sync did not create a price
         raise StripeCheckoutError("This drop does not have a Stripe Price ID.")  # Raise a clear checkout error
 
     configure_stripe()  # Configure the Stripe SDK with the secret key
@@ -57,12 +67,12 @@ def create_checkout_session_for_drop(drop, selected_size, printify_variant_id): 
     try:  # Start a protected block for Stripe Checkout Session creation
         session = stripe.checkout.Session.create(  # Create a Stripe-hosted Checkout Session
             mode="payment",  # Use one-time payment mode
-            line_items=[  # Define the products being purchased
-                {  # Start the single line item
-                    "price": drop.stripe_price_id,  # Use the Stripe Price ID connected to the drop
+            line_items=[  # Define the products being purchased through Checkout
+                {  # Create one line item for the current monthly drop
+                    "price": drop.stripe_price_id,  # Use the saved Stripe Price ID connected to this drop
                     "quantity": 1,  # Sell one item per Checkout Session for this MVP
-                }  # Close the single line item
-            ],  # Close the line items list
+                },  # Close the one line item
+            ],  # Close line items
             success_url=success_url,  # Send successful customers back to the success page
             cancel_url=cancel_url,  # Send cancelled customers back to the cancel page
             shipping_address_collection={  # Ask Stripe Checkout to collect the shipping address
@@ -70,12 +80,10 @@ def create_checkout_session_for_drop(drop, selected_size, printify_variant_id): 
             },  # Close shipping address collection configuration
             custom_text={  # Add portfolio demo messaging inside Stripe-hosted Checkout
                 "submit": {  # Add a message near the final payment submission area
-                    "message": "Portfolio demo checkout. Use Stripe test card 4242 4242 4242 4242 only. No real order will be submitted to production."
-                    # Explain that this is a safe test checkout
+                    "message": "Portfolio demo checkout. Use Stripe test card 4242 4242 4242 4242 only. No real order will be submitted to production."  # Explain that this is a safe test checkout
                 },  # Close the submit custom text object
                 "shipping_address": {  # Add a message near the shipping address collection area
-                    "message": "Demo checkout for a Python portfolio project. Shipping information is used only to test the checkout and fulfillment flow."
-                    # Explain why shipping details are requested
+                    "message": "Demo checkout for a Python portfolio project. Shipping information is used only to test the checkout and fulfillment flow."  # Explain why shipping details are requested
                 },  # Close the shipping address custom text object
             },  # Close the custom text configuration
             metadata=checkout_metadata,  # Store local app metadata on the Checkout Session
@@ -105,6 +113,7 @@ def create_checkout_session_for_drop(drop, selected_size, printify_variant_id): 
     db.session.commit()  # Save the order permanently
 
     return session  # Return the Stripe Checkout Session so the route can redirect to its URL
+
 
 def mark_order_paid_from_checkout_session(session):  # Define a service function that marks an order paid from a Stripe session object
     order = Order.query.filter_by(stripe_checkout_session_id=session.get("id")).first()  # Find the local order by Checkout Session ID

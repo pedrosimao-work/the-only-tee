@@ -14,6 +14,18 @@
             <a href="{{ url_for('admin.drops') }}" class="btn btn-outline-dark">Back to Drops</a> <!-- Link back to the admin drops page -->
         </div> <!-- Close the page header -->
 
+        <div class="alert alert-light border mb-4"> <!-- Create a small Stripe status panel -->
+            <p class="fw-semibold mb-2">Stripe Sync</p> <!-- Display the Stripe sync heading -->
+
+            {% if drop.stripe_product_id and drop.stripe_price_id %} <!-- Check if the drop is connected to Stripe -->
+            <p class="mb-1"><strong>Status:</strong> Connected</p> <!-- Display connected status -->
+            <p class="mb-1"><strong>Product ID:</strong> {{ drop.stripe_product_id }}</p> <!-- Display the saved Stripe Product ID -->
+            <p class="mb-0"><strong>Price ID:</strong> {{ drop.stripe_price_id }}</p> <!-- Display the saved Stripe Price ID -->
+            {% else %} <!-- Run this block when Stripe IDs are missing -->
+            <p class="mb-0 text-muted">Stripe Product and USD Price will be created automatically when this drop is saved.</p> <!-- Explain automatic Stripe sync -->
+            {% endif %} <!-- End the Stripe sync status condition -->
+        </div> <!-- Close the Stripe status panel -->
+
         <div class="card border-0 shadow-sm"> <!-- Create the edit form card -->
             <div class="card-body p-4"> <!-- Add spacing inside the edit form card -->
                 <form method="POST"> <!-- Create the drop edit form -->
@@ -70,19 +82,15 @@
                             {{ form.description(class="form-control", rows="4") }} <!-- Render the description textarea -->
                         </div> <!-- Close the description field column -->
 
-                        {% if form.printify_product_id is defined %} <!-- Check if the form has a Printify product ID field -->
                         <div class="col-12"> <!-- Create the Printify product ID field column -->
                             {{ form.printify_product_id.label(class="form-label fw-semibold") }} <!-- Render the Printify product ID label -->
                             {{ form.printify_product_id(class="form-control") }} <!-- Render the Printify product ID input -->
                         </div> <!-- Close the Printify product ID field column -->
-                        {% endif %} <!-- End the Printify product ID field condition -->
 
-                        {% if form.printify_variant_ids is defined %} <!-- Check if the form has a Printify variant IDs field -->
                         <div class="col-12"> <!-- Create the Printify variant IDs field column -->
                             {{ form.printify_variant_ids.label(class="form-label fw-semibold") }} <!-- Render the Printify variant IDs label -->
                             {{ form.printify_variant_ids(class="form-control", rows="3") }} <!-- Render the Printify variant IDs textarea -->
                         </div> <!-- Close the Printify variant IDs field column -->
-                        {% endif %} <!-- End the Printify variant IDs field condition -->
                     </div> <!-- Close the responsive form grid -->
 
                     <div class="d-flex flex-column flex-sm-row gap-2 mt-4"> <!-- Create responsive action buttons -->
