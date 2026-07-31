@@ -29,7 +29,7 @@
         <div class="card border-0 shadow-sm"> <!-- Create the edit form card -->
             <div class="card-body p-4"> <!-- Add spacing inside the edit form card -->
                 <form method="POST"> <!-- Create the drop edit form -->
-                    {{ form.hidden_tag() }} <!-- Render CSRF protection fields -->
+                    {{ form.csrf_token }} <!-- Render only the CSRF token so the Printify picker hidden field is not duplicated -->
 
                     <div class="row g-3"> <!-- Create a responsive form grid -->
                         <div class="col-md-4"> <!-- Create the drop number field column -->
@@ -82,15 +82,9 @@
                             {{ form.description(class="form-control", rows="4") }} <!-- Render the description textarea -->
                         </div> <!-- Close the description field column -->
 
-                        <div class="col-12"> <!-- Create the Printify product ID field column -->
-                            {{ form.printify_product_id.label(class="form-label fw-semibold") }} <!-- Render the Printify product ID label -->
-                            {{ form.printify_product_id(class="form-control") }} <!-- Render the Printify product ID input -->
-                        </div> <!-- Close the Printify product ID field column -->
-
-                        <div class="col-12"> <!-- Create the Printify variant IDs field column -->
-                            {{ form.printify_variant_ids.label(class="form-label fw-semibold") }} <!-- Render the Printify variant IDs label -->
-                            {{ form.printify_variant_ids(class="form-control", rows="3") }} <!-- Render the Printify variant IDs textarea -->
-                        </div> <!-- Close the Printify variant IDs field column -->
+                        <div class="col-12"> <!-- Create the Printify picker column -->
+                            {% include "admin/_printify_product_picker.html" %} <!-- Render the visual Printify product picker -->
+                        </div> <!-- Close the Printify picker column -->
                     </div> <!-- Close the responsive form grid -->
 
                     <div class="d-flex flex-column flex-sm-row gap-2 mt-4"> <!-- Create responsive action buttons -->

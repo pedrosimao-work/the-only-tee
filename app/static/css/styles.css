@@ -474,3 +474,80 @@ a { /* Target all links */
     object-fit: cover; /* Crop the mockup neatly without distortion */
     width: 100%; /* Make the archived mockup fill the card width */
 } /* End archived drop image styling block */
+
+.printify-product-grid { /* Create the compact visual Printify product picker grid */
+    display: grid; /* Use CSS grid for selectable product cards */
+    gap: 0.75rem; /* Add compact spacing between product options */
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Create responsive compact picker columns */
+} /* End Printify product picker grid */
+
+.printify-product-option { /* Style one compact selectable Printify product option */
+    align-items: center; /* Vertically align thumbnail and text */
+    background: #ffffff; /* Use a white card background */
+    border: 1px solid rgba(15, 23, 42, 0.14); /* Add a subtle border */
+    border-radius: var(--radius-large); /* Match the project card radius */
+    cursor: pointer; /* Show this card is clickable */
+    display: flex; /* Use flexbox for compact horizontal layout */
+    gap: 0.75rem; /* Add spacing between thumbnail and text */
+    min-height: 86px; /* Keep product options compact but clickable */
+    padding: 0.65rem; /* Add compact internal spacing */
+    text-align: left; /* Align product titles to the left */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; /* Animate selected/hover states */
+    width: 100%; /* Make buttons fill the grid column */
+} /* End selectable Printify product option */
+
+.printify-product-option:hover { /* Style product options on hover */
+    border-color: rgba(15, 23, 42, 0.35); /* Darken the border on hover */
+    box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.08); /* Add a soft hover shadow */
+    transform: translateY(-1px); /* Lift the option slightly on hover */
+} /* End hover styling */
+
+.printify-product-option.is-selected { /* Style the selected Printify product option */
+    border-color: #111827; /* Use a dark selected border */
+    box-shadow: 0 0 0 0.18rem rgba(17, 24, 39, 0.12); /* Add a selected focus ring */
+} /* End selected product styling */
+
+.printify-product-thumb { /* Style compact Printify product thumbnails */
+    border-radius: calc(var(--radius-large) - 0.35rem); /* Round image corners slightly less than the card */
+    flex: 0 0 64px; /* Keep the thumbnail at a fixed compact width */
+    height: 64px; /* Keep the thumbnail compact */
+    object-fit: cover; /* Crop mockups cleanly without distortion */
+    width: 64px; /* Keep the thumbnail compact */
+} /* End Printify thumbnail image styling */
+
+.printify-product-thumb-empty { /* Style the fallback thumbnail when no image exists */
+    align-items: center; /* Center fallback text vertically */
+    background: rgba(15, 23, 42, 0.06); /* Use a subtle fallback background */
+    color: var(--color-muted); /* Use muted text for fallback copy */
+    display: flex; /* Use flexbox for fallback alignment */
+    font-size: 0.75rem; /* Keep fallback text small */
+    justify-content: center; /* Center fallback text horizontally */
+    text-align: center; /* Center fallback text on multiple lines */
+} /* End fallback thumbnail styling */
+
+.printify-product-content { /* Style the text area inside the Printify picker option */
+    display: flex; /* Use flexbox for title and selected badge */
+    flex: 1; /* Let the text area use remaining space */
+    flex-direction: column; /* Stack title and selected badge vertically */
+    gap: 0.35rem; /* Add compact spacing between title and badge */
+    min-width: 0; /* Allow long titles to wrap correctly */
+} /* End Printify product content styling */
+
+.printify-product-title { /* Style the Printify product title inside the picker */
+    color: var(--color-ink); /* Use the project main text color */
+    font-size: 0.88rem; /* Keep long Printify titles compact */
+    font-weight: 600; /* Make product titles readable */
+    line-height: 1.35; /* Improve readability for long titles */
+} /* End Printify product title styling */
+
+.printify-selected-badge { /* Style the selected label inside a product option */
+    color: var(--color-muted); /* Use muted text by default */
+    display: none; /* Hide the selected badge until the option is selected */
+    font-size: 0.75rem; /* Keep selected label compact */
+    font-weight: 600; /* Make selected label readable */
+    text-transform: uppercase; /* Make selected label look like a small badge */
+} /* End selected badge base styling */
+
+.printify-product-option.is-selected .printify-selected-badge { /* Show selected label only on the selected product */
+    display: inline-block; /* Display the selected badge when this option is selected */
+} /* End selected badge active styling */

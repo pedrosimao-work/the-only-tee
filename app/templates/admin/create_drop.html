@@ -14,15 +14,15 @@
             <a href="{{ url_for('admin.drops') }}" class="btn btn-outline-dark">Back to Drops</a> <!-- Link back to the admin drops page -->
         </div> <!-- Close the page header -->
 
-        <div class="alert alert-light border mb-4"> <!-- Create a small automatic Stripe sync notice -->
-            <p class="fw-semibold mb-1">Automatic Stripe Sync</p> <!-- Display the Stripe sync notice heading -->
-            <p class="mb-0 text-muted">When this drop is saved, the app automatically creates the Stripe Product and USD Price.</p> <!-- Explain automatic Stripe behavior -->
-        </div> <!-- Close the automatic Stripe sync notice -->
+        <div class="alert alert-light border mb-4"> <!-- Create a small automatic sync notice -->
+            <p class="fw-semibold mb-1">Automatic External Sync</p> <!-- Display the sync notice heading -->
+            <p class="mb-0 text-muted">Stripe Product and USD Price are created automatically. Printify product selection only connects the product, variants, and mockups; name and description stay manual.</p> <!-- Explain automatic sync behavior -->
+        </div> <!-- Close the automatic sync notice -->
 
         <div class="card border-0 shadow-sm"> <!-- Create the create form card -->
             <div class="card-body p-4"> <!-- Add spacing inside the create form card -->
                 <form method="POST"> <!-- Create the drop creation form -->
-                    {{ form.hidden_tag() }} <!-- Render CSRF protection fields -->
+                    {{ form.csrf_token }} <!-- Render only the CSRF token so the Printify picker hidden field is not duplicated -->
 
                     <div class="row g-3"> <!-- Create a responsive form grid -->
                         <div class="col-md-4"> <!-- Create the drop number field column -->
@@ -75,17 +75,9 @@
                             {{ form.description(class="form-control", rows="4") }} <!-- Render the description textarea -->
                         </div> <!-- Close the description field column -->
 
-                        <div class="col-12"> <!-- Create the Printify product ID field column -->
-                            {{ form.printify_product_id.label(class="form-label fw-semibold") }} <!-- Render the Printify product ID label -->
-                            {{ form.printify_product_id(class="form-control") }} <!-- Render the Printify product ID input -->
-                            <p class="form-text mb-0">Optional at creation. Add this when the Printify product already exists.</p> <!-- Explain the Printify product ID field -->
-                        </div> <!-- Close the Printify product ID field column -->
-
-                        <div class="col-12"> <!-- Create the Printify variant IDs field column -->
-                            {{ form.printify_variant_ids.label(class="form-label fw-semibold") }} <!-- Render the Printify variant IDs label -->
-                            {{ form.printify_variant_ids(class="form-control", rows="3") }} <!-- Render the Printify variant IDs textarea -->
-                            <p class="form-text mb-0">Optional at creation. Use comma-separated Printify variant IDs for the selected color and sizes.</p> <!-- Explain the Printify variant IDs field -->
-                        </div> <!-- Close the Printify variant IDs field column -->
+                        <div class="col-12"> <!-- Create the Printify picker column -->
+                            {% include "admin/_printify_product_picker.html" %} <!-- Render the visual Printify product picker -->
+                        </div> <!-- Close the Printify picker column -->
                     </div> <!-- Close the responsive form grid -->
 
                     <div class="d-flex flex-column flex-sm-row gap-2 mt-4"> <!-- Create responsive action buttons -->
