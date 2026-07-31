@@ -1,167 +1,100 @@
-{% extends "base.html" %} <!-- Tell Jinja this page uses base.html as its parent layout -->
+{% extends "base.html" %} <!-- Tell Jinja this admin page uses the shared base layout -->
 
-{% block title %}Create Drop | {{ BRAND_NAME }}{% endblock %} <!-- Set the browser title for the create-drop page -->
+{% block title %}Create Drop | {{ BRAND_NAME }} Admin{% endblock %} <!-- Set the browser title for the create drop page -->
 
 {% block content %} <!-- Start the page-specific content block -->
-<section class="auth-section"> <!-- Use the auth-style section spacing for form-centered pages -->
-    <div class="container"> <!-- Center create-drop content inside a Bootstrap container -->
-        <div class="row justify-content-center"> <!-- Center the form column horizontally -->
-            <div class="col-lg-8"> <!-- Limit the create-drop form width -->
-                <div class="auth-card"> <!-- Reuse the card style for form layout -->
-                    <p class="eyebrow mb-3">Admin</p> <!-- Display a small uppercase admin label -->
-                    <h1 class="h2 fw-bold mb-4">Create scheduled monthly drop</h1> <!-- Display the create-drop heading -->
+<section class="page-section"> <!-- Create the admin create drop section -->
+    <div class="container"> <!-- Center the admin content inside a Bootstrap container -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4"> <!-- Create a responsive page header -->
+            <div> <!-- Create the heading text wrapper -->
+                <p class="eyebrow mb-2">Admin Drop</p> <!-- Display the small admin label -->
+                <h1 class="fw-bold mb-0">Create Drop</h1> <!-- Display the create drop heading -->
+            </div> <!-- Close the heading text wrapper -->
 
-                    <form method="POST"> <!-- Create a POST form for creating drops -->
-                        {{ form.hidden_tag() }} <!-- Render hidden CSRF protection fields -->
+            <a href="{{ url_for('admin.drops') }}" class="btn btn-outline-dark">Back to Drops</a> <!-- Link back to the admin drops page -->
+        </div> <!-- Close the page header -->
 
-                        <div class="row g-3"> <!-- Create a responsive form grid -->
-                            <div class="col-md-6"> <!-- Create the drop number column -->
-                                {{ form.drop_number.label(class="form-label") }} <!-- Render the drop number label -->
-                                {{ form.drop_number(class="form-control", placeholder="0004") }} <!-- Render the drop number input -->
-                                {% for error in form.drop_number.errors %} <!-- Loop through drop number validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each drop number error -->
-                                {% endfor %} <!-- End the drop number errors loop -->
-                            </div> <!-- Close the drop number column -->
+        <div class="alert alert-light border mb-4"> <!-- Create a small automatic Stripe sync notice -->
+            <p class="fw-semibold mb-1">Automatic Stripe Sync</p> <!-- Display the Stripe sync notice heading -->
+            <p class="mb-0 text-muted">When this drop is saved, the app automatically creates the Stripe Product and USD Price.</p> <!-- Explain automatic Stripe behavior -->
+        </div> <!-- Close the automatic Stripe sync notice -->
 
-                            <div class="col-md-6"> <!-- Create the season column -->
-                                {{ form.season.label(class="form-label") }} <!-- Render the season label -->
-                                {{ form.season(class="form-control", placeholder="1") }} <!-- Render the season input -->
-                                {% for error in form.season.errors %} <!-- Loop through season validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each season error -->
-                                {% endfor %} <!-- End the season errors loop -->
-                            </div> <!-- Close the season column -->
+        <div class="card border-0 shadow-sm"> <!-- Create the create form card -->
+            <div class="card-body p-4"> <!-- Add spacing inside the create form card -->
+                <form method="POST"> <!-- Create the drop creation form -->
+                    {{ form.hidden_tag() }} <!-- Render CSRF protection fields -->
 
-                            <div class="col-12"> <!-- Create the full-width name field row -->
-                                {{ form.name.label(class="form-label") }} <!-- Render the name label -->
-                                {{ form.name(class="form-control", placeholder="Static Garden") }} <!-- Render the name input -->
-                                {% for error in form.name.errors %} <!-- Loop through name validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each name error -->
-                                {% endfor %} <!-- End the name errors loop -->
-                            </div> <!-- Close the name field row -->
+                    <div class="row g-3"> <!-- Create a responsive form grid -->
+                        <div class="col-md-4"> <!-- Create the drop number field column -->
+                            {{ form.drop_number.label(class="form-label fw-semibold") }} <!-- Render the drop number label -->
+                            {{ form.drop_number(class="form-control") }} <!-- Render the drop number input -->
+                        </div> <!-- Close the drop number field column -->
 
-                            <div class="col-12"> <!-- Create the full-width description field row -->
-                                {{ form.description.label(class="form-label") }} <!-- Render the description label -->
-                                {{ form.description(class="form-control", rows="4", placeholder="Describe this monthly drop.") }} <!-- Render the description textarea -->
-                                {% for error in form.description.errors %} <!-- Loop through description validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each description error -->
-                                {% endfor %} <!-- End the description errors loop -->
-                            </div> <!-- Close the description field row -->
+                        <div class="col-md-4"> <!-- Create the season field column -->
+                            {{ form.season.label(class="form-label fw-semibold") }} <!-- Render the season label -->
+                            {{ form.season(class="form-control") }} <!-- Render the season input -->
+                        </div> <!-- Close the season field column -->
 
-                            <div class="col-md-6"> <!-- Create the price column -->
-                                {{ form.price.label(class="form-label") }} <!-- Render the price label -->
-                                {{ form.price(class="form-control", placeholder="59") }} <!-- Render the price input -->
-                                {% for error in form.price.errors %} <!-- Loop through price validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each price error -->
-                                {% endfor %} <!-- End the price errors loop -->
-                            </div> <!-- Close the price column -->
+                        <div class="col-md-4"> <!-- Create the status field column -->
+                            {{ form.status.label(class="form-label fw-semibold") }} <!-- Render the status label -->
+                            {{ form.status(class="form-select") }} <!-- Render the status select -->
+                        </div> <!-- Close the status field column -->
 
-                            <div class="col-md-6"> <!-- Create the status column -->
-                                {{ form.status.label(class="form-label") }} <!-- Render the status label -->
-                                {{ form.status(class="form-select") }} <!-- Render the status dropdown -->
-                                {% for error in form.status.errors %} <!-- Loop through status validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each status error -->
-                                {% endfor %} <!-- End the status errors loop -->
-                            </div> <!-- Close the status column -->
+                        <div class="col-md-8"> <!-- Create the drop name field column -->
+                            {{ form.name.label(class="form-label fw-semibold") }} <!-- Render the drop name label -->
+                            {{ form.name(class="form-control") }} <!-- Render the drop name input -->
+                        </div> <!-- Close the drop name field column -->
 
-                            <div class="col-md-6"> <!-- Create the product type column -->
-                                {{ form.product_type.label(class="form-label") }} <!-- Render the product type label -->
-                                {{ form.product_type(class="form-select") }} <!-- Render the product type dropdown -->
-                                {% for error in form.product_type.erros %} <!-- Loop through product type validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each product type error -->
-                                {% endfor %} <!-- End the product type column -->
-                            </div> <!-- Close the product type column -->
+                        <div class="col-md-4"> <!-- Create the price field column -->
+                            {{ form.price.label(class="form-label fw-semibold") }} <!-- Render the price label -->
+                            {{ form.price(class="form-control") }} <!-- Render the price input -->
+                        </div> <!-- Close the price field column -->
 
-                            <div class="col-md-6"> <!-- Create the shirt color column -->
-                                {{ form.shirt_color.label(class="form-label") }} <!-- Render the shirt color label -->
-                                {{ form.shirt_color(class="form-control", placeholder="Black") }} <!-- Render the shirt color input -->
-                                {% for error in form.shirt_color.errors %} <!-- Loop through shirt color validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each shirt color error -->
-                                {% endfor %} <!-- End the shirt color errors loop -->
-                            </div> <!-- Close the shirt color column -->
+                        <div class="col-md-6"> <!-- Create the product type field column -->
+                            {{ form.product_type.label(class="form-label fw-semibold") }} <!-- Render the product type label -->
+                            {{ form.product_type(class="form-select") }} <!-- Render the product type select -->
+                        </div> <!-- Close the product type field column -->
 
-                            <div class="col-md-6">  <!-- Create the scheduled start datetime column -->
-                                {{ form.starts_at.label(class="form-label") }}  <!--Render the starts_at label -->
-                                {{ form.starts_at(class="form-control") }}  <!-- Render the starts_at datetime-local input -->
-                                {% for error in form.starts_at.errors %}  <!-- Loop through starts_at validation errors -->
-                                <div class="form-error">{{ error }}</div>
-                                {% endfor %} <!-- End the starts_at errors loop -->
-                            </div>  <!-- Close the scheduled start datetime column -->
+                        <div class="col-md-6"> <!-- Create the shirt color field column -->
+                            {{ form.shirt_color.label(class="form-label fw-semibold") }} <!-- Render the shirt color label -->
+                            {{ form.shirt_color(class="form-control") }} <!-- Render the shirt color input -->
+                        </div> <!-- Close the shirt color field column -->
 
-                            <div class="col-md-6">  <!-- Create the scheduled end datetime column -->
-                                {{ form.ends_at.label(class="form-label") }} <!-- Render the ends_at label -->
-                                {{ form.ends_at(class="form-control") }} <!-- Render the ends_at datetime-local input -->
-                                {% for error in form.ends_at.errors %} <!-- Loop through ends_at validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each ends_at error -->
-                                {% endfor %} <!-- End the ends_at errors loop -->
-                            </div> <!-- Close the scheduled end datetime column -->
+                        <div class="col-md-6"> <!-- Create the start date field column -->
+                            {{ form.starts_at.label(class="form-label fw-semibold") }} <!-- Render the start date label -->
+                            {{ form.starts_at(class="form-control") }} <!-- Render the start date input -->
+                        </div> <!-- Close the start date field column -->
 
-                            <div class="col-12"> <!-- Create the full-width image URL row -->
-                                {{ form.image_url.label(class="form-label") }} <!-- Render the image URL label -->
-                                {{ form.image_url(class="form-control", placeholder="https://example.com/image.jpg") }} <!-- Render the image URL input -->
-                                {% for error in form.image_url.errors %} <!-- Loop through image URL validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each image URL error -->
-                                {% endfor %} <!-- End the image URL errors loop -->
-                            </div> <!-- Close the image URL row -->
+                        <div class="col-md-6"> <!-- Create the end date field column -->
+                            {{ form.ends_at.label(class="form-label fw-semibold") }} <!-- Render the end date label -->
+                            {{ form.ends_at(class="form-control") }} <!-- Render the end date input -->
+                        </div> <!-- Close the end date field column -->
 
-                            <div class="col-md-6"> <!-- Create the Printify product ID column -->
-                                {{ form.printify_product_id.label(class="form-label") }} <!-- Render the Printify product ID label -->
-                                {{ form.printify_product_id(class="form-control", placeholder="Printify product ID") }} <!-- Render the Printify product ID input -->
-                                {% for error in form.printify_product_id.errors %} <!-- Loop through Printify product ID validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each Printify product ID error -->
-                                {% endfor %} <!-- End the Printify product ID errors loop -->
-                            </div> <!-- Close the Printify product ID column -->
+                        <div class="col-12"> <!-- Create the description field column -->
+                            {{ form.description.label(class="form-label fw-semibold") }} <!-- Render the description label -->
+                            {{ form.description(class="form-control", rows="4") }} <!-- Render the description textarea -->
+                        </div> <!-- Close the description field column -->
 
-                            <div class="col-md-6"> <!-- Create the Stripe price ID column -->
-                                {{ form.stripe_price_id.label(class="form-label") }} <!-- Render the Stripe price ID label -->
-                                {{ form.stripe_price_id(class="form-control", placeholder="price_...") }} <!-- Render the Stripe price ID input -->
-                                {% for error in form.stripe_price_id.errors %} <!-- Loop through Stripe price ID validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each Stripe price ID error -->
-                                {% endfor %} <!-- End the Stripe price ID errors loop -->
-                            </div> <!-- Close the Stripe price ID column -->
+                        <div class="col-12"> <!-- Create the Printify product ID field column -->
+                            {{ form.printify_product_id.label(class="form-label fw-semibold") }} <!-- Render the Printify product ID label -->
+                            {{ form.printify_product_id(class="form-control") }} <!-- Render the Printify product ID input -->
+                            <p class="form-text mb-0">Optional at creation. Add this when the Printify product already exists.</p> <!-- Explain the Printify product ID field -->
+                        </div> <!-- Close the Printify product ID field column -->
 
-                            <div class="col-12"> <!-- Create the full-width Printify variant IDs row -->
-                                {{ form.printify_variant_ids.label(class="form-label") }} <!-- Render the Printify variant IDs label -->
-                                {{ form.printify_variant_ids(class="form-control", rows="3", placeholder="Example: 12345, 67890, 54321") }} <!-- Render the Printify variant IDs textarea -->
-                                {% for error in form.printify_variant_ids.errors %} <!-- Loop through Printify variant IDs validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each Printify variant IDs error -->
-                                {% endfor %} <!-- End the Printify variant IDs errors loop -->
-                            </div> <!-- Close the Printify variant IDs row -->
+                        <div class="col-12"> <!-- Create the Printify variant IDs field column -->
+                            {{ form.printify_variant_ids.label(class="form-label fw-semibold") }} <!-- Render the Printify variant IDs label -->
+                            {{ form.printify_variant_ids(class="form-control", rows="3") }} <!-- Render the Printify variant IDs textarea -->
+                            <p class="form-text mb-0">Optional at creation. Use comma-separated Printify variant IDs for the selected color and sizes.</p> <!-- Explain the Printify variant IDs field -->
+                        </div> <!-- Close the Printify variant IDs field column -->
+                    </div> <!-- Close the responsive form grid -->
 
-                            <div class="col-md-6"> <!-- Create the Stripe product ID column -->
-                                {{ form.stripe_product_id.label(class="form-label") }} <!-- Render the Stripe product ID label -->
-                                {{ form.stripe_product_id(class="form-control", placeholder="prod_...") }} <!-- Render the Stripe product ID input -->
-                                {% for error in form.stripe_product_id.errors %} <!-- Loop through Stripe product ID validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each Stripe product ID error -->
-                                {% endfor %} <!-- End the Stripe product ID errors loop -->
-                            </div> <!-- Close the Stripe product ID column -->
-
-                            <div class="col-md-6"> <!-- Create the Instagram media ID column -->
-                                {{ form.instagram_media_id.label(class="form-label") }} <!-- Render the Instagram media ID label -->
-                                {{ form.instagram_media_id(class="form-control", placeholder="Instagram media ID") }} <!-- Render the Instagram media ID input -->
-                                {% for error in form.instagram_media_id.errors %} <!-- Loop through Instagram media ID validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each Instagram media ID error -->
-                                {% endfor %} <!-- End the Instagram media ID errors loop -->
-                            </div> <!-- Close the Instagram media ID column -->
-
-                            <div class="col-12"> <!-- Create the full-width Instagram permalink row -->
-                                {{ form.instagram_permalink.label(class="form-label") }} <!-- Render the Instagram permalink label -->
-                                {{ form.instagram_permalink(class="form-control", placeholder="https://www.instagram.com/reel/...") }} <!-- Render the Instagram permalink input -->
-                                {% for error in form.instagram_permalink.errors %} <!-- Loop through Instagram permalink validation errors -->
-                                <div class="form-error">{{ error }}</div> <!-- Display each Instagram permalink error -->
-                                {% endfor %} <!-- End the Instagram permalink errors loop -->
-                            </div> <!-- Close the Instagram permalink row -->
-                        </div> <!-- Close the responsive form grid -->
-
-
-
-                        <div class="d-grid d-sm-flex gap-3 mt-4"> <!-- Create a responsive action button row -->
-                            {{ form.submit(class="btn btn-dark btn-lg px-4") }} <!-- Render the create-drop submit button -->
-                            <a href="{{ url_for('admin.drops') }}" class="btn btn-outline-dark btn-lg px-4">Cancel</a> <!-- Add a cancel link back to drop management -->
-                        </div> <!-- Close the action button row -->
-                    </form> <!-- Close the create-drop form -->
-                </div> <!-- Close the form card -->
-            </div> <!-- Close the centered form column -->
-        </div> <!-- Close the centered row -->
+                    <div class="d-flex flex-column flex-sm-row gap-2 mt-4"> <!-- Create responsive action buttons -->
+                        <button type="submit" class="btn btn-dark">Create Drop</button> <!-- Save the new drop -->
+                        <a href="{{ url_for('admin.drops') }}" class="btn btn-outline-secondary">Cancel</a> <!-- Cancel creation and return to drops -->
+                    </div> <!-- Close responsive action buttons -->
+                </form> <!-- Close the drop creation form -->
+            </div> <!-- Close the create form card body -->
+        </div> <!-- Close the create form card -->
     </div> <!-- Close the Bootstrap container -->
-</section> <!-- Close the create-drop section -->
+</section> <!-- Close the admin create drop section -->
 {% endblock %} <!-- End the page-specific content block -->
