@@ -1,0 +1,76 @@
+<div class="printify-picker"> <!-- Create the Printify product picker wrapper -->
+    {{ form.printify_product_id() }} <!-- Render the hidden Printify product ID field controlled by the picker -->
+
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-3"> <!-- Create the picker heading row -->
+        <div> <!-- Create the picker heading text wrapper -->
+            <p class="form-label fw-semibold mb-1">Printify Product</p> <!-- Display the Printify picker label -->
+            <p class="form-text mb-0">Choose an available Printify product to connect its mockups, variants, and size mapping.</p> <!-- Explain what the picker connects -->
+        </div> <!-- Close the picker heading text wrapper -->
+
+        <button type="button" class="btn btn-sm btn-outline-secondary printify-clear-selection">Clear selection</button> <!-- Add a button to clear the selected Printify product -->
+    </div> <!-- Close the picker heading row -->
+
+    {% if printify_error %} <!-- Check if Printify products could not be loaded -->
+    <div class="alert alert-warning mb-0"> <!-- Create a warning box for Printify loading errors -->
+        {{ printify_error }} <!-- Display the Printify loading error -->
+    </div> <!-- Close the warning box -->
+    {% elif printify_products %} <!-- Check if there are selectable Printify products -->
+    <div class="printify-product-grid"> <!-- Create the visual product picker grid -->
+        {% for product in printify_products %} <!-- Loop through selectable Printify products -->
+        <button type="button" class="printify-product-option" data-printify-product-id="{{ product.id }}"> <!-- Create one selectable Printify product option -->
+            {% if product.image_url %} <!-- Check if this Printify product has a mockup image -->
+            <img src="{{ product.image_url }}" alt="{{ product.title }} mockup" class="printify-product-thumb"> <!-- Display the Printify product mockup thumbnail -->
+            {% else %} <!-- Run this block when no mockup image exists -->
+            <div class="printify-product-thumb printify-product-thumb-empty">No image</div> <!-- Display a fallback thumbnail area -->
+            {% endif %} <!-- End the thumbnail condition -->
+
+            <span class="printify-product-content"> <!-- Create the product text wrapper -->
+                <span class="printify-product-title">{{ product.title }}</span> <!-- Display the Printify product title for selection -->
+                <span class="printify-selected-badge">Selected</span> <!-- Display selected state text when this product is selected -->
+            </span> <!-- Close the product text wrapper -->
+        </button> <!-- Close one selectable Printify product option -->
+        {% endfor %} <!-- End the Printify product loop -->
+    </div> <!-- Close the visual product picker grid -->
+    {% else %} <!-- Run this block when no Printify products are available -->
+    <div class="alert alert-light border mb-0"> <!-- Create an empty product picker notice -->
+        No unassigned Printify products are available. <!-- Explain that there are no available products to choose -->
+    </div> <!-- Close the empty product picker notice -->
+    {% endif %} <!-- End the Printify picker state conditions -->
+</div> <!-- Close the Printify product picker wrapper -->
+
+<script> // Start the Printify product picker script
+    document.addEventListener("DOMContentLoaded", function () { // Run the picker setup after the page loads
+        const picker = document.querySelector(".printify-picker"); // Find the Printify picker wrapper
+
+        if (!picker) { // Check if this page does not have a Printify picker
+            return; // Stop because there is nothing to initialize
+        } // End the missing picker guard
+
+        const hiddenInput = picker.querySelector("input[name='printify_product_id']"); // Find the hidden Printify product ID input
+        const productButtons = picker.querySelectorAll(".printify-product-option"); // Find all selectable product buttons
+        const clearButton = picker.querySelector(".printify-clear-selection"); // Find the clear selection button
+
+        function refreshSelectedState() { // Define a helper that updates selected styling
+            productButtons.forEach(function (button) { // Loop through each product button
+                const isSelected = button.dataset.printifyProductId === hiddenInput.value; // Check if this button matches the hidden value
+                button.classList.toggle("is-selected", isSelected); // Toggle the selected styling class
+            }); // Close product button loop
+        } // Close refreshSelectedState helper
+
+        productButtons.forEach(function (button) { // Loop through each selectable product button
+            button.addEventListener("click", function () { // Listen for clicks on this product option
+                hiddenInput.value = button.dataset.printifyProductId; // Store the selected Printify product ID in the hidden field
+                refreshSelectedState(); // Refresh the selected visual state
+            }); // Close click listener
+        }); // Close product button setup loop
+
+        if (clearButton) { // Check if the clear selection button exists
+            clearButton.addEventListener("click", function () { // Listen for clear selection clicks
+                hiddenInput.value = ""; // Clear the selected Printify product ID
+                refreshSelectedState(); // Refresh the selected visual state
+            }); // Close clear click listener
+        } // End clear button condition
+
+        refreshSelectedState(); // Set the initial selected visual state
+    }); // Close DOMContentLoaded listener
+</script> <!-- End the Printify product picker script -->
