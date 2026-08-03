@@ -1,6 +1,6 @@
 # The Only Drop
 
-A full-stack Python web app for managing monthly limited T-shirt drops, user accounts, archive collections, Stripe-hosted checkout, Printify product synchronization, guarded Printify fulfillment, admin order visibility, and monthly drop lifecycle automation.
+A full-stack Python web app for managing monthly limited T-shirt drops, user accounts, archive collections, Stripe-hosted checkout, automatic Stripe product/price synchronization, Printify product synchronization, guarded Printify fulfillment, admin order visibility, safe error pages, application logging, and monthly drop lifecycle automation.
 
 ## Current Product Model
 
@@ -47,6 +47,10 @@ The project currently includes:
 - Flask-Login session handling
 - Admin-only dashboard
 - Admin drop creation form
+- Admin drop editing form
+- Visual Printify product picker in admin create/edit forms
+- Automatic Printify product ID selection from picker
+- Automatic Printify variant ID storage from selected product
 - Admin orders page
 - Admin order detail page
 - Admin test-order deletion action
@@ -57,14 +61,20 @@ The project currently includes:
 - Printify product synchronization
 - Printify mockup image synchronization
 - Printify mockup carousel
+- Printify size-to-variant mapping
 - Checkout size selection
 - Stripe-hosted Checkout integration
+- Automatic Stripe Product synchronization from admin drops
+- Automatic USD Stripe Price synchronization from admin drops
 - Stripe webhook payment status handling
 - Guarded Printify fulfillment flow
 - Privacy Policy page
 - Terms of Service page
 - Shipping & Returns page
 - Portfolio/demo checkout safety notices
+- Safe public error pages for 403, 404, and 500 responses
+- Rotating application log file support
+- DirectAdmin-compatible Passenger WSGI entrypoint
 
 ## Tech Stack
 
@@ -80,16 +90,9 @@ The project currently includes:
 - Stripe Python SDK
 - SQLite for local development
 - MariaDB planned for production
-- PyMySQL for future MariaDB connection
+- PyMySQL for MariaDB connection
 - DirectAdmin planned for production deployment
-
-## Planned Integrations
-
-- Stripe product and price synchronization from admin drops
-- DirectAdmin deployment with MariaDB
-- Cron-based monthly drop rotation in production
-- Launch logging and error handling
-- README and portfolio presentation polish
+- Passenger-compatible WSGI entrypoint for shared hosting deployment
 
 ## Local Setup
 
@@ -221,11 +224,25 @@ Shows a Printify product summary and available enabled variants.
 flask printify-sync-drop 0001
 ```
 
-Syncs a local drop with its configured Printify product ID, validates selected variant availability, stores mockup image URLs, and stores the size-to-Printify-variant map used during checkout.
+Syncs a local drop with its configured Printify product, validates selected variant availability, stores mockup image URLs, and stores the size-to-Printify-variant map used during checkout.
 
 ### Current Printify Scope
 
 The app can sync local drops with Printify products, validate selected variants, store product mockups, store available sizes, and prepare paid orders for fulfillment.
+
+Admin create/edit forms use a visual Printify product picker instead of manual Printify Product ID and Variant ID fields.
+
+The picker:
+
+- Shows available Printify products
+- Shows product titles and mockup thumbnails
+- Excludes products already connected to other drops
+- Keeps the current drop product selectable during editing
+- Automatically stores the selected Printify product ID
+- Automatically stores available variant IDs
+- Syncs mockups and size mapping after save
+
+Drop name and drop description remain manual inside the app and are not copied from Printify.
 
 Printify fulfillment is disabled by default through:
 
@@ -245,12 +262,19 @@ Required environment variables:
 
 ```text
 STRIPE_SECRET_KEY=sk_test_your-stripe-secret-key
+STRIPE_PUBLISHABLE_KEY=pk_test_your-stripe-publishable-key
 STRIPE_WEBHOOK_SECRET=whsec_your-stripe-webhook-secret
 ```
 
-The checkout flow currently supports:
+The Stripe integration currently supports:
 
+- Automatic Stripe Product creation when admin drops are created
+- Automatic USD Stripe Price creation when admin drops are created
+- Stripe Product updates when admin drops are edited
+- Replacement Stripe Price creation when drop price changes
+- Safe Stripe catalog cleanup for deleted local draft/test drops
 - Stripe-hosted Checkout Session creation
+- Saved Stripe Price ID usage during checkout
 - US-only shipping address collection
 - Customer size selection before checkout
 - Selected size stored in Stripe metadata
@@ -286,10 +310,11 @@ The app includes demo-safety protections:
 - Test-order deletion does not refund Stripe and does not cancel external Printify orders
 - Public support/contact copy uses `hello@pedrosimao.work`
 
-
 ## Logging and Error Handling
 
-The app uses safe public error pages for 403, 404, and 500 responses. Technical error details are written to application logs instead of being shown to users.
+The app uses safe public error pages for 403, 404, and 500 responses.
+
+Technical error details are written to application logs instead of being shown to users.
 
 Runtime logs are written to:
 
@@ -304,8 +329,69 @@ LOG_LEVEL=INFO
 LOG_TO_FILE=true
 ```
 
+The app logs important failures around:
+
+- Stripe Checkout
+- Stripe webhooks
+- Stripe product and price synchronization
+- Printify product synchronization
+- Printify fulfillment
+- Admin external-service actions
+- 403, 404, and 500 responses
+
 The `instance/` directory and log files must not be committed.
 
+## DirectAdmin Deployment Notes
+
+The production demo target is:
+
+```text
+https://theonlydrop.pedrosimao.work
+```
+
+The app includes a Passenger-compatible WSGI entrypoint for DirectAdmin shared hosting:
+
+```text
+passenger_wsgi.py
+```
+
+DirectAdmin / Python Selector should use:
+
+```text
+Startup file: passenger_wsgi.py
+Application callable: application
+```
+
+Production environment variables are documented in:
+
+```text
+.env.production.example
+```
+
+The production database should use MariaDB with this SQLAlchemy URL format:
+
+```text
+mysql+pymysql://database_user:database_password@localhost/database_name
+```
+
+Production logs are written to:
+
+```text
+instance/logs/the_only_drop.log
+```
+
+Never commit:
+
+```text
+.env
+.env.production
+instance/
+database files
+log files
+real Stripe keys
+real Printify tokens
+real database credentials
+```
 
 ## Development Workflow
 
@@ -317,8 +403,6 @@ Issue → Branch → Code → Commit → Pull Request → Merge → Done
 
 ## Planned Features
 
-- Stripe product and price synchronization from admin drops
-- Launch logging and error handling
 - DirectAdmin deployment
 - Production MariaDB configuration
 - Cron-based monthly drop rotation in production
