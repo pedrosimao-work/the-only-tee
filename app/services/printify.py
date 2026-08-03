@@ -1,12 +1,16 @@
 import json  # Import json so multiple mockup image URLs can be stored as JSON text
-import requests  # Import requests so the app can call the Printify HTTP API
-from flask import current_app  # Import current_app so the service can read Flask configuration values
+import logging  # Import logging so Printify service failures can be recorded
 from datetime import datetime  # Import datetime so submitted orders can store submission time
 
-from app.services.stripe_checkout import StripeCheckoutError, retrieve_checkout_session  # Import Stripe session retrieval for shipping details
-from app.extensions import db  # Import the database object so synced drop changes can be saved
-from app.constants import DROP_SIZE_ORDER  # Import the preferred storefront size order
+import requests  # Import requests so the app can call the Printify HTTP API
+from flask import current_app  # Import current_app so the service can read Flask configuration values
 
+from app.constants import DROP_SIZE_ORDER  # Import the preferred storefront size order
+from app.extensions import db  # Import the database object so order fulfillment updates can be saved
+from app.services.stripe_checkout import StripeCheckoutError, retrieve_checkout_session  # Import Stripe session retrieval for shipping details
+
+
+logger = logging.getLogger(__name__)  # Create a module logger for Printify service failures
 
 
 class PrintifyConfigError(Exception):  # Create a custom error for missing Printify configuration
@@ -23,9 +27,11 @@ def get_printify_config():  # Define a helper function that reads Printify confi
     shop_id = current_app.config.get("PRINTIFY_SHOP_ID")  # Read the Printify shop ID
 
     if not api_base_url:  # Check if the API base URL is missing
+        logger.error("Printify configuration is missing PRINTIFY_API_BASE_URL.")  # Log the missing Printify base URL
         raise PrintifyConfigError("PRINTIFY_API_BASE_URL is not configured.")  # Raise a clear configuration error
 
     if not api_token:  # Check if the API token is missing
+        logger.error("Printify configuration is missing PRINTIFY_API_TOKEN.")  # Log the missing Printify API token
         raise PrintifyConfigError("PRINTIFY_API_TOKEN is not configured.")  # Raise a clear configuration error
 
     return api_base_url.rstrip("/"), api_token, shop_id  # Return the cleaned API base URL, token, and shop ID
@@ -54,15 +60,21 @@ def printify_request(method, path, **kwargs):  # Define a reusable helper for ma
             **kwargs,  # Pass through optional request arguments such as params or json
         )  # Close the requests call
     except requests.RequestException as error:  # Catch network-level request errors
-        raise PrintifyAPIError(f"Printify request failed: {error}") from error  # Raise a clear application-level API error
+        logger.exception("Printify API request failed before receiving a response: %s %s.", method, path)  # Log the technical request failure
+        raise PrintifyAPIError("Printify request failed. Check Printify configuration and try again.") from error  # Raise a safe application-level API error
 
     if not response.ok:  # Check if Printify returned an error HTTP status
-        raise PrintifyAPIError(f"Printify API error {response.status_code}: {response.text}")  # Raise the status and response text for debugging
+        logger.error("Printify API returned HTTP %s for %s %s: %s", response.status_code, method, path, response.text)  # Log the technical Printify API response error
+        raise PrintifyAPIError(f"Printify API error {response.status_code}: {response.text}")  # Raise the status and response text for admin debugging
 
     if not response.content:  # Check if Printify returned an empty response body
         return {}  # Return an empty dictionary for empty successful responses
 
-    return response.json()  # Parse and return the JSON responde body
+    try:  # Try to parse the Printify response body as JSON
+        return response.json()  # Parse and return the JSON response body
+    except ValueError as error:  # Catch invalid JSON responses
+        logger.exception("Printify API returned invalid JSON for %s %s.", method, path)  # Log the invalid JSON response problem
+        raise PrintifyAPIError("Printify returned an invalid response. Please try again.") from error  # Raise a safe API error
 
 
 def get_printify_shops():  # Define a service function that retrieves Printify shops
@@ -78,6 +90,7 @@ def require_printify_shop_id():  # Define a helper function that requires a conf
     _api_base_url, _api_token, shop_id = get_printify_config()  # Read the Printify configuration values
 
     if not shop_id:  # Check if the shop ID is missing
+        logger.error("Printify configuration is missing PRINTIFY_SHOP_ID.")  # Log the missing Printify shop ID
         raise PrintifyConfigError("PRINTIFY_SHOP_ID is not configured.")  # Raise a clear configuration error
 
     return shop_id  # Return the configured Printify shop ID
@@ -95,7 +108,7 @@ def parse_variant_ids(raw_variant_ids):  # Define a helper function that parses 
     cleaned_parts = []  # Create an empty list for cleaned variant ID values
 
     for part in raw_variant_ids.replace("\n", ",").split(","):  # Split comma-separated and new-line separated values
-        cleaned_part = part.strip()  # Remove surrounding whitespace from each valie
+        cleaned_part = part.strip()  # Remove surrounding whitespace from each value
 
         if cleaned_part:  # Check if the cleaned value is not empty
             cleaned_parts.append(cleaned_part)  # Add the cleaned value to the list
@@ -130,7 +143,7 @@ def get_default_product_image(product):  # Define a helper function that finds t
     return None  # Return None when the product has no images
 
 
-def get_product_mockup_images(product, limit=4):  # Define a helper function that returns the best mockup image in display order
+def get_product_mockup_images(product, limit=4):  # Define a helper function that returns the best mockup images in display order
     images = product.get("images", [])  # Read the product images list from the Printify response
     default_images = []  # Create a list for Printify primary/default images
     other_images = []  # Create a list for non-primary mockup images
@@ -140,7 +153,7 @@ def get_product_mockup_images(product, limit=4):  # Define a helper function tha
         image_src = image.get("src")  # Read the image URL from the Printify image object
 
         if not image_src:  # Check if this image has no usable URL
-            continue
+            continue  # Skip images without URLs
 
         if image.get("is_default"):  # Check if Printify marked this image as the primary/default mockup
             default_images.append(image_src)  # Add the primary/default image first
@@ -154,7 +167,7 @@ def get_product_mockup_images(product, limit=4):  # Define a helper function tha
         if len(selected_urls) == limit:  # Check if the carousel image limit has been reached
             break  # Stop collecting image URLs
 
-    return selected_urls  # Return the selected mockup imaged URLs
+    return selected_urls  # Return the selected mockup image URLs
 
 
 def get_variant_size(variant):  # Define a helper function that extracts the size label from a Printify variant
@@ -217,7 +230,7 @@ def get_product_variant_summary(product, selected_variant_ids=None):  # Define a
     selected_variants = []  # Create a list for selected variants
     enabled_available_variants = []  # Create a list for variants that are enabled and available
 
-    for variant in variants:  # Loop thorugh every variant from Printify
+    for variant in variants:  # Loop through every variant from Printify
         variant_id_as_text = str(variant.get("id"))  # Convert the variant ID to text for comparison
         is_enabled = bool(variant.get("is_enabled"))  # Read whether the variant is enabled
         is_available = bool(variant.get("is_available"))  # Read whether the variant is available
@@ -243,29 +256,35 @@ def get_product_variant_summary(product, selected_variant_ids=None):  # Define a
 
 
 def sync_drop_with_printify(drop):  # Define a service function that syncs one database drop with its Printify product
-    if not drop.printify_product_id:  # Check if the drop has no Printify product ID
-        raise PrintifyConfigError("This drop does not have a Printify product ID.")  # Raise a clear sync error
+    logger.info("Starting Printify sync for Drop #%s.", drop.drop_number)  # Log the start of Printify sync
 
-    product = get_printify_product(drop.printify_product_id)  # Retrieve the Printify product connected to this drop
-    selected_variant_ids = parse_variant_ids(drop.printify_variant_ids)  # Parse the drop's selected variant IDs
-    variant_summary = get_product_variant_summary(product, selected_variant_ids)  # Build a variant availability summary
-    size_variant_map = build_size_variant_map(product, drop.printify_variant_ids)  # Build a size-to-Printify-variant map from selected available variants
-    mockup_image_urls = get_product_mockup_images(product)  # Collect the best Printify mockup image URLs for the drop carousel
-    default_image_url = mockup_image_urls[0] if mockup_image_urls else get_default_product_image(product)  # Use the first carousel image as the primary image
+    try:  # Start a protected block for Printify product retrieval and sync processing
+        if not drop.printify_product_id:  # Check if the drop has no Printify product ID
+            raise PrintifyConfigError("This drop does not have a Printify product ID.")  # Raise a clear sync error
 
-    if default_image_url:  # Check if a Printify product image was found
-        drop.image_url = default_image_url  # Store the primary Printify mockup image URL on the drop
+        product = get_printify_product(drop.printify_product_id)  # Retrieve the Printify product connected to this drop
+        selected_variant_ids = parse_variant_ids(drop.printify_variant_ids)  # Parse the drop's selected variant IDs
+        variant_summary = get_product_variant_summary(product, selected_variant_ids)  # Build a variant availability summary
+        size_variant_map = build_size_variant_map(product, drop.printify_variant_ids)  # Build a size-to-Printify-variant map from selected available variants
+        mockup_image_urls = get_product_mockup_images(product)  # Collect the best Printify mockup image URLs for the drop carousel
+        default_image_url = mockup_image_urls[0] if mockup_image_urls else get_default_product_image(product)  # Use the first carousel image as the primary image
 
-    if mockup_image_urls:  # Check if Printify returned usable mockup image URLs
-        drop.mockup_image_urls = json.dumps(mockup_image_urls)  # Store multiple mockup image URLs as JSON text
+        if default_image_url:  # Check if a Printify product image was found
+            drop.image_url = default_image_url  # Store the primary Printify mockup image URL on the drop
 
-    if selected_variant_ids:  # Check if the admin already selected variant IDs
-        drop.printify_variant_ids = normalize_variant_ids(selected_variant_ids)  # Normalize the stored variant ID formatting
+        if mockup_image_urls:  # Check if Printify returned usable mockup image URLs
+            drop.mockup_image_urls = json.dumps(mockup_image_urls)  # Store multiple mockup image URLs as JSON text
 
-    if size_variant_map:  # Check if usable size variants were found
-        drop.printify_size_variant_map = json.dumps(size_variant_map)  # Store the size-to-variant map as JSON text
+        if selected_variant_ids:  # Check if the admin already selected variant IDs
+            drop.printify_variant_ids = normalize_variant_ids(selected_variant_ids)  # Normalize the stored variant ID formatting
 
-    db.session.commit()  # Save synced drop changes to the database
+        if size_variant_map:  # Check if usable size variants were found
+            drop.printify_size_variant_map = json.dumps(size_variant_map)  # Store the size-to-variant map as JSON text
+    except (PrintifyConfigError, PrintifyAPIError):  # Catch expected Printify sync failures
+        logger.exception("Printify sync failed for Drop #%s.", drop.drop_number)  # Log the technical Printify sync failure
+        raise  # Re-raise the expected error so callers can show safe admin feedback
+
+    logger.info("Completed Printify sync for Drop #%s.", drop.drop_number)  # Log successful Printify sync
 
     return {  # Return a sync report for admin UI and CLI output
         "product": product,  # Include the raw product response for inspected fields
@@ -370,13 +389,18 @@ def build_printify_order_payload(order, stripe_session):  # Define a helper func
 
 
 def submit_order_to_printify(order):  # Define a service function that submits one paid local order to Printify
+    logger.info("Starting Printify fulfillment for Order #%s.", order.id)  # Log the start of Printify fulfillment
+
     if not current_app.config.get("PRINTIFY_FULFILLMENT_ENABLED"):  # Check if real Printify fulfillment is disabled
+        logger.warning("Printify fulfillment blocked for Order #%s because fulfillment is disabled.", order.id)  # Log the fulfillment safety block
         raise PrintifyFulfillmentError("Printify fulfillment is disabled. Set PRINTIFY_FULFILLMENT_ENABLED=true only when you intentionally want to submit real Printify orders.")  # Raise a safety error
 
     if order.payment_status != "paid":  # Check if the order is not paid
+        logger.warning("Printify fulfillment blocked for Order #%s because payment status is %s.", order.id, order.payment_status)  # Log the unpaid fulfillment block
         raise PrintifyFulfillmentError("Only paid orders can be submitted to Printify.")  # Stop unpaid orders from being fulfilled
 
     if order.printify_order_id:  # Check if this order was already submitted to Printify
+        logger.warning("Printify fulfillment blocked for Order #%s because it already has Printify order %s.", order.id, order.printify_order_id)  # Log the duplicate fulfillment block
         raise PrintifyFulfillmentError("This order was already submitted to Printify.")  # Stop duplicate Printify orders
 
     try:  # Start a protected block for Stripe session retrieval and Printify order submission
@@ -385,6 +409,7 @@ def submit_order_to_printify(order):  # Define a service function that submits o
         shop_id = require_printify_shop_id()  # Read the configured Printify shop ID
         printify_order = printify_request("POST", f"shops/{shop_id}/orders.json", json=payload)  # Submit the order to Printify
     except (StripeCheckoutError, PrintifyAPIError, PrintifyFulfillmentError) as error:  # Catch expected fulfillment errors
+        logger.exception("Printify fulfillment failed for Order #%s.", order.id)  # Log the technical Printify fulfillment failure
         order.printify_last_error = str(error)  # Store the latest fulfillment error on the local order
         db.session.commit()  # Save the error message for admin visibility
         raise  # Re-raise the error so the admin route can flash it
@@ -395,5 +420,7 @@ def submit_order_to_printify(order):  # Define a service function that submits o
     order.printify_submitted_at = datetime.utcnow()  # Store when the order was submitted to Printify
 
     db.session.commit()  # Save the successful Printify fulfillment update
+
+    logger.info("Completed Printify fulfillment for Order #%s.", order.id)  # Log successful Printify fulfillment
 
     return printify_order  # Return the Printify order response for admin feedback

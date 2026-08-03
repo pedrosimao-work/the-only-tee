@@ -1,9 +1,13 @@
+import os  # Import os so environment variables can be read inside the app factory
 from flask import Flask  # Import the Flask class used to create the web application
 from flask_migrate import Migrate  # Import Flask-Migrate to manage database migrations
 
 from app.config import Config  # Import the main configuration class
 from app.constants import BRAND_NAME, BRAND_NAME_UPPER, BRAND_TAGLINE, DROP_CADENCE_LABEL, PRIMARY_DOMAIN, PRODUCT_CATEGORY_PLURAL, PRODUCT_CATEGORY_SINGULAR  # Import brand constants used globally in templates
 from app.extensions import db, login_manager  # Import the shared SQLAlchemy database object
+
+from .errors import register_error_handlers  # Import app-level error handler registration
+from .logging_config import configure_logging  # Import centralized logging setup
 
 
 migrate = Migrate()  # Create the migration extension object without binding it to the app yet
@@ -14,13 +18,18 @@ def create_app():  # Define the application factory function used to build and c
 
     app.config.from_object(Config)  # Load configuration values from the Config class
 
+    app.config["LOG_LEVEL"] = os.environ.get("LOG_LEVEL", "INFO")  # Configure the application log level from the environment
+    app.config["LOG_TO_FILE"] = os.environ.get("LOG_TO_FILE", "true").lower() == "true"  # Configure whether logs are written to a file
+
     db.init_app(app)  # Connect the SQLAlchemy database extension to this Flask app
     migrate.init_app(app, db)  # Connect Flask-Migrate to this Flask app and database object
     login_manager.init_app(app)  # Connect Flask-Login to this Flask app
 
+    configure_logging(app)  # Configure console and file logging for the application
+
     login_manager.login_view = "auth.login"  # Redirect unauthenticated users to the login page when needed
     login_manager.login_message = "Please log in to access this page."  # Set the message shown when login is required
-    login_manager.login_message_category = "warning"  # Set the Boostrap-style category for the Login-required message
+    login_manager.login_message_category = "warning"  # Set the Bootstrap-style category for the login-required message
 
     @app.context_processor  # Register a function that injects shared variables into all templates
     def inject_brand_context():  # Define the template context function for brand values
@@ -51,5 +60,7 @@ def create_app():  # Define the application factory function used to build and c
     app.register_blueprint(admin)  # Register the admin blueprint
     app.register_blueprint(checkout)  # Register the checkout blueprint
     app.register_blueprint(legal)  # Register the legal pages blueprint
+
+    register_error_handlers(app)  # Register user-safe error pages and technical error logging
 
     return app  # Return the fully configured Flask application instance

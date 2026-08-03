@@ -1,0 +1,22 @@
+{% extends "base.html" %} <!-- Use the shared site layout -->
+
+{% block title %}Access Denied | {{ BRAND_NAME }}{% endblock %} <!-- Set the browser title for the 403 page -->
+
+{% block content %} <!-- Start the page-specific content block -->
+<section class="page-section"> <!-- Create the error page section -->
+    <div class="container"> <!-- Center the error content inside a Bootstrap container -->
+        <div class="row justify-content-center"> <!-- Center the error card row -->
+            <div class="col-lg-7"> <!-- Limit the error card width -->
+                <div class="card border-0 shadow-sm text-center"> <!-- Create a clean error card -->
+                    <div class="card-body p-5"> <!-- Add generous spacing inside the card -->
+                        <p class="eyebrow mb-2">403</p> <!-- Display the error code -->
+                        <h1 class="fw-bold mb-3">Access denied</h1> <!-- Display the user-safe error heading -->
+                        <p class="text-muted mb-4">You do not have permission to access this page.</p> <!-- Explain the issue without technical details -->
+                        <a href="{{ url_for('main.home') }}" class="btn btn-dark">Back to Home</a> <!-- Link the user back to the homepage -->
+                    </div> <!-- Close the card body -->
+                </div> <!-- Close the error card -->
+            </div> <!-- Close the centered column -->
+        </div> <!-- Close the centered row -->
+    </div> <!-- Close the Bootstrap container -->
+</section> <!-- Close the error page section -->
+{% endblock %} <!-- End the page-specific content block -->

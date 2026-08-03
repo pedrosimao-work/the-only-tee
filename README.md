@@ -286,6 +286,27 @@ The app includes demo-safety protections:
 - Test-order deletion does not refund Stripe and does not cancel external Printify orders
 - Public support/contact copy uses `hello@pedrosimao.work`
 
+
+## Logging and Error Handling
+
+The app uses safe public error pages for 403, 404, and 500 responses. Technical error details are written to application logs instead of being shown to users.
+
+Runtime logs are written to:
+
+```text
+instance/logs/the_only_drop.log
+```
+
+Logging can be configured with:
+
+```text
+LOG_LEVEL=INFO
+LOG_TO_FILE=true
+```
+
+The `instance/` directory and log files must not be committed.
+
+
 ## Development Workflow
 
 This project uses a professional GitHub workflow:
